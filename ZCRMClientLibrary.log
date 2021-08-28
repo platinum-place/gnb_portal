@@ -1,0 +1,41 @@
+2021-08-26 10:07:43 ERROR: zcrmsdk\crm\exception\ZCRMException Caused by:'No Content' in C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\BulkAPIResponse.php(61)
+Trace::#0 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\CommonAPIResponse.php(76): zcrmsdk\crm\api\response\BulkAPIResponse->handleForFaultyResponses()
+#1 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\CommonAPIResponse.php(67): zcrmsdk\crm\api\response\CommonAPIResponse->processResponse()
+#2 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\BulkAPIResponse.php(47): zcrmsdk\crm\api\response\CommonAPIResponse->__construct('HTTP/1.1 204 \r\n...', 204)
+#3 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\APIRequest.php(148): zcrmsdk\crm\api\response\BulkAPIResponse->__construct('HTTP/1.1 204 \r\n...', 204)
+#4 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\handler\MassEntityAPIHandler.php(335): zcrmsdk\crm\api\APIRequest->getBulkAPIResponse()
+#5 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\crud\ZCRMModule.php(1131): zcrmsdk\crm\api\handler\MassEntityAPIHandler->searchRecords(Array, 'criteria', 'Plan:equals:322...')
+#6 C:\Users\Tecnología\Desktop\portal\app\Libraries\Zoho.php(103): zcrmsdk\crm\crud\ZCRMModule->searchRecordsByCriteria('Plan:equals:322...', Array)
+#7 C:\Users\Tecnología\Desktop\portal\app\Libraries\Incendio.php(33): App\Libraries\Zoho->searchRecordsByCriteria('Tasas', 'Plan:equals:322...')
+#8 C:\Users\Tecnología\Desktop\portal\app\Controllers\Cotizaciones.php(27): App\Libraries\Incendio->planes('2550000', '60')
+#9 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(928): App\Controllers\Cotizaciones->incendio()
+#10 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(436): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Cotizaciones))
+#11 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(336): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\Users\Tecnología\Desktop\portal\public\index.php(37): CodeIgniter\CodeIgniter->run()
+#13 C:\Users\Tecnología\Desktop\portal\system\Commands\Server\rewrite.php(45): require_once('C:\\Users\\Tecnol...')
+#14 {main}
+2021-08-26 10:08:12 ERROR: zcrmsdk\crm\exception\ZCRMException Caused by:'No Content' in C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\BulkAPIResponse.php(61)
+Trace::#0 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\CommonAPIResponse.php(76): zcrmsdk\crm\api\response\BulkAPIResponse->handleForFaultyResponses()
+#1 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\CommonAPIResponse.php(67): zcrmsdk\crm\api\response\CommonAPIResponse->processResponse()
+#2 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\response\BulkAPIResponse.php(47): zcrmsdk\crm\api\response\CommonAPIResponse->__construct('HTTP/1.1 204 \r\n...', 204)
+#3 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\APIRequest.php(148): zcrmsdk\crm\api\response\BulkAPIResponse->__construct('HTTP/1.1 204 \r\n...', 204)
+#4 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\api\handler\MassEntityAPIHandler.php(335): zcrmsdk\crm\api\APIRequest->getBulkAPIResponse()
+#5 C:\Users\Tecnología\Desktop\portal\vendor\zohocrm\php-sdk-archive\src\crm\crud\ZCRMModule.php(1131): zcrmsdk\crm\api\handler\MassEntityAPIHandler->searchRecords(Array, 'criteria', 'Plan:equals:322...')
+#6 C:\Users\Tecnología\Desktop\portal\app\Libraries\Zoho.php(103): zcrmsdk\crm\crud\ZCRMModule->searchRecordsByCriteria('Plan:equals:322...', Array)
+#7 C:\Users\Tecnología\Desktop\portal\app\Libraries\Incendio.php(34): App\Libraries\Zoho->searchRecordsByCriteria('Tasas', 'Plan:equals:322...')
+#8 C:\Users\Tecnología\Desktop\portal\app\Controllers\Cotizaciones.php(27): App\Libraries\Incendio->planes('2550000', '60')
+#9 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(928): App\Controllers\Cotizaciones->incendio()
+#10 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(436): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Cotizaciones))
+#11 C:\Users\Tecnología\Desktop\portal\system\CodeIgniter.php(336): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#12 C:\Users\Tecnología\Desktop\portal\public\index.php(37): CodeIgniter\CodeIgniter->run()
+#13 C:\Users\Tecnología\Desktop\portal\system\Commands\Server\rewrite.php(45): require_once('C:\\Users\\Tecnol...')
+#14 {main}
+2021-08-26 10:53:03 INFO: Access Token has expired. Hence refreshing.
+2021-08-26 12:59:43 INFO: Access Token has expired. Hence refreshing.
+2021-08-26 14:28:58 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 06:42:21 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 07:44:13 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 08:51:34 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 10:36:03 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 12:25:39 INFO: Access Token has expired. Hence refreshing.
+2021-08-27 13:28:54 INFO: Access Token has expired. Hence refreshing.
