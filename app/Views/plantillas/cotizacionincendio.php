@@ -73,13 +73,18 @@
     </div>
 
     <div class="col-12 d-flex justify-content-center bg-primary text-white">
-      <h6>COBERTURAS</h6>
+      <h6>ASEGURADORAS</h6>
     </div>
 
     <div class="card-group">
       <div class="card">
         <div class="card-body">
           <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
+          <hr>
+          <p class="card-text">
+          <dl><b>Valor de la propiedad</b></dl>
+          <dl><b>Valor del Préstamo</b></dl>
+          </p>
           <hr>
           <p class="card-text">
           <dl><b>Prima Neta</b></dl>
@@ -94,6 +99,11 @@
         <div class="card">
           <div class="card-body">
             <img src="<?= base_url("img/aseguradoras/" . $plan["id"] . ".png") ?>" height="50" width="150">
+            <hr>
+            <p class="card-text">
+            <dl>RD$<?= number_format($detalles["propiedad"], 2) ?></dl>
+            <dl>RD$<?= number_format($detalles["prestamo"], 2) ?></dl>
+            </p>
             <hr>
             <p class="card-text">
             <dl>RD$<?= number_format($plan["neta"], 2) ?></dl>
