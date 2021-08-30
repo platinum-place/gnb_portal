@@ -57,7 +57,7 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#">
-                                <img src="<?= base_url("img/it.png") ?>" alt="200" width="200">
+                                <img src="<?= base_url("img/it.png") ?>" alt="150" width="150">
                             </a>
                         </li>
 

@@ -84,9 +84,9 @@
                     <button class="w-100 btn btn-primary btn-lg" type="submit">Cotizar</button>
                 </form>
 
-                <hr class="my-4">
-
                 <?php if (!empty($cotizacion["planes"])) : ?>
+                    <hr class="my-4">
+
                     <h4 class="mb-3" id="cotizacion">Cotización</h4>
                     <div class="table-responsive">
                         <table class="table table-striped table-sm">
@@ -109,7 +109,7 @@
 
                     <hr class="my-4">
 
-                    <a href="<?= site_url("cotizaciones/cotizacionincendio/" . json_encode($cotizacion)) ?>"target="_blank" class="w-100 btn btn-success btn-lg">Descargar</a>
+                    <a href="<?= site_url("cotizaciones/cotizacionincendio/" . json_encode($cotizacion)) ?>" target="_blank" class="w-100 btn btn-success btn-lg">Descargar</a>
 
 
                     <script>

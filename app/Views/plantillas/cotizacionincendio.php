@@ -20,13 +20,119 @@
       <img src="<?= base_url("img/nobe.png") ?>" width="100" height="100">
     </div>
     <div class="col-6 text-center">
-      <h4>COTIZACIÓN <br> SEGURO INCENDIO HIPOTECARIO</h4>
+      <h5>COTIZACIÓN <br> SEGURO INCENDIO HIPOTECARIO</h5>
     </div>
     <div class="col-3" style="text-align: right">
       Fecha <?= date("d/m/Y") ?>
     </div>
 
-        <!-- Datos cotizacion -->
+    <div class="card-borderless">
+      <div class="card-body">
+        <h5 class="card-title d-flex justify-content-center">Card title</h5>
+        <div class="row">
+          <div class="col-6">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+                <tr>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="col-6">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+                <tr>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-borderless">
+      <div class="card-body">
+        <h5 class="card-title d-flex justify-content-center">Card title</h5>
+        <div class="row">
+          <div class="col-6">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+                <tr>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="col-6">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                </tr>
+                <tr>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-borderless">
+      <div class="card-body">
+        <h5 class="card-title d-flex justify-content-center">Card title</h5>
+        <div class="card-group">
+          <div class="card">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+          <div class="card">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+          <div class="card">
+            <img src="..." class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">Card title</h5>
+              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos cotizacion -->
 
 
 
