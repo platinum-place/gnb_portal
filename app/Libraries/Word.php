@@ -138,7 +138,7 @@ class Word
         $fotos = $this->zoho->getAttachments("Cases", $caso->getEntityId());
 
         foreach ((array)$fotos as $foto) {
-            $ruta = $this->zoho->downloadAttachment("Cases", $caso->getEntityId(), $foto->getId());
+            $ruta = $this->zoho->downloadAttachment("Cases", $caso->getEntityId(), $foto->getId(), WRITEPATH . 'uploads');
             $section->addImage($ruta, ["width" => 500, 'align' => 'left']);
         }
 

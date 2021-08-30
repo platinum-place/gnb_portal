@@ -67,7 +67,7 @@ class Excel
 
         $cont = 1;
         $pos = 13;
-        $criterio = "Account_Name:equals:" . 3222373000011690131;
+        $criterio = "Account_Name:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId();
         $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criterio);
         foreach ((array)$emisiones as $emision) {
             if (

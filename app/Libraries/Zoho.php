@@ -66,7 +66,7 @@ class Zoho
         }
     }
 
-    public function downloadAttachment($module_api_name, $record_id, $attachment_id)
+    public function downloadAttachment($module_api_name, $record_id, $attachment_id, $filePath)
     {
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
 
@@ -80,7 +80,6 @@ class Zoho
             echo $ex->getFile(); // To get the file name that throws the Exception
         }
 
-        $filePath = WRITEPATH . 'uploads'; // $filePath - absolute path where downloaded file has to be stored.
         $file = $filePath . "/" . $fileResponseIns->getFileName();
         $fp = fopen($file, "w");
         echo "HTTP Status Code:" . $fileResponseIns->getHttpStatusCode();
@@ -155,5 +154,75 @@ class Zoho
         echo "Code:" . $responseIns->getCode(); // To get status code
         echo "<br>";
         echo "Details:" . json_encode($responseIns->getDetails());
+    }
+
+    public function createRecords($module_api_name, $registro = array())
+    {
+        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance($module_api_name); //to get the instance of the module
+        $records = array();
+        $record = ZCRMRecord::getInstance($module_api_name, null);  //To get ZCRMRecord instance
+
+        foreach ($registro as $campo => $valor) {
+            $record->setFieldValue($campo, $valor); //This function use to set FieldApiName and value similar to all other FieldApis and Custom field
+        }
+
+
+        /** Following methods are being used only by Inventory modules **/
+        /*
+        $lineItem=ZCRMInventoryLineItem::getInstance(null);  //To get ZCRMInventoryLineItem instance
+        $lineItem->setDescription("Product_description");  //To set line item description
+        $lineItem ->setDiscount(5);  //To set line item discount
+        $lineItem->setListPrice(100);  //To set line item list price
+        
+        $taxInstance1=ZCRMTax::getInstance("{tax_name}");  //To get ZCRMTax instance
+        $taxInstance1->setPercentage(2);  //To set tax percentage
+        $taxInstance1->setValue(50);  //To set tax value
+        $lineItem->addLineTax($taxInstance1);  //To set line tax to line item
+        
+        $taxInstance1=ZCRMTax::getInstance("{tax_name}"); //to get the tax instance
+        $taxInstance1->setPercentage(12); //to set the tax percentage
+        $taxInstance1->setValue(50); //to set the tax value
+        $lineItem->addLineTax($taxInstance1); //to add the tax to line item
+        
+        $lineItem->setProduct(ZCRMRecord::getInstance("{module_api_name}","{record_id}"));  //To set product to line item
+        $lineItem->setQuantity(100);  //To set product quantity to this line item
+        
+        $record->addLineItem($lineItem);   //to add the line item to the record
+        */
+
+        array_push($records, $record); // pushing the record to the array.
+        //$trigger=array();//triggers to include
+        //$lar_id={"lead_assignment_rule_id"};//lead assignment rule id
+        $responseIn = $moduleIns->createRecords($records); // updating the records.$trigger,$lar_id are optional
+        foreach ($responseIn->getEntityResponses() as $responseIns) {
+            echo "HTTP Status Code:" . $responseIn->getHttpStatusCode(); // To get http response code
+            echo "<br>";
+            echo "Status:" . $responseIns->getStatus(); // To get response status
+            echo "<br>";
+            echo "Message:" . $responseIns->getMessage(); // To get response message
+            echo "<br>";
+            echo "Code:" . $responseIns->getCode(); // To get status code
+            echo "<br>";
+            echo "Details:" . json_encode($responseIns->getDetails());
+            
+            $details = json_decode(json_encode($responseIns->getDetails()), true);
+        }
+
+        return $details["id"];
+    }
+
+    public function uploadAttachment($module_api_name, $record_id, $path)
+    {
+        $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
+        $responseIns = $record->uploadAttachment($path); // $filePath - absolute path of the attachment to be uploaded.
+        echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
+        echo "<br>";
+        echo "Status:" . $responseIns->getStatus(); // To get response status
+        echo "<br>";
+        echo "Message:" . $responseIns->getMessage(); // To get response message
+        echo "<br>";
+        echo "Code:" . $responseIns->getCode(); // To get status code
+        echo "<br>";
+        echo "Details:" . $responseIns->getDetails()['id'];
     }
 }

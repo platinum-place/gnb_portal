@@ -86,7 +86,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= site_url("login/editar") ?>">
                                 <span data-feather="users"></span>
-                                Cambiar contraseñe
+                                Cambiar contraseña
                             </a>
                         </li>
                         <li class="nav-item">

@@ -52,7 +52,9 @@
 
                     <hr class="my-4">
 
-                    <button class="w-100 btn btn-primary btn-lg" type="submit">Generar</button>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button class="btn btn-primary btn-lg" type="submit">Generar</button>
+                    </div>
                 </form>
             </div>
         </div>

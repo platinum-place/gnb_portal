@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h4">Cotización Seguro Incendio Hipotecario</h1>
+    <h1 class="h2">Cotización Seguro Incendio Hipotecario</h1>
 </div>
 
 <div class="container py-4">
@@ -21,8 +21,8 @@
                 <form class="needs-validation" novalidate method="post" action="<?= site_url("cotizaciones/incendio") ?>">
                     <div class="row g-3">
                         <div class="col-sm-4">
-                            <label for="cliente" class="form-label">Cliente <span class="h4asdasd a sdasd a asd as as dasd asd a-muted">(Optional)</span></label>
-                            <input type="h4asdasd a sdasd a asd as as dasd asd a" class="form-control" id="cliente" name="cliente" value="<?= (!empty($cotizacion["cliente"])) ? $cotizacion["cliente"] : "" ?>">
+                            <label for="cliente" class="form-label">Cliente <span class="text-muted">(Optional)</span></label>
+                            <input type="text" class="form-control" id="cliente" name="cliente" value="<?= (!empty($cotizacion["cliente"])) ? $cotizacion["cliente"] : "" ?>">
                         </div>
 
                         <div class="col-sm-4">
@@ -42,7 +42,7 @@
                         </div>
 
                         <div class="col-sm-4">
-                            <label for="plazo" class="form-label">Plazo <span class="h4asdasd a sdasd a asd as as dasd asd a-muted">(en meses)</span></label>
+                            <label for="plazo" class="form-label">Plazo <span class="text-muted">(en meses)</span></label>
                             <input type="number" class="form-control" id="plazo" required name="plazo" value="<?= (!empty($cotizacion["plazo"])) ? $cotizacion["plazo"] : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
@@ -72,7 +72,7 @@
 
                         <div class="col-12">
                             <label for="direccion" class="form-label">Dirección</label>
-                            <input type="h4asdasd a sdasd a asd as as dasd asd a" class="form-control" id="direccion" name="direccion" required value="<?= (!empty($cotizacion["direccion"])) ? $cotizacion["direccion"] : "" ?>">
+                            <input type="text" class="form-control" id="direccion" name="direccion" required value="<?= (!empty($cotizacion["direccion"])) ? $cotizacion["direccion"] : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -81,7 +81,9 @@
 
                     <hr class="my-4">
 
-                    <button class="w-100 btn btn-primary btn-lg" type="submit">Cotizar</button>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button class="btn btn-primary btn-lg" type="submit">Cotizar</button>
+                    </div>
                 </form>
 
                 <?php if (!empty($cotizacion["planes"])) : ?>
@@ -109,9 +111,12 @@
 
                     <hr class="my-4">
 
-                    <a href="<?= site_url("cotizaciones/cotizacionincendio/" . json_encode($cotizacion)) ?>" target="_blank" class="w-100 btn btn-success btn-lg">Descargar</a>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a href="<?= site_url("cotizaciones/cotizacionincendio/" . json_encode($cotizacion)) ?>" target="_blank" class="btn btn-success btn-lg">Descargar</a>
+                        <a href="<?= site_url("emisiones/incendio/" . json_encode($cotizacion)) ?>" class="btn btn-secondary btn-lg">Emitir</a>
+                    </div>
 
-
+                    <!-- Hacer scroll automatico cuando aparece la tabla de cotizaciones -->
                     <script>
                         var my_element = document.getElementById("cotizacion");
 

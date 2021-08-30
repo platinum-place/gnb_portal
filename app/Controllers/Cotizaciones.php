@@ -22,8 +22,10 @@ class Cotizaciones extends BaseController
         return view('cotizaciones/index');
     }
 
-    public function incendio()
+    public function incendio($cotizacion = null)
     {
+        $cotizacion = json_decode($cotizacion, true);
+
         if ($this->request->getPost()) {
             $planes = $this->libreria->calcularplanesincendio($this->request->getPost("propiedad"));
 
@@ -39,12 +41,13 @@ class Cotizaciones extends BaseController
                     "planes" => $planes
                 ];
 
-                return view('cotizaciones/incendio', ["cotizacion" => $cotizacion]);
+                return redirect()->to(site_url("cotizaciones/incendio/" . json_encode($cotizacion)));
             }
 
             session()->setFlashdata('alerta', 'Ha ocurrido un error');
         }
-        return view('cotizaciones/incendio');
+
+        return view('cotizaciones/incendio', ["cotizacion" => $cotizacion]);
     }
 
     public function cotizacionincendio($detalles)
