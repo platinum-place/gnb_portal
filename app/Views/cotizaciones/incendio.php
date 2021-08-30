@@ -50,10 +50,10 @@
                         </div>
 
                         <div class="col-sm-4">
-                            <label for="constrccion" class="form-label">Tipo de Construcción</label>
-                            <select class="form-select" id="constrccion" name="constrccion">
-                                <?php if (!empty($cotizacion["constrccion"])) : ?>
-                                    <option value="<?= $cotizacion["constrccion"] ?>"><?= $cotizacion["constrccion"] ?></option>
+                            <label for="construccion" class="form-label">Tipo de Construcción</label>
+                            <select class="form-select" id="construccion" name="construccion">
+                                <?php if (!empty($cotizacion["construccion"])) : ?>
+                                    <option value="<?= $cotizacion["construccion"] ?>"><?= $cotizacion["construccion"] ?></option>
                                 <?php endif ?>
                                 <option value="Superior">Superior</option>
                             </select>

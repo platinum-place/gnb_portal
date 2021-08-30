@@ -26,118 +26,130 @@
       Fecha <?= date("d/m/Y") ?>
     </div>
 
-    <div class="card-borderless">
-      <div class="card-body">
-        <h5 class="card-title d-flex justify-content-center">Card title</h5>
-        <div class="row">
-          <div class="col-6">
-            <table class="table table-borderless">
-              <tbody>
-                <tr>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
 
-          <div class="col-6">
-            <table class="table table-borderless">
-              <tbody>
-                <tr>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    <div class="col-12 d-flex justify-content-center bg-primary text-white">
+      <h6>DATOS</h6>
+    </div>
+
+    <div class="col-6 border">
+      <div class="row">
+        <div class="col-6">
+          <b>Cliente:</b><br>
+          <b>Valor de la propiedad:</b><br>
+          <b>Valor del Préstamo:</b><br>
+          <b>Plazo en meses:</b>
+        </div>
+
+        <div class="col-6">
+          <?= $detalles["cliente"] ?> <br>
+          RD$<?= number_format($detalles["propiedad"], 2) ?><br>
+          RD$<?= number_format($detalles["prestamo"], 2) ?> <br>
+          <?= $detalles["plazo"] ?>
         </div>
       </div>
     </div>
 
-    <div class="card-borderless">
-      <div class="card-body">
-        <h5 class="card-title d-flex justify-content-center">Card title</h5>
-        <div class="row">
-          <div class="col-6">
-            <table class="table table-borderless">
-              <tbody>
-                <tr>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+    <div class="col-6 border">
+      <div class="row">
+        <div class="col-4">
+          <b>Tipo de Construcción:</b><br>
+          <b>Tipo de Riesgo:</b><br>
+          <b>Dirección:</b>
+        </div>
 
-          <div class="col-6">
-            <table class="table table-borderless">
-              <tbody>
-                <tr>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                </tr>
-                <tr>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <div class="col-8">
+          <?= $detalles["riesgo"] ?> <br>
+          <?= $detalles["construccion"] ?><br>
+          <?= $detalles["direccion"] ?>
         </div>
       </div>
     </div>
 
-    <div class="card-borderless">
-      <div class="card-body">
-        <h5 class="card-title d-flex justify-content-center">Card title</h5>
-        <div class="card-group">
-          <div class="card">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-            </div>
-          </div>
-          <div class="card">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-            </div>
-          </div>
-          <div class="card">
-            <img src="..." class="card-img-top" alt="...">
-            <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-              <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="col-12">
+      &nbsp;
     </div>
 
-    <!-- Datos cotizacion -->
+    <div class="col-12 d-flex justify-content-center bg-primary text-white">
+      <h6>COBERTURAS</h6>
+    </div>
+
+    <div class="card-group">
+      <div class="card">
+        <div class="card-body">
+          <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
+          <hr>
+          <p class="card-text">
+          <dl><b>Prima Neta</b></dl>
+          <dl><b>ISC</b></dl>
+          <dl><b>Prima Mensual</b></dl>
+          </p>
+        </div>
+      </div>
+
+      <?php foreach ($detalles["planes"] as $plan) : ?>
+
+        <div class="card">
+          <div class="card-body">
+            <img src="<?= base_url("img/aseguradoras/" . $plan["id"] . ".png") ?>" height="50" width="150">
+            <hr>
+            <p class="card-text">
+            <dl>RD$<?= number_format($plan["neta"], 2) ?></dl>
+            <dl>RD$<?= number_format($plan["isc"], 2) ?></dl>
+            <dl>RD$<?= number_format($plan["total"], 2) ?></dl>
+            </p>
+          </div>
+        </div>
+
+      <?php endforeach ?>
+
+    </div>
 
 
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
+    <div class="col-12">
+      &nbsp;
+    </div>
 
 
+    <div class="row">
+      <div class="col-4">
+        <p class="text-center">
+          _______________________________ <br> Firma Cliente
+        </p>
+      </div>
 
+      <div class="col-4">
+        <p class="text-center">
+          _______________________________ <br> Aseguradora Elegida
+        </p>
+      </div>
+
+      <div class="col-4">
+        <p class="text-center">
+          _______________________________ <br> Fecha
+        </p>
+      </div>
+    </div>
 
   </div>
 
@@ -151,6 +163,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     -->
+
+
+  <script>
+    setTimeout(function() {
+      window.print();
+      window.close();
+    }, 2000);
+  </script>
 </body>
 
 </html>

@@ -33,7 +33,7 @@ class Cotizaciones extends BaseController
                     "plazo" => $this->request->getPost("plazo"),
                     "propiedad" => $this->request->getPost("propiedad"),
                     "prestamo" => $this->request->getPost("prestamo"),
-                    "constrccion" => $this->request->getPost("constrccion"),
+                    "construccion" => $this->request->getPost("construccion"),
                     "riesgo" => $this->request->getPost("riesgo"),
                     "direccion" => $this->request->getPost("direccion"),
                     "planes" => $planes
@@ -47,9 +47,9 @@ class Cotizaciones extends BaseController
         return view('cotizaciones/incendio');
     }
 
-    public function cotizacionincendio($cotizacion)
+    public function cotizacionincendio($detalles)
     {
-        $cotizacion = json_decode($cotizacion);
-        return view('plantillas/cotizacionincendio', ["cotizacion" => $cotizacion, "zoho" => $this->zoho]);
+        $detalles = json_decode($detalles, true);
+        return view('plantillas/cotizacionincendio', ["detalles" => $detalles, "zoho" => $this->zoho]);
     }
 }
