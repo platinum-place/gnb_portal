@@ -53,36 +53,19 @@ class Zoho
         $responseIns = $records->getAttachments(1, 50); // to get the attachments */
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
         $param_map = array("page" => $page, "per_page" => $per_page); // key-value pair containing all the parameters - optional
-
-        try {
-            $responseIns = $record->getAttachments($param_map); // to get the attachments
-            return $responseIns->getData(); // to get the attachments in form of ZCRMAttachment instance array
-        } catch (ZCRMException $ex) {
-            echo $ex->getMessage(); // To get ZCRMException error message
-            echo "<br>";
-            echo $ex->getExceptionCode(); // To get ZCRMException error code
-            echo "<br>";
-            echo $ex->getFile(); // To get the file name that throws the Exception
-        }
+        $responseIns = $record->getAttachments($param_map); // to get the attachments
+        return $responseIns->getData(); // to get the attachments in form of ZCRMAttachment instance array
     }
 
     public function downloadAttachment($module_api_name, $record_id, $attachment_id, $filePath)
     {
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
-
-        try {
-            $fileResponseIns = $record->downloadAttachment($attachment_id);
-        } catch (ZCRMException $ex) {
-            echo $ex->getMessage(); // To get ZCRMException error message
-            echo "<br>";
-            echo $ex->getExceptionCode(); // To get ZCRMException error code
-            echo "<br>";
-            echo $ex->getFile(); // To get the file name that throws the Exception
-        }
+        $fileResponseIns = $record->downloadAttachment($attachment_id);
 
         $file = $filePath . "/" . $fileResponseIns->getFileName();
         $fp = fopen($file, "w");
         echo "HTTP Status Code:" . $fileResponseIns->getHttpStatusCode();
+        echo "<br>";
         echo "File Name:" . $fileResponseIns->getFileName();
         $stream = $fileResponseIns->getFileContent();
         var_dump($stream);
@@ -204,7 +187,7 @@ class Zoho
             echo "Code:" . $responseIns->getCode(); // To get status code
             echo "<br>";
             echo "Details:" . json_encode($responseIns->getDetails());
-            
+
             $details = json_decode(json_encode($responseIns->getDetails()), true);
         }
 

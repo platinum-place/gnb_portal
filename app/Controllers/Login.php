@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Clave;
-use App\Libraries\Login as LibrariesLogin;
 use App\Libraries\Zoho;
 
 class Login extends BaseController
@@ -18,42 +16,48 @@ class Login extends BaseController
     public function index()
     {
         if ($this->request->getPost()) {
-            $libreria = new LibrariesLogin($this->zoho);
+            //buscar el todos los usuarios con el correo y contraseña sean iguales
+            //los correos son campos unicos en el crm
+            $criterio = "((Email:equals:" . $this->request->getPost("user") . ")and(Contrase_a:equals:" . $this->request->getPost("pass") . "))";
+            $usuarios = $this->zoho->searchRecordsByCriteria("Contacts", $criterio);
 
-            $libreria->usuario($this->request->getPost("user"), $this->request->getPost("pass"));
-
-            if ($libreria->validar()) {
-                $libreria->ingresar();
+            //el resultado siempre son dos
+            //o encuentra el usuario, que solo sera uno, en este caso se crear la sesion
+            //o no encuentra ningun valor
+            foreach ((array)$usuarios as $usuario) {
+                session()->set('usuario', $usuario);
                 return redirect()->to(site_url());
             }
 
-            session()->setFlashdata('alerta', 'Ha ocurrido un error');
+            //alerta que dara en caso de no encontrar ningun resultado
+            session()->setFlashdata('alerta', 'Usuario o contraseña incorrectos.');
         }
+
         return view('login/index');
     }
 
     public function editar()
     {
         if ($this->request->getPost()) {
-            $libreria = new Clave($this->zoho);
-            $libreria->establecer($this->request->getPost("actual"), $this->request->getPost("nuevo"));
+            //cambiar solo la contrase del usuario en el crm
+            $this->zoho->update("Contacts", session("usuario")->getEntityId(), ["Contrase_a" => $this->request->getPost("nuevo")]);
 
-            if ($libreria->validar()) {
-                $libreria->cambiar();
+            //alerta
+            session()->setFlashdata('alerta', 'La contraseña ha sido actualizada.');
 
-                session()->setFlashdata('alerta', 'La contraseña actualizada.');
-                return redirect()->to(site_url("clave"));
-            } else {
-                session()->setFlashdata('alerta', 'La contraseña actual no coincide.');
-                return redirect()->to(site_url("clave"));
-            }
+            //recargar la pagina para limpiar el post
+            return redirect()->to(site_url("login/editar"));
         }
+
         return view('login/editar');
     }
 
     public function salir()
     {
+        //eliminar todas las sesiones
         session()->destroy();
-        return redirect()->to(site_url());
+
+        //redirigir al login
+        return redirect()->to(site_url("login"));
     }
 }

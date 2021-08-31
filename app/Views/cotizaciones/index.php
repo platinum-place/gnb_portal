@@ -17,6 +17,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col">
             <div class="card h-100">
                 <img src="<?= base_url("img/vida.png") ?>" class="rounded mx-auto d-block" height="200">
@@ -26,6 +27,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col">
             <div class="card h-100">
                 <img src="<?= base_url("img/desempleo.png") ?>" class="rounded mx-auto d-block" height="200">
@@ -35,6 +37,7 @@
                 </div>
             </div>
         </div>
+        
         <div class="col">
             <div class="card h-100">
                 <img src="<?= base_url("img/incendio.png") ?>" class="rounded mx-auto d-block" height="200">

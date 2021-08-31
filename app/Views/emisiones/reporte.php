@@ -7,10 +7,8 @@
 </div>
 
 <div class="container py-4">
-
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
-
             <?php if (session()->getFlashdata('alerta')) : ?>
                 <div class="alert alert-info" role="alert">
                     <?= session()->getFlashdata('alerta') ?>
@@ -20,6 +18,8 @@
             <div class="col-md-11 col-lg-12">
                 <form class="needs-validation" novalidate method="POST" action="<?= site_url("emisiones/reporte") ?>">
                     <div class="row g-3">
+                    <h4 class="mb-3">Formulario</h4>
+
                         <div class="col-sm-4">
                             <label for="tipo" class="form-label">Tipo de reporte</label>
                             <select class="form-select" id="tipo" name="tipo" required>

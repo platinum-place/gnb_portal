@@ -45,7 +45,7 @@
 
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="<?= site_url("login/salir") ?>">Cerrar sesión</a>
+                <a class="nav-link px-3" href="<?= site_url("login/salir") ?>" onclick="return confirm('¿Estas seguro de salir?')">Cerrar sesión</a>
             </div>
         </div>
     </header>
@@ -92,7 +92,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?= site_url("emisiones/reporte") ?>">
                                 <span data-feather="bar-chart-2"></span>
-                                Reportes
+                                Reportes de emisiones
                             </a>
                         </li>
                     </ul>

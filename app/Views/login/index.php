@@ -61,10 +61,6 @@
             <p class="mt-5 mb-3 text-muted">Grupo Nobe &copy;<?= date("Y") ?></p>
         </form>
     </main>
-
-    <nav class="navbar fixed-bottom navbar-dark bg-dark">
-        <p class="text-muted">Grupo Nobe &copy;<?= date("Y") ?></p>
-    </nav>
 </body>
 
 </html>
