@@ -18,15 +18,16 @@
             <div class="col-md-11 col-lg-12">
                 <form class="needs-validation" novalidate method="POST" action="<?= site_url("emisiones/reporte") ?>">
                     <div class="row g-3">
-                    <h4 class="mb-3">Formulario</h4>
+                        <h4 class="mb-3">Formulario</h4>
 
                         <div class="col-sm-4">
-                            <label for="tipo" class="form-label">Tipo de reporte</label>
+                            <label for="tipo" class="form-label">Plan</label>
                             <select class="form-select" id="tipo" name="tipo" required>
                                 <option value="" disabled selected>Selecciona un tipo</option>
                                 <option value="auto">Auto</option>
                                 <option value="vida">Vida</option>
                                 <option value="desempleo">Vida/Desempleo</option>
+                                <option value="desempleo">Incendio Hipotecario</option>
                             </select>
                             <div class="invalid-feedback">
                                 Campo obligatorio.

@@ -12,7 +12,7 @@
 </div>
 
 <?php if (session()->getFlashdata('alerta')) : ?>
-    <div class="alert alert-info" role="alert">
+    <div class="alert alert-success" role="alert">
         <?= session()->getFlashdata('alerta') ?>
     </div>
 <?php endif ?>
@@ -21,11 +21,12 @@
     <h5 class="card-header">Buscar por:</h5>
     <div class="card-body">
         <form class="row" action="<?= site_url("emisiones") ?>" method="post">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <select class="form-select" name="opcion" required>
                     <option value="nombre">Nombre del cliente</option>
                     <option value="apellido">Apellido del cliente</option>
                     <option value="id">RNC/Cédula del cliente</option>
+                    <option value="codigo">Código</option>
                 </select>
                 <div class="invalid-feedback">
                     Campo obligatorio.
@@ -36,7 +37,7 @@
                 <input type="text" class="form-control" name="busqueda" required>
             </div>
 
-            <div class="col-2">
+            <div class="col-4">
                 <button type="submit" class="btn btn-primary">Buscar</button>
                 |
                 <a href="<?= site_url("emisiones") ?>" class="btn btn-secondary">Limpiar</a>

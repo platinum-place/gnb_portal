@@ -201,3 +201,4 @@ Trace::#0 C:\Users\Tecnología\Desktop\zohoportal\vendor\zohocrm\php-sdk-archive
 #12 C:\Users\Tecnología\Desktop\zohoportal\public\index.php(37): CodeIgniter\CodeIgniter->run()
 #13 C:\Users\Tecnología\Desktop\zohoportal\system\Commands\Server\rewrite.php(45): require_once('C:\\Users\\Tecnol...')
 #14 {main}
+2021-08-31 17:00:21 INFO: Access Token has expired. Hence refreshing.

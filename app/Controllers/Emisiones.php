@@ -30,6 +30,10 @@ class Emisiones extends BaseController
                 case 'id':
                     $criterio = "((Identificaci_n:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
                     break;
+
+                case 'codigo':
+                    $criterio = "((TUA:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
             }
         } else {
             $criterio = "Account_Name:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId();
@@ -62,13 +66,13 @@ class Emisiones extends BaseController
             $sheet->getStyle('D7')->getFont()->setBold(true);
 
             //titulos
-            $sheet->setCellValue('E2', 'EMISIONES PLAN AUTO');
-            $sheet->setCellValue('D4', 'CONTRERAS ESTÉVEZ');
-            $sheet->setCellValue('D5', 'Generado por: ');
-            $sheet->setCellValue('E5', "Nishaly Germosen");
-            $sheet->setCellValue('D6', 'Desde: ');
+            $sheet->setCellValue('E2', 'EMISIONES PLAN'.strtoupper($this->request->getPost("tipo")));
+            $sheet->setCellValue('D4', session("usuario")->getFieldValue("Account_Name")->getLookupLabel());
+            $sheet->setCellValue('D5', 'Generado por:');
+            $sheet->setCellValue('E5', session("usuario")->getFieldValue("Account_Name"));
+            $sheet->setCellValue('D6', 'Desde:');
             $sheet->setCellValue('E6', $this->request->getPost("desde"));
-            $sheet->setCellValue('D7', 'Hasta: ');
+            $sheet->setCellValue('D7', 'Hasta:');
             $sheet->setCellValue('E7', $this->request->getPost("hasta"));
 
             switch ($this->request->getPost("tipo")) {
@@ -274,8 +278,10 @@ class Emisiones extends BaseController
             //eliminar documento subido al servidor
             unlink($ruta);
 
+            //llama una vista adicional para alertas que son muy grandes
+            $alerta = view("alertas/emision");
             //alerta de confirmacion
-            session()->setFlashdata('alerta', 'Emisión realizada correctamente.');
+            session()->setFlashdata('alerta', $alerta);
 
             //ir a los registros
             return redirect()->to(site_url("emisiones"));
