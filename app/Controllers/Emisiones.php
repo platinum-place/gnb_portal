@@ -66,14 +66,17 @@ class Emisiones extends BaseController
             $sheet->getStyle('D7')->getFont()->setBold(true);
 
             //titulos
-            $sheet->setCellValue('E2', 'EMISIONES PLAN'.strtoupper($this->request->getPost("tipo")));
+            $sheet->setCellValue('E2', 'EMISIONES PLAN' . strtoupper($this->request->getPost("tipo")));
             $sheet->setCellValue('D4', session("usuario")->getFieldValue("Account_Name")->getLookupLabel());
             $sheet->setCellValue('D5', 'Generado por:');
-            $sheet->setCellValue('E5', session("usuario")->getFieldValue("Account_Name"));
+            $sheet->setCellValue('E5', session("usuario")->getFieldValue("First_Name") . " " . session("usuario")->getFieldValue("Last_Name"));
             $sheet->setCellValue('D6', 'Desde:');
             $sheet->setCellValue('E6', $this->request->getPost("desde"));
             $sheet->setCellValue('D7', 'Hasta:');
             $sheet->setCellValue('E7', $this->request->getPost("hasta"));
+
+            $cont = 1;
+            $pos = 13;
 
             switch ($this->request->getPost("tipo")) {
                 case 'auto':
@@ -97,15 +100,13 @@ class Emisiones extends BaseController
                     $sheet->setCellValue('Q12', 'Placa');
                     $sheet->setCellValue('R12', 'Chasis');
 
-                    $cont = 1;
-                    $pos = 13;
-                    $criterio = "Account_Name:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId();
+                    $criterio = "((Type:equals:Auto) and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
                     $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criterio);
                     foreach ((array)$emisiones as $emision) {
                         if (
                             date("Y-m-d", strtotime($emision->getCreatedTime())) >= $this->request->getPost("desde")
                             and
-                            date("Y-m-d", strtotime($emision->getFieldValue('Closing_Date'))) <= $this->request->getPost("hasta")
+                            date("Y-m-d", strtotime($emision->getCreatedTime())) <= $this->request->getPost("hasta")
                         ) {
                             $sheet->setCellValue('A' . $pos, $cont);
                             $sheet->setCellValue('B' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
@@ -136,13 +137,65 @@ class Emisiones extends BaseController
                         }
                     }
                     break;
+
+                case 'incendio':
+                    //titulo tabla
+                    $sheet->setCellValue('A12', 'Num');
+                    $sheet->setCellValue('B12', 'Cliente');
+                    $sheet->setCellValue('C12', 'Identificación');
+                    $sheet->setCellValue('D12', 'Teléfono');
+                    $sheet->setCellValue('E12', 'Dirección');
+                    $sheet->setCellValue('F12', 'Aseguradora');
+                    $sheet->setCellValue('G12', 'Póliza');
+                    $sheet->setCellValue('H12', 'Plan');
+                    $sheet->setCellValue('I12', 'Suma Asegurada');
+                    $sheet->setCellValue('J12', 'Prima');
+                    $sheet->setCellValue('K12', 'Desde');
+                    $sheet->setCellValue('L12', 'Hasta');
+                    $sheet->setCellValue('M12', 'Prestamo');
+                    $sheet->setCellValue('N12', 'Plazo');
+                    $sheet->setCellValue('O12', 'Tipo de Construcción');
+                    $sheet->setCellValue('P12', 'Tipo de Riesgo');
+
+                    $criterio = "((Type:equals:Incendio) and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criterio);
+                    foreach ((array)$emisiones as $emision) {
+                        if (
+                            date("Y-m-d", strtotime($emision->getCreatedTime())) >= $this->request->getPost("desde")
+                            and
+                            date("Y-m-d", strtotime($emision->getCreatedTime())) <= $this->request->getPost("hasta")
+                        ) {
+                            $sheet->setCellValue('A' . $pos, $cont);
+                            $sheet->setCellValue('B' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
+                            $sheet->setCellValue('C' . $pos, $emision->getFieldValue('Identificaci_n'));
+                            $sheet->setCellValue('D' . $pos, $emision->getFieldValue('Tel_Celular'));
+                            $sheet->setCellValue('E' . $pos, $emision->getFieldValue('Direcci_n'));
+                            $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Aseguradora')->getLookupLabel());
+                            $sheet->setCellValue('G' . $pos, $emision->getFieldValue('P_liza'));
+                            $sheet->setCellValue('H' . $pos, $emision->getFieldValue('Plan'));
+                            $sheet->setCellValue('I' . $pos, $emision->getFieldValue('Suma_asegurada'));
+                            $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Amount'));
+                            $sheet->setCellValue('K' . $pos, date("Y-m-d", strtotime($emision->getCreatedTime())));
+                            $sheet->setCellValue('L' . $pos, date("Y-m-d", strtotime($emision->getFieldValue('Closing_Date'))));
+                            $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Prestamo'));
+                            $sheet->setCellValue('N' . $pos, $emision->getFieldValue("Plazo"));
+                            $sheet->setCellValue('O' . $pos, $emision->getFieldValue("Tipo_de_Construcci_n"));
+                            $sheet->setCellValue('P' . $pos, $emision->getFieldValue("Tipo_de_Riesgo"));
+
+                            $cont++;
+                            $pos++;
+                        }
+                    }
+                    break;
             }
 
             //si no encontro registros sale de la funcion
-            if ($cont <= 1) {
-                session()->setFlashdata('alerta', 'Ha ocurrido un error');
-                return redirect()->to(site_url("excel"));
+            if ($cont < 2) {
+                session()->setFlashdata('alerta', 'No existen emisiones dentro de ese rango de tiempo.');
+                return redirect()->to(site_url("emisiones/reporte"));
             }
+
+            $sheet->setCellValue('A' . $pos + 1, 'Total de emisiónes: ' . $cont - 1);
 
             //cambiar el color de fondo de un rango de celdas
             $spreadsheet

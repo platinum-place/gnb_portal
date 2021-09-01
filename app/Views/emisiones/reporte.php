@@ -27,7 +27,7 @@
                                 <option value="auto">Auto</option>
                                 <option value="vida">Vida</option>
                                 <option value="desempleo">Vida/Desempleo</option>
-                                <option value="desempleo">Incendio Hipotecario</option>
+                                <option value="incendio">Incendio Hipotecario</option>
                             </select>
                             <div class="invalid-feedback">
                                 Campo obligatorio.
