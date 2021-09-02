@@ -30,7 +30,6 @@
         }
     </style>
 
-
     <!-- Custom styles for this template -->
     <link href="<?= base_url("css/dashboard.css") ?>" rel="stylesheet">
 </head>
@@ -90,7 +89,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?= site_url("emisiones/reporte") ?>">
+                            <a class="nav-link" href="<?= site_url("reportes") ?>">
                                 <span data-feather="bar-chart-2"></span>
                                 Reportes de emisiones
                             </a>

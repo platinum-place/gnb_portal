@@ -6,21 +6,21 @@
     <h1 class="h2">Editar usuario</h1>
 </div>
 
+<?php if (session()->getFlashdata('alerta')) : ?>
+    <div class="alert alert-info" role="alert">
+        <?= session()->getFlashdata('alerta') ?>
+    </div>
+<?php endif ?>
+
 <div class="container py-4">
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
-            <?php if (session()->getFlashdata('alerta')) : ?>
-                <div class="alert alert-info" role="alert">
-                    <?= session()->getFlashdata('alerta') ?>
-                </div>
-            <?php endif ?>
-
             <div class="col-md-11 col-lg-12">
-                <h4 class="mb-3">Cambiar contraseña</h4>
                 <form class="needs-validation" novalidate method="POST" action="<?= site_url("login/editar") ?>">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <label for="nueva" class="form-label">Contraseña nueva</label>
+                    <h4 class="mb-3">Cambiar contraseña</h4>
+                    <div class="mb-3 row">
+                        <label for="nueva" class="col-sm-4 col-form-label">Contraseña nueva</label>
+                        <div class="col-sm-8">
                             <input type="password" class="form-control" id="nueva" required name="nueva">
                             <div class="invalid-feedback">
                                 Campo obligatorio.

@@ -3,15 +3,15 @@
 <?= $this->section('content') ?>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Cotización Seguro Incendio Hipotecario</h1>
+    <h1 class="h2">Cotización de Plan Vida/Desempleo</h1>
 </div>
 
 <div class="container py-4">
     <div class="p-5 mb-4 bg-light rounded-3">
         <div class="container-fluid py-5">
             <div class="col-md-11 col-lg-12">
-                <form class="needs-validation" novalidate method="post" action="<?= site_url("cotizaciones/incendio") ?>">
-                    <h4 class="mb-3">Formulario</h4>
+                <form class="needs-validation" novalidate method="post" action="<?= site_url("cotizaciones/desempleo") ?>">
+                    <h4 class="mb-3">Cliente</h4>
                     <div class="mb-3 row">
                         <label for="cliente" class="col-sm-4 col-form-label">Cliente <span class="text-muted">(Optional)</span></label>
                         <div class="col-sm-8">
@@ -20,9 +20,39 @@
                     </div>
 
                     <div class="mb-3 row">
-                        <label for="prestamo" class="col-sm-4 col-form-label">Valor del Préstamo</label>
+                        <label for="fecha" class="col-sm-4 col-form-label">Fecha de Nacimiento</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" id="prestamo" required name="prestamo" value="<?= (!empty($cotizacion["prestamo"])) ? $cotizacion["prestamo"] : "" ?>">
+                            <input type="date" class="form-control" id="fecha" required name="fecha" value="<?= (!empty($cotizacion["fecha"])) ? $cotizacion["fecha"] : "" ?>">
+                            <div class="invalid-feedback">
+                                Campo obligatorio.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- hace que el rango de clic del campo de fecha sea mas grande -->
+                    <style>
+                        #fecha::-webkit-calendar-picker-indicator {
+                            padding-left: 60%;
+                        }
+                    </style>
+
+                    <hr class="my-4">
+
+
+                    <div class="mb-3 row">
+                        <label for="suma" class="col-sm-4 col-form-label">Suma Asegurada</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="suma" required name="suma" value="<?= (!empty($cotizacion["suma"])) ? $cotizacion["suma"] : "" ?>">
+                            <div class="invalid-feedback">
+                                Campo obligatorio.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="cuota" class="col-sm-4 col-form-label">Cuota Mensual</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="cuota" required name="cuota" value="<?= (!empty($cotizacion["cuota"])) ? $cotizacion["cuota"] : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -33,41 +63,6 @@
                         <label for="plazo" class="col-sm-4 col-form-label">Plazo</label>
                         <div class="col-sm-8">
                             <input type="number" class="form-control" id="plazo" required name="plazo" value="<?= (!empty($cotizacion["plazo"])) ? $cotizacion["plazo"] : "" ?>">
-                            <div class="invalid-feedback">
-                                Campo obligatorio.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 row">
-                        <label for="construccion" class="col-sm-4 col-form-label">Tipo de Construcción</label>
-                        <div class="col-sm-8">
-                            <select class="form-select" id="construccion" name="construccion">
-                                <?php if (!empty($cotizacion["construccion"])) : ?>
-                                    <option value="<?= $cotizacion["construccion"] ?>"><?= $cotizacion["construccion"] ?></option>
-                                <?php endif ?>
-                                <option value="Superior">Superior</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 row">
-                        <label for="riesgo" class="col-sm-4 col-form-label">Tipo de Riesgo</label>
-                        <div class="col-sm-8">
-                            <select class="form-select" id="riesgo" name="riesgo" required>
-                                <?php if (!empty($cotizacion["riesgo"])) : ?>
-                                    <option value="<?= $cotizacion["riesgo"] ?>"><?= $cotizacion["riesgo"] ?></option>
-                                <?php endif ?>
-                                <option value="Vivienda">Vivienda</option>
-                                <option value="Oficina">Oficina</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 row">
-                        <label for="riesgo" class="col-sm-4 col-form-label">Dirección</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="direccion" name="direccion" required value="<?= (!empty($cotizacion["direccion"])) ? $cotizacion["direccion"] : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -88,7 +83,6 @@
                         <?= session()->getFlashdata('alerta') ?>
                     </div>
                 <?php endif ?>
-
 
                 <?php if (!empty($cotizacion["planes"])) : ?>
                     <hr class="my-4">
@@ -116,8 +110,8 @@
                     <hr class="my-4">
 
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <a href="<?= site_url("cotizaciones/cotizacionincendio/" . json_encode($cotizacion)) ?>" target="_blank" class="btn btn-success btn-lg">Descargar</a>
-                        <a href="<?= site_url("emisiones/incendio/" . json_encode($cotizacion)) ?>" class="btn btn-secondary btn-lg">Emitir</a>
+                        <a href="<?= site_url("cotizaciones/cotizaciondesempleo/" . json_encode($cotizacion)) ?>" target="_blank" class="btn btn-success btn-lg">Descargar</a>
+                        <a href="<?= site_url("emisiones/desempleo/" . json_encode($cotizacion)) ?>" class="btn btn-secondary btn-lg">Emitir</a>
                     </div>
 
                     <!-- Hacer scroll automatico cuando aparece la tabla de cotizaciones -->

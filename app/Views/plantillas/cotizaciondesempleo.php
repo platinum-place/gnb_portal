@@ -29,7 +29,7 @@
 
     <div class="card border-0">
       <div class="card-body">
-        <h5 class="card-title text-center">COTIZACIÓN <br> SEGURO INCENDIO HIPOTECARIO</h5>
+        <h5 class="card-title text-center">COTIZACIÓN <br> PLAN VIDA/DESEMPLEO</h5>
       </div>
     </div>
 
@@ -46,7 +46,7 @@
     &nbsp;
   </div>
 
-  <h5 class="card-title d-flex justify-content-center bg-primary text-white">DATOS</h5>
+  <h5 class="card-title d-flex justify-content-center bg-primary text-white">DEUDOR</h5>
   <div class="card-group">
     <div class="card">
       <div class="card-body">
@@ -55,16 +55,6 @@
             <tr>
               <td style="width: 50%"><b>Cliente</b></td>
               <td><?= $detalles["cliente"] ?></td>
-            </tr>
-
-            <tr>
-              <td style="width: 50%"><b>Tipo de Construcción</b></td>
-              <td><?= $detalles["riesgo"] ?></td>
-            </tr>
-
-            <tr>
-              <td style="width: 50%"><b>Tipo de Riesgo</b></td>
-              <td><?= $detalles["construccion"] ?></td>
             </tr>
           </tbody>
         </table>
@@ -76,13 +66,8 @@
         <table class="table table-borderless">
           <tbody>
             <tr>
-              <td style="width: 50%"><b>Plazo en meses</b></td>
-              <td><?= $detalles["plazo"] ?></td>
-            </tr>
-
-            <tr>
-              <td style="width: 50%"><b>Dirección</b></td>
-              <td><?= $detalles["direccion"] ?></td>
+              <td style="width: 50%"><b>Fecha de Nacimiento</b></td>
+              <td><?= $detalles["fecha"] ?></td>
             </tr>
           </tbody>
         </table>
@@ -94,15 +79,16 @@
     &nbsp;
   </div>
 
-  <h5 class="card-title d-flex justify-content-center bg-primary text-white">ASEGURADORA</h5>
+  <h5 class="card-title d-flex justify-content-center bg-primary text-white">PRIMA MENSUAL</h5>
   <div class="card-group border">
     <div class="card border-0">
       <div class="card-body">
         <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
 
         <p class="card-text">
-        <dl><b>Valor de la propiedad</b></dl>
-        <dl><b>Valor del Préstamo</b></dl>
+        <dl><b>Suma Asegurada</b></dl>
+        <dl><b>Cuota Mensual de Prestamo</b></dl>
+        <dl><b>Plazo</b></dl>
         </p>
 
         <hr>
@@ -122,8 +108,9 @@
           <img src="<?= base_url("img/aseguradoras/" . $plan["id"] . ".png") ?>" height="50" width="150">
 
           <p class="card-text">
-          <dl>RD$<?= number_format($detalles["propiedad"], 2) ?></dl>
-          <dl>RD$<?= number_format($detalles["prestamo"], 2) ?></dl>
+          <dl>RD$<?= number_format($detalles["suma"], 2) ?></dl>
+          <dl>RD$<?= number_format($detalles["cuota"], 2) ?></dl>
+          <dl><?= $detalles["plazo"] ?></dl>
           </p>
 
           <hr>
@@ -138,6 +125,47 @@
 
     <?php endforeach ?>
 
+  </div>
+
+  <div class="col-12">
+    &nbsp;
+  </div>
+
+  <div class="card-group">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title text-center">REQUISITOS DEL DEUDOR</h5>
+        <p class="card-text">
+          <?php foreach ($requisitos as $aseguradora => $lista) : ?>
+        <ul>
+          <li>
+            <b><?= $aseguradora ?></b>:
+            <?php foreach ($lista as $requisito) : ?>
+              <?= $requisito  ?>
+
+              <?php if ($requisito === end($lista)) : ?>
+                .
+              <?php else : ?>
+                ,
+              <?php endif ?>
+            <?php endforeach ?>
+          </li>
+        </ul>
+      <?php endforeach ?>
+      </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title text-center">OBSERVACIONES</h5>
+        <p class="card-text">
+        <ul>
+          <li>Pago de desempleo por hasta 6 meses.</li>
+        </ul>
+        </p>
+      </div>
+    </div>
   </div>
 
 

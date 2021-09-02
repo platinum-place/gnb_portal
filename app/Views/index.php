@@ -25,18 +25,6 @@
     </div>
 
     <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
-            <div class="card-header py-3 text-white bg-success border-primary">
-                <h4 class="my-0 fw-normal">Pólizas en evaluación</h4>
-            </div>
-            <div class="card-body">
-                <h1 class="card-title pricing-card-title"><?= $evaluacion ?></h1>
-                <!--<button type="button" class="w-100 btn btn-lg btn-outline-primary">Ver más</button> -->
-            </div>
-        </div>
-    </div>
-
-    <div class="col">
         <div class="card mb-4 rounded-3 shadow-sm border-primary">
             <div class="card-header py-3 text-white bg-warning border-primary">
                 <h4 class="my-0 fw-normal">Pólizas que vencen este mes</h4>
@@ -52,10 +40,10 @@
         <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm border-primary">
                 <div class="card-header py-3">
-                    <h4 class="my-0 fw-normal">Pólizas agrupadas por aseguradoras</h4>
+                    <h4 class="my-0 fw-normal">Pólizas agrupadas</h4>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-sm">
                         <thead>
                             <tr>
                                 <th scope="col">Aseguradora</th>
