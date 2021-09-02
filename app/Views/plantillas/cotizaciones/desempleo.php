@@ -29,7 +29,7 @@
 
     <div class="card border-0">
       <div class="card-body">
-        <h5 class="card-title text-center">COTIZACIÓN <br> SEGURO INCENDIO HIPOTECARIO</h5>
+        <h4 class="card-title text-center">COTIZACIÓN <br> PLAN VIDA/DESEMPLEO</h4>
       </div>
     </div>
 
@@ -46,98 +46,81 @@
     &nbsp;
   </div>
 
-  <h5 class="card-title d-flex justify-content-center bg-primary text-white">DATOS</h5>
-  <div class="card-group">
-    <div class="card">
+  <h5 class="card-title d-flex justify-content-center bg-primary text-white">ASEGURADORAS</h5>
+  <div class="card-group border">
+    <div class="card border-0">
       <div class="card-body">
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <td style="width: 50%"><b>Cliente</b></td>
-              <td><?= $detalles["cliente"] ?></td>
-            </tr>
+        <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
 
-            <tr>
-              <td style="width: 50%"><b>Tipo de Construcción</b></td>
-              <td><?= $detalles["riesgo"] ?></td>
-            </tr>
+        <dl><b>Fecha de Nacimiento</b></dl>
+        <dl><b>Suma Asegurada</b></dl>
+        <dl><b>Cuota Mensual de Prestamo</b></dl>
+        <dl><b>Plazo</b></dl>
 
-            <tr>
-              <td style="width: 50%"><b>Tipo de Riesgo</b></td>
-              <td><?= $detalles["construccion"] ?></td>
-            </tr>
-          </tbody>
-        </table>
+        <hr>
+
+        <dl><b>Prima Neta</b></dl>
+        <dl><b>ISC</b></dl>
+        <dl><b>Prima Mensual</b></dl>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-body">
-        <table class="table table-borderless">
-          <tbody>
-            <tr>
-              <td style="width: 50%"><b>Plazo en meses</b></td>
-              <td><?= $detalles["plazo"] ?></td>
-            </tr>
+    <?php foreach ($cotizacion["planes"] as $plan) : ?>
+      <div class="card border-0">
+        <div class="card-body">
+          <img src="<?= base_url("img/aseguradoras/" . $plan["id"] . ".png") ?>" height="50" width="150">
 
-            <tr>
-              <td style="width: 50%"><b>Dirección</b></td>
-              <td><?= $detalles["direccion"] ?></td>
-            </tr>
-          </tbody>
-        </table>
+          <dl><?= $cotizacion["edad"] ?> años</dl>
+          <dl>RD$<?= number_format($cotizacion["suma"], 2) ?></dl>
+          <dl>RD$<?= number_format($cotizacion["cuota"], 2) ?></dl>
+          <dl><?= $cotizacion["plazo"] ?> meses</dl>
+
+          <hr>
+
+          <dl>RD$<?= number_format($plan["neta"], 2) ?></dl>
+          <dl>RD$<?= number_format($plan["isc"], 2) ?></dl>
+          <dl>RD$<?= number_format($plan["total"], 2) ?></dl>
+        </div>
       </div>
-    </div>
+    <?php endforeach ?>
+
   </div>
 
   <div class="col-12">
     &nbsp;
   </div>
 
-  <h5 class="card-title d-flex justify-content-center bg-primary text-white">ASEGURADORA</h5>
-  <div class="card-group border">
-    <div class="card border-0">
+  <div class="card-group">
+    <div class="card">
       <div class="card-body">
-        <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
+        <h5 class="card-title text-center">REQUISITOS DEL DEUDOR</h5>
+        <?php foreach ($requisitos as $aseguradora => $lista) : ?>
+          <ul>
+            <li>
+              <b><?= $aseguradora ?></b>:
+              <?php foreach ($lista as $requisito) : ?>
+                <?= $requisito  ?>
 
-        <p class="card-text">
-        <dl><b>Valor de la propiedad</b></dl>
-        <dl><b>Valor del Préstamo</b></dl>
-        </p>
-
-        <hr>
-
-        <p class="card-text">
-        <dl><b>Prima Neta</b></dl>
-        <dl><b>ISC</b></dl>
-        <dl><b>Prima Mensual</b></dl>
-        </p>
+                <?php if ($requisito === end($lista)) : ?>
+                  .
+                <?php else : ?>
+                  ,
+                <?php endif ?>
+              <?php endforeach ?>
+            </li>
+          </ul>
+        <?php endforeach ?>
       </div>
     </div>
 
-    <?php foreach ($detalles["planes"] as $plan) : ?>
-
-      <div class="card border-0">
-        <div class="card-body">
-          <img src="<?= base_url("img/aseguradoras/" . $plan["id"] . ".png") ?>" height="50" width="150">
-
-          <p class="card-text">
-          <dl>RD$<?= number_format($detalles["propiedad"], 2) ?></dl>
-          <dl>RD$<?= number_format($detalles["prestamo"], 2) ?></dl>
-          </p>
-
-          <hr>
-
-          <p class="card-text">
-          <dl>RD$<?= number_format($plan["neta"], 2) ?></dl>
-          <dl>RD$<?= number_format($plan["isc"], 2) ?></dl>
-          <dl>RD$<?= number_format($plan["total"], 2) ?></dl>
-          </p>
-        </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title text-center">OBSERVACIONES</h5>
+        <ul>
+          <li>Pago de desempleo por hasta 6 meses.</li>
+        </ul>
       </div>
-
-    <?php endforeach ?>
-
+    </div>
   </div>
 
 

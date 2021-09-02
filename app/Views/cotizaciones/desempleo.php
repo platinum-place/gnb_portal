@@ -11,18 +11,11 @@
         <div class="container-fluid py-5">
             <div class="col-md-11 col-lg-12">
                 <form class="needs-validation" novalidate method="post" action="<?= site_url("cotizaciones/desempleo") ?>">
-                    <h4 class="mb-3">Cliente</h4>
-                    <div class="mb-3 row">
-                        <label for="cliente" class="col-sm-4 col-form-label">Cliente <span class="text-muted">(Optional)</span></label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="cliente" name="cliente" value="<?= (!empty($cotizacion["cliente"])) ? $cotizacion["cliente"] : "" ?>">
-                        </div>
-                    </div>
-
+                    <h4 class="mb-3">Formulario</h4>
                     <div class="mb-3 row">
                         <label for="fecha" class="col-sm-4 col-form-label">Fecha de Nacimiento</label>
                         <div class="col-sm-8">
-                            <input type="date" class="form-control" id="fecha" required name="fecha" value="<?= (!empty($cotizacion["fecha"])) ? $cotizacion["fecha"] : "" ?>">
+                            <input type="date" class="form-control" id="fecha" required name="fecha" value="<?= (!empty($cotizacion->fecha)) ? $cotizacion->fecha : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -32,17 +25,14 @@
                     <!-- hace que el rango de clic del campo de fecha sea mas grande -->
                     <style>
                         #fecha::-webkit-calendar-picker-indicator {
-                            padding-left: 60%;
+                            padding-left: 70%;
                         }
                     </style>
-
-                    <hr class="my-4">
-
 
                     <div class="mb-3 row">
                         <label for="suma" class="col-sm-4 col-form-label">Suma Asegurada</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" id="suma" required name="suma" value="<?= (!empty($cotizacion["suma"])) ? $cotizacion["suma"] : "" ?>">
+                            <input type="number" class="form-control" id="suma" required name="suma" value="<?= (!empty($cotizacion->suma)) ? $cotizacion->suma : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -52,7 +42,7 @@
                     <div class="mb-3 row">
                         <label for="cuota" class="col-sm-4 col-form-label">Cuota Mensual</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" id="cuota" required name="cuota" value="<?= (!empty($cotizacion["cuota"])) ? $cotizacion["cuota"] : "" ?>">
+                            <input type="number" class="form-control" id="cuota" required name="cuota" value="<?= (!empty($cotizacion->cuota)) ? $cotizacion->cuota : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -62,7 +52,7 @@
                     <div class="mb-3 row">
                         <label for="plazo" class="col-sm-4 col-form-label">Plazo</label>
                         <div class="col-sm-8">
-                            <input type="number" class="form-control" id="plazo" required name="plazo" value="<?= (!empty($cotizacion["plazo"])) ? $cotizacion["plazo"] : "" ?>">
+                            <input type="number" class="form-control" id="plazo" required name="plazo" value="<?= (!empty($cotizacion->plazo)) ? $cotizacion->plazo : "" ?>">
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -84,7 +74,7 @@
                     </div>
                 <?php endif ?>
 
-                <?php if (!empty($cotizacion["planes"])) : ?>
+                <?php if (!empty($cotizacion->planes)) : ?>
                     <hr class="my-4">
 
                     <h4 class="mb-3" id="cotizacion">Cotización</h4>
@@ -97,7 +87,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($cotizacion["planes"] as $plan) : ?>
+                                <?php foreach ($cotizacion->planes as $plan) : ?>
                                     <tr>
                                         <td><?= $plan["nombre"] ?></td>
                                         <td>RD$<?= number_format($plan["total"], 2) ?></td>
@@ -110,8 +100,8 @@
                     <hr class="my-4">
 
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <a href="<?= site_url("cotizaciones/cotizaciondesempleo/" . json_encode($cotizacion)) ?>" target="_blank" class="btn btn-success btn-lg">Descargar</a>
-                        <a href="<?= site_url("emisiones/desempleo/" . json_encode($cotizacion)) ?>" class="btn btn-secondary btn-lg">Emitir</a>
+                        <a href="<?= site_url("plantillas/cotizacion/" . $cotizacion->plantilla() . "/desempleo") ?>" target="_blank" class="btn btn-success btn-lg">Descargar</a>
+                        <a href="<?= site_url("emisiones/desempleo/" .  $cotizacion->plantilla()) ?>" class="btn btn-secondary btn-lg">Emitir</a>
                     </div>
 
                     <!-- Hacer scroll automatico cuando aparece la tabla de cotizaciones -->

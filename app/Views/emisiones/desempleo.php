@@ -12,12 +12,12 @@
             <div class="col-md-11 col-lg-12">
                 <form enctype="multipart/form-data" class="needs-validation" novalidate method="post" action="<?= site_url("emisiones/desempleo/" . json_encode($cotizacion)) ?>">
 
-                    <h4 class="mb-3">Cliente</h4>
+                    <h4 class="mb-3">Deudor</h4>
 
                     <div class="mb-3 row">
                         <label for="nombre" class="col-sm-4 col-form-label">Nombre</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="nombre" name="nombre" value="<?= (!empty($detalles["cliente"])) ? $cotizacion["cliente"] : "" ?>">
+                            <input type="text" class="form-control" id="nombre" name="nombre" required>
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -27,7 +27,7 @@
                     <div class="mb-3 row">
                         <label for="apellido" class="col-sm-4 col-form-label">Apellido</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="apellido" name="apellido">
+                            <input type="text" class="form-control" id="apellido" name="apellido" required>
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -37,7 +37,7 @@
                     <div class="mb-3 row">
                         <label for="id" class="col-sm-4 col-form-label">Cédula/RNC</label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="id" name="id">
+                            <input type="text" class="form-control" id="id" name="id" required>
                             <div class="invalid-feedback">
                                 Campo obligatorio.
                             </div>
@@ -47,20 +47,14 @@
                     <div class="mb-3 row">
                         <label for="correo" class="col-sm-4 col-form-label">Email</label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" id="correo" required name="correo">
-                            <div class="invalid-feedback">
-                                Campo obligatorio.
-                            </div>
+                            <input type="email" class="form-control" id="correo" name="correo">
                         </div>
                     </div>
 
                     <div class="mb-3 row">
                         <label for="tel1" class="col-sm-4 col-form-label">Tel. Residencia</label>
                         <div class="col-sm-8">
-                            <input type="tel" class="form-control" id="tel1" required name="tel1">
-                            <div class="invalid-feedback">
-                                Campo obligatorio.
-                            </div>
+                            <input type="tel" class="form-control" id="tel1" name="tel1">
                         </div>
                     </div>
 
@@ -75,6 +69,13 @@
                         <label for="tel3" class="col-sm-4 col-form-label">Tel. Trabajo</label>
                         <div class="col-sm-8">
                             <input type="tel" class="form-control" id="tel3" name="tel3">
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="direccion" class="col-sm-4 col-form-label">Direccion</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="direccion" name="direccion">
                         </div>
                     </div>
 
@@ -97,12 +98,12 @@
                     <h4 class="mb-3">Aseguradora</h4>
 
                     <div class="mb-3 row">
-                        <label for="aseguradora" class="col-sm-4 col-form-label">Aseguradora</label>
+                        <label for="aseguradora" class="col-sm-4 col-form-label">Emitir con</label>
                         <div class="col-sm-8">
                             <select class="form-select" id="aseguradora" name="aseguradora" required>
                                 <option value="" selected disabled>Selecciona una aseguradora</option>
-                                <?php foreach ($cotizacion["planes"] as $plan) : ?>
-                                    <option value="<?= $plan["id"] . "," . $plan["total"] ?>"><?= $plan["nombre"] ?></option>
+                                <?php foreach ($cotizacion->planes as $plan) : ?>
+                                    <option value="<?= $plan->id . "," . $plan->total ?>"><?= $plan->nombre ?></option>
                                 <?php endforeach ?>
                             </select>
                         </div>

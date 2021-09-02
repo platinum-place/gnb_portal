@@ -14,6 +14,8 @@
     <!-- Bootstrap core CSS -->
     <link href="<?= base_url("assets/dist/css/bootstrap.min.css") ?>" rel="stylesheet">
 
+    <link rel="icon" type="image/png" href="<?= base_url("img/favicon.png") ?>">
+    
     <style>
         .bd-placeholder-img {
             font-size: 1.125rem;

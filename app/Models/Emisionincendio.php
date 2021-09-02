@@ -21,18 +21,6 @@ class Emisionincendio extends Emision
         $this->plazo = $plazo;
     }
 
-    public function obtener_coberturas()
-    {
-        //planes o coberturas de plan elegido, solo es un registro,
-        //debe haber un registro, si no, debe ser posible avanzar
-        //estan ubicados en el modulo de productos
-        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Vendor_Name:equals:" . $this->aseguradoraid . ") and (Product_Category:equals:Incendio))";
-        $coberturas = $this->zoho->searchRecordsByCriteria("Products", $criterio);
-        foreach ($coberturas as $cobertura) {
-            $this->coberturaid = $cobertura->getEntityId();
-        }
-    }
-
     public function crear_emision($request)
     {
         //array que representa al registro que se creara
@@ -60,7 +48,6 @@ class Emisionincendio extends Emision
             "Tel_Celular" => $request->getPost("tel2"),
             "Tel_Trabajo" => $request->getPost("tel3"),
             "Direcci_n" => $request->getPost("direccion"),
-            "Direcci_n" => $this->direccion,
             "Coberturas" => $this->coberturaid,
             "Stage" => "Proceso de validación",
             "Tipo_de_Construcci_n" => $this->construccion,
@@ -68,7 +55,7 @@ class Emisionincendio extends Emision
             "Plazo" => $this->plazo
         ];
         //crear registro en crm
-        $this->emisionid = $this->zoho->createRecords("Deals", $emision);
+        $this->emisionid = $this->createRecords("Deals", $emision);
         return true;
     }
 }
