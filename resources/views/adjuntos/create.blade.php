@@ -8,7 +8,7 @@
                 <div class="card-body">
                     <form enctype="multipart/form-data" method="POST" action="{{ url('/adjuntar') }}">
                         @csrf
-                        <input type="text" hidden name="id" value="{{ $id }}">
+                        <input hidden name="id" value="{{ $id }}">
                         <div class="mb-3">
                             <input required type="file" name="documentos[]" multiple class="form-control"
                                 type="file" />

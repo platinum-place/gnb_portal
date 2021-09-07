@@ -47,7 +47,7 @@ class Adjuntos extends Controller
     public function store(Request $request)
     {
         $adjunto = new Adjunto;
-        $adjunto->adjuntar_documentos($request->file('documentos'), $request->file('id'));
+        $adjunto->adjuntar_documentos($request->file('documentos'), $request->input('id'));
         return redirect("/buscar")->with('alerta', "Documentos adjuntados correctamente.");
     }
 

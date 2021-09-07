@@ -40,10 +40,8 @@ class Adjunto extends Zoho
         }
     }
 
-    protected function adjuntar_documento($record_id, $path)
+    protected function adjuntar_documento($path, $record_id)
     {
-        var_dump($path);
-        exit();
         $record = ZCRMRestClient::getInstance()->getRecordInstance("Deals", $record_id); // To get record instance
         $responseIns = $record->uploadAttachment($path); // $filePath - absolute path of the attachment to be uploaded.
         echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
@@ -58,9 +56,9 @@ class Adjunto extends Zoho
         //recorre todo los archivos cargados
         foreach ($documentos as $file) {
             //guarda los archivos en el servidor
-            $path = $file->store('public');
+            $path = $file->storeAs('public', $file->getClientOriginalName());
             //subi el archivo del servidor al registro en el crm
-            $this->adjuntar_documento($id, storage_path("app/$path"));
+            $this->adjuntar_documento(storage_path("app/$path"), $id);
             //borra el archivo del servidor
             unlink(storage_path("app/$path"));
         }
