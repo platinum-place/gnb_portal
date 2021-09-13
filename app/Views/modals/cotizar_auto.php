@@ -64,22 +64,20 @@
     </div>
 </div>
 
+<!-- Librerias adicionales -->
 
 <!-- CSS personalizado -->
-<?= $this->section('js') ?>
-
+<?= $this->section('css') ?>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
-
 <?= $this->endSection() ?>
 
 
 <!-- JS personalizado -->
 <?= $this->section('js') ?>
-
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
-
+<!-- Funcion para cargar una url con codigo php cuando hagan una solicitud con ajax -->
 <script>
     function modelosAJAX(val) {
         $.ajax({
@@ -93,7 +91,10 @@
                 marcaid: val.value
             },
             success: function(response) {
+                //agrega el codigo php en el select
                 document.getElementById("modelos").innerHTML = response;
+                //refresca solo el select para actualizar la interfaz del select
+                $('.selectpicker').selectpicker('refresh');
             },
             error: function(data) {
                 console.log(data);
@@ -101,5 +102,4 @@
         });
     }
 </script>
-
 <?= $this->endSection() ?>

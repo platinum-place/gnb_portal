@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Cotizacion;
+use App\Models\Modelo;
 
 class Auto extends BaseController
 {
@@ -11,6 +12,7 @@ class Auto extends BaseController
     function __construct()
     {
         $this->cotizacion = new Cotizacion;
+        $this->modelo = new Modelo;
     }
 
     public function mostrarModelos()
@@ -32,6 +34,5 @@ class Auto extends BaseController
 
     public function cotizar()
     {
-
     }
 }

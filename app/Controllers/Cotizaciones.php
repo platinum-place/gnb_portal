@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\Marca;
-use App\Models\Modelo;
 
 class Cotizaciones extends BaseController
 {
@@ -13,7 +12,6 @@ class Cotizaciones extends BaseController
     function __construct()
     {
         $this->marca = new Marca;
-        $this->modelo = new Modelo;
     }
 
     public function index()
