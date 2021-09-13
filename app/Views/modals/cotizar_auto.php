@@ -5,11 +5,12 @@
                 <h5 class="modal-title" id="exampleModalLabel">Cotización de Plan Auto</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" action="<?= site_url("auto/cotizar") ?>">
+            <form method="POST" action="<?= site_url("cotizaciones/cotizarAuto") ?>">
+                <input type="text" hidden value="auto" name="cotizacion">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="marca" class="form-label">Marca</label>
-                        <select name="marca" class="form-control selectpicker" id="marca" onchange="modelosAJAX(this)" required  data-live-search="true">
+                        <select name="marca" class="form-control selectpicker" id="marca" onchange="modelosAJAX(this)" required data-live-search="true">
                             <option value="" selected disabled>Selecciona una Marca</option>
                             <?php foreach ($marcas as $marca) : ?>
                                 <option value="<?= $marca->getEntityId() ?>">
@@ -21,7 +22,7 @@
                     <div class="mb-3">
                         <label for="modelo" class="form-label">Modelo</label>
                         <select name="modelo" class="form-control selectpicker" id="modelos" required data-live-search="true">
-                        <option value="" selected disabled>Selecciona un modelo</option>
+                            <option value="" selected disabled>Selecciona un modelo</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -82,7 +83,7 @@
     function modelosAJAX(val) {
         $.ajax({
             type: 'ajax',
-            url: "<?= site_url('auto/mostrarModelos') ?>",
+            url: "<?= site_url('cotizaciones/mostrarModelos') ?>",
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             },

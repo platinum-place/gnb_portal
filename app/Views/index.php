@@ -44,19 +44,13 @@
         Pólizas emitidas
     </div>
     <div class="card-body">
-        <table id="datatablesSimple">
+        <table class="table">
             <thead>
                 <tr>
                     <th>Aseguradora</th>
                     <th>Cantidad</th>
                 </tr>
             </thead>
-            <tfoot>
-                <tr>
-                    <th>Aseguradora</th>
-                    <th>Cantidad</th>
-                </tr>
-            </tfoot>
             <tbody>
                 <?php foreach ($lista as $aseguradora => $cantidad) : ?>
                     <tr>
