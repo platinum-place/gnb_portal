@@ -2,28 +2,36 @@
 
 namespace App\Controllers;
 
-use App\Models\Usuario;
+use App\Libraries\Zoho;
 
 class Login extends BaseController
 {
-    protected $usuario;
+    protected $zoho;
 
     function __construct()
     {
-        $this->usuario = new Usuario;
+        $this->zoho = new Zoho;
     }
 
     public function index()
     {
         if ($this->request->getPost()) {
-            $this->usuario->colocar_credenciales($this->request->getPost("correo"), $this->request->getPost("pass"));
-            if ($this->usuario->validar()) {
-                session()->set('usuario', $this->usuario->crm);
-                return redirect()->to(site_url());
-            } else {
+            $criterio = "((Email:equals:" . $this->request->getPost("correo") . ") and (Contrase_a:equals:" . $this->request->getPost("pass") . "))";
+            $usuarios = $this->zoho->searchRecordsByCriteria("Contacts", $criterio, 1, 1);
+            //buscar el todos los usuarios con el correo y contraseña sean iguales
+            //los correos son campos unicos en el crm
+            foreach ((array)$usuarios as $usuario) {
+                $usuario_ingresado = $usuario;
+            }
+            //validar si encontro algun usuario
+            if (empty($usuario_ingresado)) {
                 //alerta que dara en caso de no encontrar ningun resultado
                 session()->setFlashdata('alerta', 'Usuario o contraseña incorrectos.');
                 return redirect()->to(site_url("login"));
+            } else {
+                //el objeto con las propiedades de la api pasa a ser una sesion
+                session()->set('usuario', $usuario_ingresado);
+                return redirect()->to(site_url());
             }
         }
         return view('login');
@@ -31,8 +39,7 @@ class Login extends BaseController
 
     public function editar()
     {
-        $this->usuario->colocar_credenciales(session("usuario")->getFieldValue('Email'), $this->request->getPost("pass"));
-        $this->usuario->cambiar_clave();
+        $this->zoho->update("Contacts", session('usuario')->getEntityId(), ["Contrase_a" => $this->request->getPost("pass")]);
         //alerta
         session()->setFlashdata('alerta', 'La contraseña ha sido actualizada.');
         //recargar la pagina para limpiar el post

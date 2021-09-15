@@ -15,9 +15,9 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                     Cotizar
                 </a>
-                <a class="nav-link" href="<?= site_url("cotizaciones") ?>">
+                <a class="nav-link" href="<?= site_url("cotizaciones/buscar") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                    Pages
+                    Buscar cotización
                 </a>
                 <div class="sb-sidenav-menu-heading">Addons</div>
                 <a class="nav-link" href="charts.html">
@@ -31,8 +31,8 @@
             </div>
         </div>
         <div class="sb-sidenav-footer">
-            <div class="small">Logged in as:</div>
-            Start Bootstrap
+            <div class="small">Ingresado como:</div>
+            <?= session('usuario')->getFieldValue('First_Name') . " " . session('usuario')->getFieldValue('Last_Name') ?>
         </div>
     </nav>
 </div>

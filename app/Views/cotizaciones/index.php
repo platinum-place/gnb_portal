@@ -2,7 +2,8 @@
 
 <?= $this->section('content') ?>
 
-<?php if (!empty($cotizacion)) : ?>
+<!-- Tabla con la cotizacion -->
+<?php if (!empty($cotizacion->planes)) : ?>
     <div class="card mb-3">
         <div class="card-body">
             <div class="table-responsive">
@@ -15,21 +16,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($cotizacion as $valores) : ?>
+                        <!-- contador para saber si existen valores vacios, para no permitir continuar de ser el caso -->
+                        <?php $cont = 0 ?>
+                        <?php foreach ($cotizacion->planes as $plan) : ?>
                             <tr>
-                                <td><?= $valores["aseguradora"] ?></td>
-                                <td>RD$<?= number_format($valores["total"], 2) ?></td>
-                                <td><?= $valores["comentario"] ?></td>
+                                <td><?= $plan["aseguradora"] ?></td>
+                                <td>RD$<?= number_format($plan["total"], 2) ?></td>
+                                <td><?= $plan["comentario"] ?></td>
                             </tr>
+
+                            <?php
+                            if ($plan["total"] > 0) {
+                                $cont++;
+                            }
+                            ?>
                         <?php endforeach ?>
                     </tbody>
                 </table>
-                <a href="<?=site_url("cotizaciones/descargar")?>" class="btn btn-success">Continuar</a>
+                <?php if ($cont > 0) : ?>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completar_cotizacion">
+                        Continuar
+                    </button>
+                <?php endif ?>
             </div>
         </div>
     </div>
 <?php endif ?>
 
+<!-- Opciones para cotizar -->
 <div class="row row-cols-1 row-cols-md-4 g-4">
     <div class="col">
         <div class="card">
@@ -75,7 +90,12 @@
 
 <?= $this->endSection() ?>
 
+<!-- Formularios a utilizar -->
 <?= $this->section('modal') ?>
+<!-- Modal para completar la cotizacion -->
+<?php if (!empty($cotizacion)) : ?>
+    <?= $this->include('modals/completar_cotizacion') ?>
+<?php endif ?>
 <!-- Modal para auto -->
 <?= $this->include('modals/cotizar_auto') ?>
 <!-- Modal para vida -->

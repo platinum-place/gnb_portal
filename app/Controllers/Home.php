@@ -2,18 +2,26 @@
 
 namespace App\Controllers;
 
-use App\Models\Emision;
+use App\Libraries\Zoho;
 
 class Home extends BaseController
 {
+    protected $zoho;
+
+    function __construct()
+    {
+        $this->zoho = new Zoho;
+    }
+
     public function index()
     {
-        $resumen = new Emision;
         $lista = array();
         $polizas = 0;
         $vencidas = 0;
         $evaluacion = 0;
-        foreach ($resumen->lista_emisiones() as $emision) {
+        $criterio = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
+        $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criterio);
+        foreach ($emisiones as $emision) {
             if (date("Y-m", strtotime($emision->getCreatedTime())) == date("Y-m")) {
                 $lista[] = $emision->getFieldValue('Aseguradora')->getLookupLabel();
                 $polizas++;
