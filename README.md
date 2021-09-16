@@ -8,8 +8,10 @@ Utiliza la [versión 2](https://github.com/zoho/zohocrm-php-sdk) del SDK de PHP 
 Utiliza la [versión 4](https://github.com/codeigniter4/CodeIgniter4) del framework. Es bastante sencillo de usar, porque uni las logicas de MVC con la logia de un framework moderno, similar a laravel.
 
 ## Librerias externas
-- [Generar documentos](https://github.com/PHPOffice/PHPWord) ,utilizada para la creación de documentos. Bastente conocido y con mucha documentacion.
+- [Generar documentos](https://github.com/PHPOffice/PHPWord), utilizada para la creación de documentos. Bastente conocido y con mucha documentacion.
 
-- [Generar tablas](https://github.com/PHPOffice/PhpSpreadsheet) ,utilizada para la creación de libros excel.
+- [Generar tablas](https://github.com/PHPOffice/PhpSpreadsheet), utilizada para la creación de libros excel.
 
-- [Selects tag con buscador](https://github.com/snapappointments/bootstrap-select) ,utilizada para agregar un cuadro de busqueda a los selects tag muy largos.
+- [Selects tag con buscador](https://github.com/snapappointments/bootstrap-select), utilizada para agregar un cuadro de busqueda a los selects tag muy largos.
+
+- [Iconos](https://fontawesome.com/v5.15/icons/search?style=solid).

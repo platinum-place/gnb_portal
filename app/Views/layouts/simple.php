@@ -10,10 +10,15 @@
     <title>IT - Insurance Tech</title>
     <link rel="icon" type="image/png" href="<?= base_url('img/favicon.png') ?>">
     <link href="<?= base_url('css/styles.css') ?>" rel="stylesheet" />
+    <!-- Aqui se cargaran el css que se utilicen en las vistas -->
+    <?= $this->renderSection('css') ?>
 </head>
 
-<body class="sb-nav-fixed">
+<body>
     <?= $this->renderSection('content') ?>
+
+    <!-- Aqui se cargaran el js que se utilicen en las vistas -->
+    <?= $this->renderSection('js') ?>
 </body>
 
 </html>

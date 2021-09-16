@@ -56,7 +56,7 @@ class Cotizaciones extends BaseController
 
     //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...
     //funciones del sdk relacionadas al inventario y impuestos
-    protected function crear_cotizacion_api($registro, array $productos)
+    protected function crear_cotizacion($registro, array $productos)
     {
         //inicializar el api
         $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Quotes");
@@ -88,10 +88,12 @@ class Cotizaciones extends BaseController
             echo "Message:" . $responseIns->getMessage();
             echo "Code:" . $responseIns->getCode();
             echo "Details:" . json_encode($responseIns->getDetails());
+            $details = json_decode(json_encode($responseIns->getDetails()), true);
         }
+        return $details["id"];
     }
 
-    public function crear()
+    public function cotizar()
     {
         //pasa la tabla de cotizacion en array para agregarla al registro
         $planes = json_decode($this->request->getPost("planes"), true);
@@ -141,11 +143,38 @@ class Cotizaciones extends BaseController
                 break;
         }
         //crea la cotizacion el en crm
-        $this->crear_cotizacion_api($registro, $planes);
+        $id = $this->crear_cotizacion($registro, $planes);
         //alerta general cuando se realiza una cotizacion en el crm
-        $alerta = view("alertas/cotizacion_exitosa");
-        session()->setFlashdata('alerta', $alerta);
-        return redirect()->to(site_url("cotizaciones/buscar"));
+        session()->setFlashdata('alerta', "¡Cotización completada exitosamente! Para emitir, descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta al formulario todos los documentos necesarios, junto con la cotización firmada. A continuación, haz clic en “Emitir”.");
+        return redirect()->to(site_url("emisiones/emitir/$id"));
+    }
+
+    public function descargar($id)
+    {
+        $cotizacion = $this->zoho->getRecord("Quotes", $id);
+        switch ($cotizacion->getFieldValue("Tipo")) {
+            case 'Vida':
+                return view('cotizaciones/vida', ["cotizacion" => $cotizacion, "zoho" => $this->zoho]);
+                break;
+        }
+    }
+
+    public function documentos($id)
+    {
+        $attachments = $this->zoho->getAttachments("Products", $id);
+        foreach ($attachments as $attchmentIns) {
+            $file = $this->zoho->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+            unlink($file);
+            exit;
+        }
     }
 
     public function mostrarModelos()

@@ -23,7 +23,8 @@ class Home extends BaseController
         $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criterio);
         foreach ($emisiones as $emision) {
             if (date("Y-m", strtotime($emision->getCreatedTime())) == date("Y-m")) {
-                $lista[] = $emision->getFieldValue('Aseguradora')->getLookupLabel();
+                $plan = $this->zoho->getRecord("Products", $emision->getFieldValue('Coberturas')->getEntityId());
+                $lista[] = $plan->getFieldValue('Vendor_Name')->getLookupLabel();
                 $polizas++;
                 if ($emision->getFieldValue('Stage') == "Proceso de validación") {
                     $evaluacion++;

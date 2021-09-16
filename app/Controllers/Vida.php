@@ -117,6 +117,7 @@ class Vida extends BaseController
                 "comentario" => $comentario
             ];
         }
+        session()->setFlashdata('alerta', '¡Cotización creada exitosamente! Para descargar la cotización, haz clic en "Continuar" y completa el formulario.');
         //valores de la vista, en caso de querer hacer otra cotizacion
         $marcas = $this->zoho->getRecords("Marcas");
         asort($marcas);

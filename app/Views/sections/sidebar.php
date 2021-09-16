@@ -17,12 +17,12 @@
                 </a>
                 <a class="nav-link" href="<?= site_url("cotizaciones/buscar") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                    Buscar cotización
+                    Buscar Cotización
                 </a>
-                <div class="sb-sidenav-menu-heading">Addons</div>
-                <a class="nav-link" href="charts.html">
+                <div class="sb-sidenav-menu-heading">Emisiones</div>
+                <a class="nav-link" href="<?= site_url("emisiones") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                    Charts
+                    Buscar Emisión
                 </a>
                 <a class="nav-link" href="tables.html">
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>

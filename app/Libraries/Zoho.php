@@ -55,8 +55,8 @@ class Zoho
         $fileResponseIns = $record->downloadAttachment($attachment_id);
         $file = $filePath . "/" . $fileResponseIns->getFileName();
         $fp = fopen($file, "w");
-        echo "HTTP Status Code:" . $fileResponseIns->getHttpStatusCode();
-        echo "File Name:" . $fileResponseIns->getFileName();
+        //echo "HTTP Status Code:" . $fileResponseIns->getHttpStatusCode();
+        //echo "File Name:" . $fileResponseIns->getFileName();
         $stream = $fileResponseIns->getFileContent();
         var_dump($stream);
         fputs($fp, $stream);
@@ -136,5 +136,16 @@ class Zoho
             echo $ex->getExceptionCode(); // To get ZCRMException error code
             echo $ex->getFile(); // To get the file name that throws the Exception
         }
+    }
+
+    public function delete($module_api_name, $record_id)
+    {
+        $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
+        $responseIns = $record->delete();
+        echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
+        echo "Status:" . $responseIns->getStatus(); // To get response status
+        echo "Message:" . $responseIns->getMessage(); // To get response message
+        echo "Code:" . $responseIns->getCode(); // To get status code
+        echo "Details:" . json_encode($responseIns->getDetails());
     }
 }

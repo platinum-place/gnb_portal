@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="POST" action="<?= site_url("cotizaciones/crear") ?>">
+            <form method="POST" action="<?= site_url("cotizaciones/cotizar") ?>">
                 <div class="modal-body">
                     <h6>Datos del cliente</h6>
                     <hr>
