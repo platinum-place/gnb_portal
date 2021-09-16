@@ -62,6 +62,7 @@
                     <th>Tipo</th>
                     <th>Estado</th>
                     <th>Prima</th>
+                    <th>Aseguradora</th>
                     <th>Vendedor</th>
                     <th>Opciones</th>
                 </tr>

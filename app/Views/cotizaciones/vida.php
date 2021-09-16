@@ -18,8 +18,8 @@
     <div class="card border-0">
         <div class="card-body">
             <p class="card-text" style="text-align: right">
-                Fecha <b><?= date("d/m/Y") ?></b> <br>
-                No. <b><?= $cotizacion->getFieldValue('Quote_Number') ?></b>
+                <b>Fecha</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
+                <b>No.</b> <?= $cotizacion->getFieldValue('Quote_Number') ?>
             </p>
         </div>
     </div>
@@ -36,19 +36,19 @@
             <table class="table table-borderless table-sm">
                 <tbody>
                     <tr>
-                        <td style="width: 50%"><b>Nombre</b></td>
+                        <td style="width: 30%"><b>Nombre</b></td>
                         <td> <?= $cotizacion->getFieldValue("Nombre") . " " . $cotizacion->getFieldValue("Apellido") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 50%"><b>Cédula/RNC</b></td>
+                        <td style="width: 30%"><b>Cédula/RNC</b></td>
                         <td><?= $cotizacion->getFieldValue("RNC_C_dula") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 50%"><b>Email</b></td>
+                        <td style="width: 30%"><b>Email</b></td>
                         <td><?= $cotizacion->getFieldValue("Correo_electr_nico") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 50%"><b>Fecha de Nacimiento</b></td>
+                        <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
                         <td><?= $cotizacion->getFieldValue("Fecha_de_nacimiento") ?></td>
                     </tr>
                 </tbody>
@@ -94,19 +94,19 @@
                 <table class="table table-borderless table-sm">
                     <tbody>
                         <tr>
-                            <td style="width: 50%"><b>Nombre</b></td>
+                            <td style="width: 30%"><b>Nombre</b></td>
                             <td> <?= $cotizacion->getFieldValue("Nombre_codeudor") . " " . $cotizacion->getFieldValue("Apellido_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 50%"><b>Cédula/RNC</b></td>
+                            <td style="width: 30%"><b>Cédula/RNC</b></td>
                             <td><?= $cotizacion->getFieldValue("RNC_C_dula_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 50%"><b>Email</b></td>
+                            <td style="width: 30%"><b>Email</b></td>
                             <td><?= $cotizacion->getFieldValue("Correo_electr_nico_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 50%"><b>Fecha de Nacimiento</b></td>
+                            <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
                             <td><?= $cotizacion->getFieldValue("Fecha_de_nacimiento_codeudor") ?></td>
                         </tr>
                     </tbody>
@@ -317,6 +317,7 @@
 
 
 <?= $this->section('js') ?>
+<!-- Tiempo para que la pagina se imprima y luego se cierre -->
 <script>
     setTimeout(function() {
         window.print();

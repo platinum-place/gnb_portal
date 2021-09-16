@@ -145,7 +145,7 @@ class Cotizaciones extends BaseController
         //crea la cotizacion el en crm
         $id = $this->crear_cotizacion($registro, $planes);
         //alerta general cuando se realiza una cotizacion en el crm
-        session()->setFlashdata('alerta', "¡Cotización completada exitosamente! Para emitir, descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta al formulario todos los documentos necesarios, junto con la cotización firmada. A continuación, haz clic en “Emitir”.");
+        session()->setFlashdata('alerta', "¡Cotización completada exitosamente! Descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta todos los documentos necesarios al formulario. A continuación, haz clic en “Emitir”.");
         return redirect()->to(site_url("emisiones/emitir/$id"));
     }
 

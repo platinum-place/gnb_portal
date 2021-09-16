@@ -104,12 +104,23 @@ class Emisiones extends BaseController
                     }
                 }
             }
-            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en estado “Proceso de evaluación” mientras es validado por nosotros, mientras, puedes descargarla.");
+            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en estado “Proceso de evaluación” mientras es validado por nosotros, mientras, puedes descargarla un certificado de emisión.");
             return redirect()->to(site_url("emisiones"));
         }
         return view("emisiones/emitir", [
             "titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
             "cotizacion" => $cotizacion
         ]);
+    }
+
+    public function descargar($id)
+    {
+        $emision = $this->zoho->getRecord("Deals", $id);
+        $plan = $this->zoho->getRecord("Products", $emision->getFieldValue("Coberturas")->getEntityId());
+        switch ($emision->getFieldValue("Type")) {
+            case 'Vida':
+                return view('emisiones/vida', ["emision" => $emision, "plan" => $plan]);
+                break;
+        }
     }
 }
