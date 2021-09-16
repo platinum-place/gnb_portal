@@ -17,9 +17,6 @@
                         <option value="apellido">Apellido del cliente</option>
                         <option value="id">RNC/Cédula del cliente</option>
                     </select>
-                    <div class="invalid-feedback">
-                        Campo obligatorio.
-                    </div>
                 </div>
 
                 <div class="col-4">

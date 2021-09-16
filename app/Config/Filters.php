@@ -36,7 +36,8 @@ class Filters extends BaseConfig
             'sesion' => ['except' => ['casos/*', 'login']],
         ],
         'after' => [
-            'toolbar',
+            //el toolbar ralentiza la carga cuando se listan grandes cantidades de registros
+            //'toolbar',
             // 'honeypot',
         ],
     ];

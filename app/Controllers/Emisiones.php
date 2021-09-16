@@ -20,6 +20,25 @@ class Emisiones extends BaseController
         } else {
             $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
         }
+        if ($this->request->getPost()) {
+            switch ($this->request->getPost("opcion")) {
+                case 'nombre':
+                    $criteria = "((Nombre:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'apellido':
+                    $criteria = "((Apellido:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'id':
+                    $criteria = "((Identificaci_n:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'codigo':
+                    $criteria = "((TUA:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+            }
+        }
         $emisiones = $this->zoho->searchRecordsByCriteria("Deals", $criteria);
         return view("emisiones/index", ["titulo" => "Emisiones", "emisiones" => $emisiones]);
     }
