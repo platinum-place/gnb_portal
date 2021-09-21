@@ -43,12 +43,13 @@
             <thead>
                 <tr>
                     <th>Fecha</th>
-                    <th>No. emisión</th>
+                    <th>No.</th>
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
                     <th>Estado</th>
                     <th>Prima</th>
+                    <th>Aseguradora</th>
                     <th>Vendedor</th>
                     <th>Opciones</th>
                 </tr>
@@ -56,7 +57,7 @@
             <tfoot>
                 <tr>
                     <th>Fecha</th>
-                    <th>No. emisión</th>
+                    <th>No.</th>
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
@@ -70,12 +71,13 @@
             <tbody>
                 <?php foreach ((array)$emisiones as $emision) : ?>
                     <tr>
-                        <td><?= date('d/m/Y', strtotime($emision->getCreatedTime())) ?></td>
+                        <td><?= $emision->getFieldValue('Fecha_de_inicio') ?></td>
                         <td><?= $emision->getFieldValue('TUA') ?></td>
                         <td>
                             <?= $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido') ?>
                         </td>
                         <td><?= $emision->getFieldValue('Identificaci_n') ?></td>
+                        <td><?= $emision->getFieldValue('Aseguradora') ?> </td>
                         <td><?= $emision->getFieldValue('Type') ?> </td>
                         <td><?= $emision->getFieldValue('Stage') ?> </td>
                         <td>RD$<?= number_format($emision->getFieldValue('Amount'), 2) ?></td>

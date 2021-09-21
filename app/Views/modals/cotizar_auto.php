@@ -9,7 +9,7 @@
                 <input type="text" hidden value="auto" name="cotizacion">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="marca" class="form-label">Marca</label>
+                        <label class="form-label">Marca</label>
                         <select name="marca" class="form-control selectpicker" id="marca" onchange="modelosAJAX(this)" required data-live-search="true">
                             <option value="" selected disabled>Selecciona una Marca</option>
                             <?php foreach ($marcas as $marca) : ?>
@@ -19,37 +19,43 @@
                             <?php endforeach ?>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="modelo" class="form-label">Modelo</label>
+                        <label class="form-label">Modelo</label>
                         <select name="modelo" class="form-control selectpicker" id="modelos" required data-live-search="true">
                             <option value="" selected disabled>Selecciona un modelo</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="ano" class="form-label">Año</label>
+                        <label class="form-label">Año</label>
                         <input type="number" class="form-control" name="ano" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="suma" class="form-label">Suma Asegurada</label>
+                        <label class="form-label">Suma Asegurada</label>
                         <input type="number" class="form-control" required name="suma">
                     </div>
+
                     <div class="mb-3">
-                        <label for="uso" class="form-label">Uso</label>
+                        <label class="form-label">Uso</label>
                         <select name="uso" class="form-control">
                             <option value="Privado" selected>Privado</option>
                             <option value="Publico">Publico</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="plan" class="form-label">Plan</label>
+                        <label class="form-label">Plan</label>
                         <select name="plan" class="form-control" required>
                             <option value="" selected disabled>Selecciona un plan</option>
                             <option value="Mensual full">Mensual Full</option>
                             <option value="Anual full">Anual Full</option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label for="estado" class="form-label">Estado</label>
+                        <label class="form-label">Estado</label>
                         <select name="estado" class="form-control">
                             <option value="Nuevo" selected>Nuevo</option>
                             <option value="Usado">Usado</option>

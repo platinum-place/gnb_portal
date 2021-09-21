@@ -2,95 +2,106 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Zoho;
-use zcrmsdk\crm\crud\ZCRMRecord;
-use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
-use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
-use zcrmsdk\crm\crud\ZCRMTax;
+use App\Libraries\Cotizaciones as LibrariesCotizaciones;
+use App\Libraries\CotizacionesAuto;
+use App\Models\Cotizacion;
 
 class Cotizaciones extends BaseController
 {
-    protected $zoho;
-
-    function __construct()
-    {
-        $this->zoho = new Zoho;
-    }
-
     public function index()
     {
-        $marcas = $this->zoho->getRecords("Marcas");
-        asort($marcas);
-        return view("cotizaciones/index", ["titulo" => "Cotizar", "marcas" => $marcas]);
+        $cotizaciones = new LibrariesCotizaciones;
+        return view("cotizaciones/index", [
+            "titulo" => "Cotizar",
+            "marcas" => $cotizaciones->lista_marcas()
+        ]);
     }
 
-    public function buscar()
+    //funcion post
+    public function mostrarModelos()
     {
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
-        } else {
-            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
-        if ($this->request->getPost()) {
-            switch ($this->request->getPost("opcion")) {
-                case 'nombre':
-                    $criteria = "((Nombre:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'apellido':
-                    $criteria = "((Apellido:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'id':
-                    $criteria = "((RNC_C_dula:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'codigo':
-                    $criteria = "((Quote_Number:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
+        $cotizaciones = new LibrariesCotizaciones;
+        $pag = 1;
+        do {
+            $modelos = $cotizaciones->lista_modelos($this->request->getPost("marcaid"), $pag);
+            if (!empty($modelos)) {
+                asort($modelos);
+                $pag++;
+                foreach ($modelos as $modelo) {
+                    echo '<option value="' . $modelo->getEntityId() . "," . $modelo->getFieldValue('Tipo') . '">' . strtoupper($modelo->getFieldValue('Name')) . '</option>';
+                }
+            } else {
+                $pag = 0;
             }
-        }
-        $cotizaciones = $this->zoho->searchRecordsByCriteria("Quotes", $criteria);
-        return view("cotizaciones/buscar", ["titulo" => "Buscar Cotización", "cotizaciones" => $cotizaciones]);
+        } while ($pag > 0);
     }
 
-    //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...
-    //funciones del sdk relacionadas al inventario y impuestos
-    protected function crear_cotizacion($registro, array $productos)
+    //funcion post
+    public function cotizarAuto()
     {
-        //inicializar el api
-        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Quotes");
-        //inicializar el registro en blanco
-        $records = array();
-        $record = ZCRMRecord::getInstance("Quotes", null);
-        //recorre los datos para crear un registro con los nombres de los campos a los valores que correspondan
-        foreach ($registro as $campo => $valor) {
-            $record->setFieldValue($campo, $valor);
+        //datos relacionados al modelo, dividios en un array
+        $modelo = explode(",", $this->request->getPost("modelo"));
+        //libreria para cotizar auto
+        $libreria = new CotizacionesAuto;
+        //modelo para cotizacion
+        $cotizacion = new Cotizacion;
+        //asignando valores al objeto
+        $cotizacion->tipo = "Auto";
+        $cotizacion->modeloid = $modelo[0];
+        $cotizacion->modelotipo = $modelo[1];
+        $cotizacion->suma = $this->request->getPost("suma");
+        $cotizacion->ano = $this->request->getPost("ano");
+        $cotizacion->uso = $this->request->getPost("uso");
+        $cotizacion->plan = $this->request->getPost("plan");
+        $cotizacion->estado = $this->request->getPost("estado");
+        $cotizacion->marcaid = $this->request->getPost("marca");
+        //planes relacionados al banco
+        $planes = $libreria->lista_planes("Auto");
+        foreach ($planes as $plan) {
+            //inicializacion de variables
+            $comentario = "";
+            $prima = 0;
+            //verificaciones
+            $comentario = $libreria->verificar_limites($cotizacion, $plan);
+            $comentario = $libreria->verificar_restringido($cotizacion, $plan);
+            //si no hubo un excepcion
+            if (empty($comentario)) {
+                //calcular tasa
+                $tasa = $libreria->calcular_tasa($cotizacion, $plan);
+                //calcular recargo
+                $recargo = $libreria->calcular_recargo($cotizacion, $plan);
+                //calcular prima
+                $prima = $libreria->calcular_prima($cotizacion, $tasa, $recargo);
+                //si el valor de la prima es muy bajo
+                if ($prima > 0 and $prima < $plan->getFieldValue('Prima_m_nima')) {
+                    $prima = $plan->getFieldValue('Prima_m_nima');
+                }
+                //en caso de ser mensual
+                if ($cotizacion->plan == "Mensual full") {
+                    $prima = $prima / 12;
+                }
+                //en caso de haber algun problema
+                if ($prima == 0) {
+                    $comentario = "No existen tasas para el año o tipo del vehículo.";
+                }
+            }
+            //lista con los resultados de cada calculo
+            $cotizacion->planes[] = [
+                "aseguradora" => $plan->getFieldValue('Vendor_Name')->getLookupLabel(),
+                "aseguradoraid" => $plan->getFieldValue('Vendor_Name')->getEntityId(),
+                "planid" => $plan->getEntityId(),
+                "prima" => round($prima - ($prima * 0.16)),
+                "neta" => round($prima * 0.16),
+                "total" => round($prima),
+                "suma" =>  $cotizacion->suma,
+                "comentario" => $comentario
+            ];
         }
-        //recorre los planes/productos al registro
-        foreach ($productos as $producto) {
-            $lineItem = ZCRMInventoryLineItem::getInstance(null);
-            $lineItem->setListPrice($producto["prima"]);
-            $lineItem->setDescription($producto["aseguradora"]);
-            $taxInstance1 = ZCRMTax::getInstance("ITBIS 16");
-            $taxInstance1->setPercentage(16);
-            $taxInstance1->setValue(50);
-            $lineItem->addLineTax($taxInstance1);
-            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $producto["planid"]));
-            $lineItem->setQuantity(1);
-            $record->addLineItem($lineItem);
-        }
-        array_push($records, $record);
-        $responseIn = $moduleIns->createRecords($records);
-        foreach ($responseIn->getEntityResponses() as $responseIns) {
-            echo "HTTP Status Code:" . $responseIn->getHttpStatusCode();
-            echo "Status:" . $responseIns->getStatus();
-            echo "Message:" . $responseIns->getMessage();
-            echo "Code:" . $responseIns->getCode();
-            echo "Details:" . json_encode($responseIns->getDetails());
-            $details = json_decode(json_encode($responseIns->getDetails()), true);
-        }
-        return $details["id"];
+        session()->setFlashdata('alerta', '¡Cotización creada exitosamente! Para descargar la cotización, haz clic en "Continuar" y completa el formulario.');
+        //valores de la vista, en caso de querer hacer otra cotizacion
+        $marcas = $libreria->getRecords("Marcas");
+        asort($marcas);
+        return view("cotizaciones/index", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
     }
 
     public function cotizar()
@@ -100,6 +111,7 @@ class Cotizaciones extends BaseController
         //datos generales para crear una cotizacion
         $registro = [
             "Subject" => "Cotización",
+            "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 10 days")),
             "Account_Name" =>  session('usuario')->getFieldValue("Account_Name")->getEntityId(),
             "Contact_Name" =>  session('usuario')->getEntityId(),
             "Nombre" => $this->request->getPost("nombre"),
@@ -132,38 +144,99 @@ class Cotizaciones extends BaseController
             //actualiza el array general
             $registro = array_merge($registro, $codeudor);
         }
-        //condiciones especificas
-        switch ($this->request->getPost("tipo")) {
-            case 'Vida':
-                $vida = [
-                    "Plazo" => $this->request->getPost("plazo")
-                ];
-                //actualiza el array general
-                $registro = array_merge($registro, $vida);
-                break;
+        //en caso de haber un vehiculo
+        if ($this->request->getPost("chasis")) {
+            $vehiculo = [
+                "A_o" => $this->request->getPost("ano"),
+                "Marca" => $this->request->getPost("marcaid"),
+                "Modelo" => $this->request->getPost("modeloid"),
+                "Uso" => $this->request->getPost("uso"),
+                "Tipo_veh_culo" => $this->request->getPost("modelotipo"),
+                "Chasis" => $this->request->getPost("chasis"),
+                "Color" => $this->request->getPost("color"),
+                "Placa" => $this->request->getPost("placa"),
+                "Condiciones" => $this->request->getPost("estado")
+            ];
+            //actualiza el array general
+            $registro = array_merge($registro, $vehiculo);
         }
+        //en caso de vida
+        if ($this->request->getPost("plazo")) {
+            $vida = [
+                "Plazo" => $this->request->getPost("plazo")
+            ];
+            //actualiza el array general
+            $registro = array_merge($registro, $vida);
+        }
+        //libreria para cotizaciones
+        $libreria = new LibrariesCotizaciones;
         //crea la cotizacion el en crm
-        $id = $this->crear_cotizacion($registro, $planes);
+        $id = $libreria->crear_cotizacion($registro, $planes);
         //alerta general cuando se realiza una cotizacion en el crm
         session()->setFlashdata('alerta', "¡Cotización completada exitosamente! Descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta todos los documentos necesarios al formulario. A continuación, haz clic en “Emitir”.");
         return redirect()->to(site_url("emisiones/emitir/$id"));
     }
 
+    public function buscar()
+    {
+        //libreria para cotizaciones
+        $libreria = new LibrariesCotizaciones;
+        if (session('usuario')->getFieldValue("Title") == "Administrador") {
+            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
+        } else {
+            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
+        }
+        if ($this->request->getPost()) {
+            switch ($this->request->getPost("opcion")) {
+                case 'nombre':
+                    $criteria = "((Nombre:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'apellido':
+                    $criteria = "((Apellido:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'id':
+                    $criteria = "((RNC_C_dula:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+
+                case 'codigo':
+                    $criteria = "((Quote_Number:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    break;
+            }
+        }
+        //lista de todas las cotizaciones
+        $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criteria);
+        return view("cotizaciones/buscar", ["titulo" => "Buscar Cotización", "cotizaciones" => $cotizaciones]);
+    }
+
     public function descargar($id)
     {
-        $cotizacion = $this->zoho->getRecord("Quotes", $id);
+        //libreria para cotizaciones
+        $libreria = new LibrariesCotizaciones;
+        //obtener datos de la cotizacion
+        $cotizacion = $libreria->getRecord("Quotes", $id);
         switch ($cotizacion->getFieldValue("Tipo")) {
             case 'Vida':
-                return view('cotizaciones/vida', ["cotizacion" => $cotizacion, "zoho" => $this->zoho]);
+                return view('cotizaciones/vida', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                break;
+
+            case 'Auto':
+                return view('cotizaciones/auto', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
         }
     }
 
     public function documentos($id)
     {
-        $attachments = $this->zoho->getAttachments("Products", $id);
+        //libreria para cotizaciones
+        $libreria = new LibrariesCotizaciones;
+        //obtener los todos los adjuntos del plan, normalmente es solo uno
+        $attachments = $libreria->getAttachments("Products", $id);
         foreach ($attachments as $attchmentIns) {
-            $file = $this->zoho->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
+            //descargar un documento en el servidor local
+            $file = $libreria->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
+            //forzar al navegador a descargar el archivo
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
             header('Content-Disposition: attachment; filename="' . basename($file) . '"');
@@ -172,196 +245,9 @@ class Cotizaciones extends BaseController
             header('Pragma: public');
             header('Content-Length: ' . filesize($file));
             readfile($file);
+            //eliminar el archivo descargado
             unlink($file);
             exit;
         }
-    }
-
-    public function mostrarModelos()
-    {
-        $pag = 1;
-        $criterio = "Marca:equals:" . $this->request->getPost("marcaid");
-        do {
-            $lista_modelos =  $this->zoho->searchRecordsByCriteria("Modelos", $criterio, $pag);
-            if ($lista_modelos) {
-                $pag++;
-                asort($lista_modelos);
-                foreach ($lista_modelos as $modelo) {
-                    echo '<option value="' . $modelo->getEntityId() . "," . $modelo->getFieldValue('Tipo') . '">' . strtoupper($modelo->getFieldValue('Name')) . '</option>';
-                }
-            } else {
-                $pag = 0;
-            }
-        } while ($pag > 0);
-    }
-
-    public function cotizarAuto()
-    {
-        if ($this->request->getPost()) {
-            switch ($this->request->getPost("cotizacion")) {
-                case 'auto':
-                    $edad_codeudor = 0;
-                    $edad_deudor = $this->libreria->calcular_edad($this->request->getPost("deudor"));
-                    if ($this->request->getPost("codeudor")) {
-                        $edad_codeudor = $this->libreria->calcular_edad($this->request->getPost("codeudor"));
-                    }
-                    $tasas = $this->libreria->lista_tasas("Vida");
-                    foreach ($tasas as $tasa) {
-                        $prima = 0;
-                        $comentario = "";
-                        $comentario = $this->libreria->verificar_limites_deudor_codeudor(
-                            $tasa,
-                            $this->request->getPost("plazo"),
-                            $this->request->getPost("suma"),
-                            $edad_deudor,
-                            $edad_codeudor
-                        );
-                        if (empty($comentario)) {
-                            $prima = $this->libreria->calcular_prima_vida(
-                                $tasa,
-                                $this->request->getPost("suma"),
-                                $edad_deudor,
-                                $edad_codeudor
-                            );
-                        }
-                        $cotizacion[] = [
-                            "aseguradora" => $tasa->getFieldValue('Aseguradora')->getLookupLabel(),
-                            "prima" => $prima,
-                            "neta" => $prima * 0.16,
-                            "total" => $prima * 1.16,
-                            "suma" => $this->request->getPost("suma"),
-                            "cotizacion" => $this->request->getPost("cotizacion"),
-                            "comentario" => $comentario
-                        ];
-                    }
-                    break;
-
-
-
-                case 'desempleo':
-                    $edad_codeudor = 0;
-                    $edad_deudor = $this->libreria->calcular_edad($this->request->getPost("fecha"));
-                    $tasas = $this->libreria->lista_tasas("Desempleo");
-                    foreach ($tasas as $tasa) {
-                        $prima = 0;
-                        $comentario = "";
-                        $comentario = $this->libreria->verificar_limites_deudor_codeudor(
-                            $tasa,
-                            $this->request->getPost("plazo"),
-                            $this->request->getPost("suma"),
-                            $edad_deudor
-                        );
-                        if (empty($comentario)) {
-                            $prima = $this->libreria->calcular_prima_desempleo(
-                                $tasa,
-                                $this->request->getPost("suma"),
-                                $this->request->getPost("cuota"),
-                            );
-                        }
-                        $cotizacion[] = [
-                            "aseguradora" => $tasa->getFieldValue('Aseguradora')->getLookupLabel(),
-                            "prima" => $prima,
-                            "neta" => $prima * 0.16,
-                            "total" => $prima * 1.16,
-                            "suma" => $this->request->getPost("suma"),
-                            "cotizacion" => $this->request->getPost("cotizacion"),
-                            "comentario" => $comentario
-                        ];
-                    }
-                    break;
-
-                case 'incendio':
-                    $tasas = $this->libreria->lista_tasas("Incendio");
-                    foreach ($tasas as $tasa) {
-                        $prima = 0;
-                        $comentario = "";
-                        if (empty($comentario)) {
-                            $prima = $this->libreria->calcular_prima_incendio($tasa, $this->request->getPost("suma"));
-                        }
-                        $cotizacion[] = [
-                            "aseguradora" => $tasa->getFieldValue('Aseguradora')->getLookupLabel(),
-                            "prima" => $prima,
-                            "neta" => $prima * 0.16,
-                            "total" => $prima * 1.16,
-                            "suma" => $this->request->getPost("suma"),
-                            "cotizacion" => $this->request->getPost("cotizacion"),
-                            "comentario" => $comentario
-                        ];
-                    }
-                    break;
-            }
-        }
-        $planes = $this->auto->lista_planes("Auto");
-        $modelo = explode(",", $this->request->getPost("modelo"));
-        $modeloid = $modelo[0];
-        $modelotipo = $modelo[1];
-        $cotizacion = array();
-        foreach ($planes as $plan) {
-            $comentario = "";
-            $prima = 0;
-            if (in_array($this->request->getPost("uso"), $plan->getFieldValue('Restringir_veh_culos_de_uso'))) {
-                $comentario = "Uso del vehículo restringido.";
-            }
-            $criterio = "((Marca:equals:" . $this->request->getPost("marca") . ") and (Plan:equals:" . $plan->getEntityId() . "))";
-            $marcas = $this->auto->searchRecordsByCriteria("Restringidos", $criterio, 1, 200);
-            foreach ((array)$marcas as $marca) {
-                if (empty($marca->getFieldValue('Modelo'))) {
-                    $comentario = "Marca restrigida.";
-                }
-            }
-            $criterio = "((Modelo:equals:$modeloid) and (Plan:equals:" . $plan->getEntityId() . "))";
-            $modelos = $this->auto->searchRecordsByCriteria("Restringidos", $criterio, 1, 200);
-            foreach ((array)$modelos as $modelo) {
-                $comentario = "Modelo restrigido.";
-            }
-            if (empty($comentario)) {
-                $valortasa = 0;
-                //encontrar la tasa
-                $criterio = "Plan:equals:" . $plan->getEntityId();
-                $tasas = $this->auto->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
-                foreach ($tasas as $tasa) {
-                    if (in_array($modelotipo, $tasa->getFieldValue('Grupo_de_veh_culo')) and $tasa->getFieldValue('A_o') == $this->request->getPost("ano")) {
-                        $valortasa = $tasa->getFieldValue('Name') / 100;
-                    }
-                }
-                $valorrecargo = 0;
-                //verificar si la aseguradora tiene algun recargo para la marca o modelo
-                $recargos = $this->auto->lista_recargos($this->request->getPost("marca"), $plan->getFieldValue('Vendor_Name')->getEntityId());
-                foreach ((array)$recargos as $recargo) {
-                    if (
-                        $modelotipo == $recargo->getFieldValue("Tipo")
-                        and
-                        $this->request->getPost("ano") >= $recargo->getFieldValue('Desde')
-                        and
-                        $this->request->getPost("ano") <= $recargo->getFieldValue('Hasta')
-                    ) {
-                        $valorrecargo = $recargo->getFieldValue('Name') / 100;
-                    }
-                }
-                //calculo para cotizacion auto
-                $prima = $this->request->getPost("suma") * ($valortasa + ($valortasa * $valorrecargo));
-                echo  $prima;
-                if ($prima > 0 and $prima < $plan->getFieldValue('Prima_m_nima')) {
-                    $prima = $plan->getFieldValue('Prima_m_nima');
-                }
-                if ($this->request->getPost("plan") == "Mensual full") {
-                    $prima = $prima / 12;
-                }
-                if ($prima == 0) {
-                    $comentario = "No existen tasas para el año o tipo del vehículo.";
-                }
-            }
-            $cotizacion[] = [
-                "aseguradora" => $plan->getFieldValue('Vendor_Name')->getLookupLabel(),
-                "planid" => $plan->getEntityId(),
-                "prima" => $prima,
-                "neta" => $prima * 0.16,
-                "total" => $prima * 1.16,
-                "suma" => $this->request->getPost("suma"),
-                "cotizacion" => $this->request->getPost("cotizacion"),
-                "comentario" => $comentario
-            ];
-        }
-        return $cotizacion;
     }
 }

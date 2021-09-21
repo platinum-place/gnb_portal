@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="sb-sidenav-footer">
-            <div class="small">Ingresado como:</div>
+            <div class="small">Ingresaste como:</div>
             <?= session('usuario')->getFieldValue('First_Name') . " " . session('usuario')->getFieldValue('Last_Name') ?>
         </div>
     </nav>

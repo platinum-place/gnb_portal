@@ -19,7 +19,7 @@
         <div class="card-body">
             <p class="card-text" style="text-align: right">
                 <b>No.</b> <?= $emision->getFieldValue('TUA') ?> <br>
-                <b>Desde:</b> <?= date("d/m/Y", strtotime($emision->getCreatedTime())) ?> <br>
+                <b>Desde:</b> <?= date("d/m/Y", strtotime($emision->getFieldValue("Fecha_de_inicio"))) ?> <br>
                 <b>Hasta:</b> <?= date("d/m/Y", strtotime($emision->getFieldValue("Closing_Date"))) ?> <br>
             </p>
         </div>
@@ -38,19 +38,19 @@
                 <tbody>
                     <tr>
                         <td style="width: 30%"><b>Nombre</b></td>
-                        <td> <?= $emision->getFieldValue("Nombre") . " " . $emision->getFieldValue("Apellido") ?></td>
+                        <td> <?= $deudor->getFieldValue("First_Name") . " " . $deudor->getFieldValue("Last_Name") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Cédula/RNC</b></td>
-                        <td><?= $emision->getFieldValue("Identificaci_n") ?></td>
+                        <td style="width: 30%"><b>RNC/Cédula</b></td>
+                        <td><?= $deudor->getFieldValue("RNC_C_dula") ?></td>
                     </tr>
                     <tr>
                         <td style="width: 30%"><b>Email</b></td>
-                        <td><?= $emision->getFieldValue("Correo_electr_nico") ?></td>
+                        <td><?= $deudor->getFieldValue("Email") ?></td>
                     </tr>
                     <tr>
                         <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
-                        <td><?= $emision->getFieldValue("Fecha_de_nacimiento") ?></td>
+                        <td><?= $deudor->getFieldValue("Date_of_Birth") ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -63,19 +63,19 @@
                 <tbody>
                     <tr>
                         <td style="width: 30%"><b>Tel. Residencia</b></td>
-                        <td> <?= $emision->getFieldValue("Tel_Residencia") ?></td>
+                        <td> <?= $emision->getFieldValue("Home_Phone") ?></td>
                     </tr>
                     <tr>
                         <td style="width: 30%"><b>Tel. Celular</b></td>
-                        <td><?= $emision->getFieldValue("Tel_Celular") ?></td>
+                        <td><?= $emision->getFieldValue("Mobile") ?></td>
                     </tr>
                     <tr>
                         <td style="width: 30%"><b>Tel. Trabajo</b></td>
-                        <td><?= $emision->getFieldValue("Tel_Trabajo") ?></td>
+                        <td><?= $emision->getFieldValue("Other_Phone") ?></td>
                     </tr>
                     <tr>
                         <td style="width: 30%"><b>Dirección</b></td>
-                        <td><?= $emision->getFieldValue("Direcci_n") ?></td>
+                        <td><?= $emision->getFieldValue("Mailing_Street") ?></td>
                     </tr>
                 </tbody>
             </table>
@@ -83,7 +83,7 @@
     </div>
 </div>
 
-<?php if (!empty($emision->getFieldValue("Nombre_codeudor"))) : ?>
+<?php if (!empty($codeudor->getFieldValue("First_Name"))) : ?>
     <div class="col-12">
         &nbsp;
     </div>
@@ -96,19 +96,19 @@
                     <tbody>
                         <tr>
                             <td style="width: 30%"><b>Nombre</b></td>
-                            <td> <?= $emision->getFieldValue("Nombre_codeudor") . " " . $emision->getFieldValue("Apellido_codeudor") ?></td>
+                            <td> <?= $codeudor->getFieldValue("First_Name") . " " . $codeudor->getFieldValue("Last_Name") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Cédula/RNC</b></td>
-                            <td><?= $emision->getFieldValue("Identificaci_n_codeudor") ?></td>
+                            <td style="width: 30%"><b>RNC/Cédula</b></td>
+                            <td><?= $codeudor->getFieldValue("RNC_C_dula") ?></td>
                         </tr>
                         <tr>
                             <td style="width: 30%"><b>Email</b></td>
-                            <td><?= $emision->getFieldValue("Correo_electr_nico_codeudor") ?></td>
+                            <td><?= $codeudor->getFieldValue("Email") ?></td>
                         </tr>
                         <tr>
                             <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
-                            <td><?= $emision->getFieldValue("Fecha_de_nacimiento_codeudor") ?></td>
+                            <td><?= $codeudor->getFieldValue("Date_of_Birth") ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -121,19 +121,19 @@
                     <tbody>
                         <tr>
                             <td style="width: 30%"><b>Tel. Residencia</b></td>
-                            <td> <?= $emision->getFieldValue("Tel_Residencia_codeudor") ?></td>
+                            <td> <?= $codeudor->getFieldValue("Home_Phone") ?></td>
                         </tr>
                         <tr>
                             <td style="width: 30%"><b>Tel. Celular</b></td>
-                            <td><?= $emision->getFieldValue("Tel_Celular_codeudor") ?></td>
+                            <td><?= $codeudor->getFieldValue("Mobile") ?></td>
                         </tr>
                         <tr>
                             <td style="width: 30%"><b>Tel. Trabajo</b></td>
-                            <td><?= $emision->getFieldValue("Tel_Trabajo_codeudor") ?></td>
+                            <td><?= $codeudor->getFieldValue("Other_Phone") ?></td>
                         </tr>
                         <tr>
                             <td style="width: 30%"><b>Dirección</b></td>
-                            <td><?= $emision->getFieldValue("Direcci_n_codeudor") ?></td>
+                            <td><?= $codeudor->getFieldValue("Mailing_Street") ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -151,12 +151,12 @@
     <tbody>
         <tr>
             <td style="width: 50%"><b>Fecha de Nacimiento Deudor</b></td>
-            <td><?= $emision->getFieldValue("Fecha_de_nacimiento") ?></td>
+            <td><?= $deudor->getFieldValue("Date_of_Birth") ?></td>
         </tr>
-        <?php if (!empty($emision->getFieldValue("Nombre_codeudor"))) : ?>
+        <?php if (!empty($codeudor->getFieldValue("First_Name"))) : ?>
             <tr>
                 <td style="width: 50%"><b>Fecha de Nacimiento Codeudor</b></td>
-                <td><?= $emision->getFieldValue("Fecha_de_nacimiento_codeudor") ?></td>
+                <td><?= $codeudor->getFieldValue("Date_of_Birth") ?></td>
             </tr>
         <?php endif ?>
         <tr>

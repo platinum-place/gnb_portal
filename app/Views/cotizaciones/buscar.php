@@ -43,7 +43,7 @@
             <thead>
                 <tr>
                     <th>Fecha</th>
-                    <th>No. cotización</th>
+                    <th>No.</th>
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
@@ -55,7 +55,7 @@
             <tfoot>
                 <tr>
                     <th>Fecha</th>
-                    <th>No. cotización</th>
+                    <th>No.</th>
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>

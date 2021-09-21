@@ -10,5 +10,12 @@ class Cotizacion
     public $plazo;
     public $suma;
     public $direccion;
+    public $marcaid;
+    public $modeloid;
+    public $modelotipo;
+    public $ano;
+    public $uso;
+    public $plan;
+    public $estado;
     public $planes = array();
 }

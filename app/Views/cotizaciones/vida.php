@@ -36,19 +36,19 @@
             <table class="table table-borderless table-sm">
                 <tbody>
                     <tr>
-                        <td style="width: 30%"><b>Nombre</b></td>
+                        <th style="width: 30%">Nombre</th>
                         <td> <?= $cotizacion->getFieldValue("Nombre") . " " . $cotizacion->getFieldValue("Apellido") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Cédula/RNC</b></td>
+                        <th style="width: 30%">RNC/Cédula</th>
                         <td><?= $cotizacion->getFieldValue("RNC_C_dula") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Email</b></td>
+                        <th style="width: 30%">Email</th>
                         <td><?= $cotizacion->getFieldValue("Correo_electr_nico") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
+                        <th style="width: 30%">Fecha de Nacimiento</th>
                         <td><?= $cotizacion->getFieldValue("Fecha_de_nacimiento") ?></td>
                     </tr>
                 </tbody>
@@ -61,19 +61,19 @@
             <table class="table table-borderless table-sm">
                 <tbody>
                     <tr>
-                        <td style="width: 30%"><b>Tel. Residencia</b></td>
+                        <th style="width: 30%">Tel. Residencia</th>
                         <td> <?= $cotizacion->getFieldValue("Tel_Residencia") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Tel. Celular</b></td>
+                        <th style="width: 30%">Tel. Celular</th>
                         <td><?= $cotizacion->getFieldValue("Tel_Celular") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Tel. Trabajo</b></td>
+                        <th style="width: 30%">Tel. Trabajo</th>
                         <td><?= $cotizacion->getFieldValue("Tel_Trabajo") ?></td>
                     </tr>
                     <tr>
-                        <td style="width: 30%"><b>Dirección</b></td>
+                        <th style="width: 30%">Dirección</th>
                         <td><?= $cotizacion->getFieldValue("Direcci_n") ?></td>
                     </tr>
                 </tbody>
@@ -94,19 +94,19 @@
                 <table class="table table-borderless table-sm">
                     <tbody>
                         <tr>
-                            <td style="width: 30%"><b>Nombre</b></td>
+                            <th style="width: 30%">Nombre</th>
                             <td> <?= $cotizacion->getFieldValue("Nombre_codeudor") . " " . $cotizacion->getFieldValue("Apellido_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Cédula/RNC</b></td>
+                            <th style="width: 30%">RNC/Cédula</th>
                             <td><?= $cotizacion->getFieldValue("RNC_C_dula_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Email</b></td>
+                            <th style="width: 30%">Email</th>
                             <td><?= $cotizacion->getFieldValue("Correo_electr_nico_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Fecha de Nacimiento</b></td>
+                            <th style="width: 30%">Fecha de Nacimiento</th>
                             <td><?= $cotizacion->getFieldValue("Fecha_de_nacimiento_codeudor") ?></td>
                         </tr>
                     </tbody>
@@ -119,19 +119,19 @@
                 <table class="table table-borderless table-sm">
                     <tbody>
                         <tr>
-                            <td style="width: 30%"><b>Tel. Residencia</b></td>
+                            <th style="width: 30%">Tel. Residencia</th>
                             <td> <?= $cotizacion->getFieldValue("Tel_Residencia_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Tel. Celular</b></td>
+                            <th style="width: 30%">Tel. Celular</th>
                             <td><?= $cotizacion->getFieldValue("Tel_Celular_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Tel. Trabajo</b></td>
+                            <th style="width: 30%">Tel. Trabajo</th>
                             <td><?= $cotizacion->getFieldValue("Tel_Trabajo_codeudor") ?></td>
                         </tr>
                         <tr>
-                            <td style="width: 30%"><b>Dirección</b></td>
+                            <th style="width: 30%">Dirección</th>
                             <td><?= $cotizacion->getFieldValue("Direcci_n_codeudor") ?></td>
                         </tr>
                     </tbody>
@@ -168,7 +168,7 @@
 
     <?php foreach ($cotizacion->getLineItems() as $lineItem) : ?>
         <?php if ($lineItem->getNetTotal() > 0) : ?>
-            <?php $plan = $zoho->getRecord("Products", $lineItem->getProduct()->getEntityId()); ?>
+            <?php $plan = $libreria->getRecord("Products", $lineItem->getProduct()->getEntityId()); ?>
             <div class="card border-0">
                 <div class="card-body">
                     <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getEntityId() . ".png") ?>" height="50" width="150">
@@ -202,7 +202,7 @@
             <?php foreach ($cotizacion->getLineItems() as $lineItem) : ?>
                 <?php if ($lineItem->getNetTotal() > 0) : ?>
                     <?php
-                    $plan = $zoho->getRecord("Products", $lineItem->getProduct()->getEntityId());
+                    $plan = $libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
                     $requisitos = $plan->getFieldValue("Requisitos_deudor");
                     ?>
                     <ul>
@@ -231,7 +231,7 @@
                 <?php foreach ($cotizacion->getLineItems() as $lineItem) : ?>
                     <?php if ($lineItem->getNetTotal() > 0) : ?>
                         <?php
-                        $plan = $zoho->getRecord("Products", $lineItem->getProduct()->getEntityId());
+                        $plan = $libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
                         $requisitos = $plan->getFieldValue("Requisitos_codeudor");
                         ?>
                         <ul>

@@ -3,11 +3,8 @@
 <?= $this->section('content') ?>
 
 <div class="row justify-content-center">
-    <div class="col-lg-7">
+    <div class="col-lg-10">
         <div class="card  rounded-lg mt-5">
-            <div class="card-header">
-                &nbsp;
-            </div>
             <div class="card-body">
                 <form enctype="multipart/form-data" method="POST" action="<?= site_url("emisiones/emitir/" . $cotizacion->getEntityId()) ?>">
                     <div class="mb-3 row">
@@ -24,7 +21,7 @@
                                 <option value="" selected disabled>Selecciona una aseguradora</option>
                                 <?php foreach ($cotizacion->getLineItems() as $lineItem) : ?>
                                     <?php if ($lineItem->getNetTotal() > 0) : ?>
-                                        <option value="<?= $lineItem->getNetTotal() . "," . $lineItem->getProduct()->getEntityId() ?>"><?= $lineItem->getDescription() ?></option>
+                                        <option value="<?= $lineItem->getProduct()->getEntityId() ?>"><?= $lineItem->getDescription() ?></option>
                                     <?php endif ?>
                                 <?php endforeach ?>
                             </select>
@@ -65,9 +62,6 @@
                         <button type="submit" class="btn btn-primary">Emitir</button>
                     </div>
                 </form>
-            </div>
-            <div class="card-footer text-center py-3">
-                &nbsp;
             </div>
         </div>
     </div>
