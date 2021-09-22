@@ -1,49 +1,47 @@
-<div class="row border">
-    <div class="col-6">
-        <div class="row">
-            <div class="col-6">
-                <p>
-                    <b>Marca:</b> <br>
-                    <b>Modelo:</b> <br>
-                    <b>Año:</b> <br>
-                    <b>Color:</b> <br>
-                    <b>Tipo:</b>
-                </p>
-            </div>
-
-            <div class="col-6">
-                <p>
-                    <?= $cotizacion->getFieldValue('Marca')->getLookupLabel() ?> <br>
-                    <?= $cotizacion->getFieldValue('Modelo')->getLookupLabel() ?> <br>
-                    <?= $cotizacion->getFieldValue("A_o") ?> <br>
-                    <?= $cotizacion->getFieldValue("Color") ?> <br>
-                    <?= $cotizacion->getFieldValue("Tipo_veh_culo") ?>
-                </p>
-            </div>
+<div class="card-group" style="font-size: small;">
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">
+                <b>Marca</b> <br>
+                <b>Modelo</b> <br>
+                <b>Año</b> <br>
+                <b>Color</b> <br>
+                <b>Tipo</b>
+            </p>
         </div>
     </div>
 
-    <div class="col-6">
-        <div class="row">
-            <div class="col-6">
-                <p>
-                    <b>Chasis:</b> <br>
-                    <b>Placa:</b> <br>
-                    <b>Uso:</b> <br>
-                    <b>Condiciones:</b> <br>
-                    &nbsp;
-                </p>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">
+                <?= $detalles->getFieldValue('Marca')->getLookupLabel() ?> <br>
+                <?= $detalles->getFieldValue('Modelo')->getLookupLabel() ?> <br>
+                <?= $detalles->getFieldValue("A_o") ?> <br>
+                <?= $detalles->getFieldValue("Color") ?> <br>
+                <?= $detalles->getFieldValue("Tipo_veh_culo") ?>
+            </p>
+        </div>
+    </div>
 
-            <div class="col-6">
-                <p>
-                    <?= $cotizacion->getFieldValue("Chasis") ?> <br>
-                    <?= $cotizacion->getFieldValue('Placa') ?> <br>
-                    <?= $cotizacion->getFieldValue("Uso") ?> <br>
-                    <?= $cotizacion->getFieldValue("Condiciones") ?> <br>
-                    &nbsp;
-                </p>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">
+                <b>Chasis</b> <br>
+                <b>Placa</b> <br>
+                <b>Uso</b> <br>
+                <b>Condiciones</b>
+            </p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">
+                <?= $detalles->getFieldValue("Chasis") ?> <br>
+                <?= $detalles->getFieldValue('Placa') ?> <br>
+                <?= $detalles->getFieldValue("Uso") ?> <br>
+                <?= $detalles->getFieldValue("Condiciones") ?>
+            </p>
         </div>
     </div>
 </div>

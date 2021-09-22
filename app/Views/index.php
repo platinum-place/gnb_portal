@@ -26,7 +26,7 @@
         <div class="card bg-warning text-white mb-4">
             <div class="card-body">
                 <p>Pólizas en proceso de aprobación</p>
-                <p><?= $vencidas ?></p>
+                <p><?= $pendiente ?></p>
             </div>
             <!--
                 <div class="card-footer d-flex align-items-center justify-content-between">

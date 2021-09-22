@@ -30,7 +30,7 @@ class Cotizaciones extends Zoho
 
     //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...
     //funciones del sdk relacionadas al inventario y impuestos
-    public function crear_cotizacion($registro, array $productos)
+    public function crear_cotizacion($cotizacion, array $planes)
     {
         //inicializar el api
         $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Quotes");
@@ -38,15 +38,15 @@ class Cotizaciones extends Zoho
         $records = array();
         $record = ZCRMRecord::getInstance("Quotes", null);
         //recorre los datos para crear un registro con los nombres de los campos a los valores que correspondan
-        foreach ($registro as $campo => $valor) {
+        foreach ($cotizacion as $campo => $valor) {
             $record->setFieldValue($campo, $valor);
         }
         //recorre los planes/productos al registro
-        foreach ($productos as $producto) {
+        foreach ($planes as $plan) {
             $lineItem = ZCRMInventoryLineItem::getInstance(null);
-            $lineItem->setListPrice($producto["total"]);
-            $lineItem->setDescription($producto["aseguradora"]);
-            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $producto["planid"]));
+            $lineItem->setListPrice($plan["total"]);
+            $lineItem->setDescription($plan["aseguradora"]);
+            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $plan["planid"]));
             $lineItem->setQuantity(1);
             $record->addLineItem($lineItem);
         }

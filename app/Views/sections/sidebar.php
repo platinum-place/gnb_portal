@@ -5,7 +5,7 @@
                 <div class="text-center">
                     <img src="<?= base_url('img/it.png') ?>" alt="Logo IT" width="190" height="190">
                 </div>
-                <div class="sb-sidenav-menu-heading">Core</div>
+                <div class="sb-sidenav-menu-heading">&nbsp;</div>
                 <a class="nav-link" href="<?= site_url() ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                     Panel de Control
@@ -24,9 +24,9 @@
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                     Buscar Emisión
                 </a>
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="<?= site_url("emisiones/reporte") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                    Tables
+                    Generar Reporte
                 </a>
             </div>
         </div>

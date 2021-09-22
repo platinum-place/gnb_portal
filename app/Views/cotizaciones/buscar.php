@@ -2,37 +2,6 @@
 
 <?= $this->section('content') ?>
 
-<?php if (session('usuario')->getFieldValue("Title") == "Administrador") : ?>
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-search"></i>
-            Busqueda avanzada
-        </div>
-        <div class="card-body">
-            <form class="row" action="<?= site_url("cotizaciones/buscar") ?>" method="post">
-                <div class="col-md-4">
-                    <select class="form-select" name="opcion" required>
-                        <option value="codigo">No. cotización</option>
-                        <option value="nombre">Nombre del cliente</option>
-                        <option value="apellido">Apellido del cliente</option>
-                        <option value="id">RNC/Cédula del cliente</option>
-                    </select>
-                </div>
-
-                <div class="col-4">
-                    <input type="text" class="form-control" name="busqueda" required>
-                </div>
-
-                <div class="col-4">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    |
-                    <a href="<?= site_url("cotizaciones/buscar") ?>" class="btn btn-secondary">Limpiar</a>
-                </div>
-            </form>
-        </div>
-    </div>
-<?php endif ?>
-
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-table me-1"></i>
@@ -79,6 +48,10 @@
                         <td>
                             <a href="<?= site_url("emisiones/emitir/" . $cotizacion->getEntityId()) ?>" title="Emitir">
                                 <i class="far fa-user"></i>
+                            </a>
+                            |
+                            <a href="<?= site_url("cotizaciones/editar/" . $cotizacion->getEntityId()) ?>" title="Editar">
+                                <i class="fas fa-edit"></i>
                             </a>
                             |
                             <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">

@@ -15,7 +15,7 @@ class Home extends BaseController
             "lista" => array_count_values($emisiones->lista),
             "polizas" => $emisiones->polizas,
             "vencidas" => $emisiones->vencidas,
-            "vencidas" => $emisiones->evaluacion
+            "pendiente" => $emisiones->pendiente
         ]);
     }
 }

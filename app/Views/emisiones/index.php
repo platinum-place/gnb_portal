@@ -42,52 +42,85 @@
         <table id="datatablesSimple">
             <thead>
                 <tr>
-                    <th>Fecha</th>
+                    <th>Fecha Emisión</th>
                     <th>No.</th>
-                    <th>Nombre del cliente</th>
-                    <th>RNC/Cédula del cliente</th>
+                    <th>Nombre Cliente</th>
+                    <th>RNC/Cédula Cliente</th>
                     <th>Tipo</th>
                     <th>Estado</th>
-                    <th>Prima</th>
-                    <th>Aseguradora</th>
+                    <th>Suma Asegurada</th>
                     <th>Vendedor</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
-                    <th>Fecha</th>
-                    <th>No.</th>
-                    <th>Nombre del cliente</th>
-                    <th>RNC/Cédula del cliente</th>
-                    <th>Tipo</th>
+                    <th>Fecha Emisión</th>
+                    <th>No. emisión</th>
+                    <th>Nombre Cliente</th>
+                    <th>RNC/Cédula Cliente</th>
+                    <th>Plan</th>
                     <th>Estado</th>
-                    <th>Prima</th>
-                    <th>Aseguradora</th>
+                    <th>Suma Asegurada</th>
                     <th>Vendedor</th>
                     <th>Opciones</th>
                 </tr>
             </tfoot>
             <tbody>
+                <!-- contador para los modals -->
+                <?php $cont = 0 ?>
                 <?php foreach ((array)$emisiones as $emision) : ?>
                     <tr>
-                        <td><?= $emision->getFieldValue('Fecha_de_inicio') ?></td>
-                        <td><?= $emision->getFieldValue('TUA') ?></td>
+                        <td><?= date("d/m/Y", strtotime($emision->getCreatedTime())) ?></td>
+                        <td><?= $emision->getFieldValue('SO_Number') ?></td>
                         <td>
                             <?= $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido') ?>
                         </td>
-                        <td><?= $emision->getFieldValue('Identificaci_n') ?></td>
-                        <td><?= $emision->getFieldValue('Aseguradora') ?> </td>
-                        <td><?= $emision->getFieldValue('Type') ?> </td>
-                        <td><?= $emision->getFieldValue('Stage') ?> </td>
-                        <td>RD$<?= number_format($emision->getFieldValue('Amount'), 2) ?></td>
+                        <td><?= $emision->getFieldValue('RNC_C_dula') ?></td>
+                        <td><?= $emision->getFieldValue('Plan') ?> </td>
+                        <td><?= $emision->getFieldValue('Status') ?> </td>
+                        <td>RD$<?= number_format($emision->getFieldValue('Suma_asegurada'), 2) ?></td>
                         <td><?= $emision->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                         <td>
                             <a href="<?= site_url("emisiones/descargar/" . $emision->getEntityId()) ?>" title="Descargar" target="__blank">
                                 <i class="fas fa-download"></i>
                             </a>
+                            |
+                            <!-- Button trigger modal -->
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#subir<?= $cont ?>">
+                                <i class="fas fa-upload"></i>
+                            </a>
                         </td>
                     </tr>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="subir<?= $cont ?>" tabindex="-1" aria-labelledby="label<?= $cont ?>" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="label<?= $cont ?>">
+                                        Adjuntar a emisión a nombre de
+                                        <?= $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido') ?>
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="<?= site_url("emisiones/adjuntar/" . $emision->getEntityId()) ?>" method="POST" enctype="multipart/form-data">
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Adjuntar documentos</label>
+                                            <input required type="file" name="documentos[]" multiple class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Adjuntar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <?php $cont++; ?>
                 <?php endforeach ?>
             </tbody>
         </table>

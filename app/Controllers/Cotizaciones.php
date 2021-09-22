@@ -109,9 +109,10 @@ class Cotizaciones extends BaseController
         //pasa la tabla de cotizacion en array para agregarla al registro
         $planes = json_decode($this->request->getPost("planes"), true);
         //datos generales para crear una cotizacion
+        $fecha_limite = date("Y-m-d", strtotime(date("Y-m-d") . "+ 10 days"));
         $registro = [
             "Subject" => "Cotización",
-            "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 10 days")),
+            "Valid_Till" => $fecha_limite,
             "Account_Name" =>  session('usuario')->getFieldValue("Account_Name")->getEntityId(),
             "Contact_Name" =>  session('usuario')->getEntityId(),
             "Nombre" => $this->request->getPost("nombre"),
@@ -125,7 +126,6 @@ class Cotizaciones extends BaseController
             "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
             "Plan" => $this->request->getPost("plan"),
             "Tipo" =>  $this->request->getPost("tipo"),
-            "Quote_Stage" => "Negociación",
             "Suma_asegurada" => $this->request->getPost("suma"),
         ];
         //en caso de haber un codeudor
@@ -173,7 +173,7 @@ class Cotizaciones extends BaseController
         //crea la cotizacion el en crm
         $id = $libreria->crear_cotizacion($registro, $planes);
         //alerta general cuando se realiza una cotizacion en el crm
-        session()->setFlashdata('alerta', "¡Cotización completada exitosamente! Descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta todos los documentos necesarios al formulario. A continuación, haz clic en “Emitir”.");
+        session()->setFlashdata('alerta', "¡Cotización completada exitosamente! A continuación, pues descargar, emitir o editar la cotización. Para emitir, descarga la cotización y los documentos asociados a la aseguradora elegida. Luego, adjunta todos los documentos necesarios al formulario. Por último, haz clic en “Emitir”. De no hacerlo, es posible retomar la cotización en otro momento. La cotización estara activa hasta " . $fecha_limite);
         return redirect()->to(site_url("emisiones/emitir/$id"));
     }
 
@@ -186,25 +186,6 @@ class Cotizaciones extends BaseController
         } else {
             $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
         }
-        if ($this->request->getPost()) {
-            switch ($this->request->getPost("opcion")) {
-                case 'nombre':
-                    $criteria = "((Nombre:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'apellido':
-                    $criteria = "((Apellido:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'id':
-                    $criteria = "((RNC_C_dula:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'codigo':
-                    $criteria = "((Quote_Number:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-            }
-        }
         //lista de todas las cotizaciones
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criteria);
         return view("cotizaciones/buscar", ["titulo" => "Buscar Cotización", "cotizaciones" => $cotizaciones]);
@@ -215,14 +196,14 @@ class Cotizaciones extends BaseController
         //libreria para cotizaciones
         $libreria = new LibrariesCotizaciones;
         //obtener datos de la cotizacion
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-        switch ($cotizacion->getFieldValue("Tipo")) {
+        $detalles = $libreria->getRecord("Quotes", $id);
+        switch ($detalles->getFieldValue("Tipo")) {
             case 'Vida':
-                return view('cotizaciones/vida', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('cotizaciones/vida', ["detalles" => $detalles, "libreria" => $libreria]);
                 break;
 
             case 'Auto':
-                return view('cotizaciones/auto', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('cotizaciones/auto', ["detalles" => $detalles, "libreria" => $libreria]);
                 break;
         }
     }
@@ -249,5 +230,61 @@ class Cotizaciones extends BaseController
             unlink($file);
             exit;
         }
+    }
+
+    public function editar($id)
+    {
+        //libreria para cotizaciones
+        $libreria = new LibrariesCotizaciones;
+        //obtener datos de la cotizacion
+        $cotizacion = $libreria->getRecord("Quotes", $id);
+        if ($this->request->getPost()) {
+            //datos generales para crear una cotizacion
+            $registro = [
+                "Nombre" => $this->request->getPost("nombre"),
+                "Apellido" => $this->request->getPost("apellido"),
+                "Fecha_de_nacimiento" => $this->request->getPost("fecha"),
+                "RNC_C_dula" => $this->request->getPost("rnc_cedula"),
+                "Correo_electr_nico" => $this->request->getPost("correo"),
+                "Direcci_n" => $this->request->getPost("direccion"),
+                "Tel_Celular" => $this->request->getPost("telefono"),
+                "Tel_Residencia" => $this->request->getPost("tel_residencia"),
+                "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
+            ];
+            //en caso de haber un codeudor
+            if ($this->request->getPost("nombre_codeudor")) {
+                $codeudor = [
+                    "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
+                    "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
+                    "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
+                    "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
+                    "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
+                    "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
+                    "Fecha_de_nacimiento_codeudor" => $this->request->getPost("fecha_nacimiento_codeudor"),
+                    "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
+                    "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
+                ];
+                //actualiza el array general
+                $registro = array_merge($registro, $codeudor);
+            }
+            //en caso de haber un vehiculo
+            if ($this->request->getPost("chasis")) {
+                $vehiculo = [
+                    "Chasis" => $this->request->getPost("chasis"),
+                    "Color" => $this->request->getPost("color"),
+                    "Placa" => $this->request->getPost("placa"),
+                ];
+                //actualiza el array general
+                $registro = array_merge($registro, $vehiculo);
+            }
+            $libreria->update("Quotes", $id, $registro);
+            //alerta general cuando se edita una cotizacion en el crm
+            session()->setFlashdata('alerta', "¡Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . " editada exitosamente!.");
+            return redirect()->to(site_url("emisiones/emitir/$id"));
+        }
+        return view("cotizaciones/editar", [
+            "titulo" => "Editar Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
+            "cotizacion" => $cotizacion
+        ]);
     }
 }
