@@ -35,9 +35,9 @@ class Zoho
             $response = $moduleIns->getRecord($record_id); // To get module record
             return $response->getData(); // To get response data
         } catch (ZCRMException $ex) {
-            echo $ex->getMessage(); // To get ZCRMException error message
-            echo $ex->getExceptionCode(); // To get ZCRMException error code
-            echo $ex->getFile(); // To get the file name that throws the Exception
+            //echo $ex->getMessage(); // To get ZCRMException error message
+            //echo $ex->getExceptionCode(); // To get ZCRMException error code
+            //echo $ex->getFile(); // To get the file name that throws the Exception
         }
     }
 
@@ -72,9 +72,9 @@ class Zoho
             $response = $moduleIns->searchRecordsByCriteria($criteria, $param_map); // To get module records// $criteria to search for  to search for// $param_map-parameters key-value pair - optional
             return $response->getData(); // To get response data
         } catch (ZCRMException $ex) {
-            echo $ex->getMessage(); // To get ZCRMException error message
-            echo $ex->getExceptionCode(); // To get ZCRMException error code
-            echo $ex->getFile(); // To get the file name that throws the Exception
+            //echo $ex->getMessage(); // To get ZCRMException error message
+            //echo $ex->getExceptionCode(); // To get ZCRMException error code
+            //echo $ex->getFile(); // To get the file name that throws the Exception
         }
     }
 
@@ -85,11 +85,11 @@ class Zoho
             $record->setFieldValue($campo,  $valor); // This function use to set FieldApiName and value similar to all other FieldApis and Custom field
         }
         $responseIns = $record->update(); // to update the record
-        echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
-        echo "Status:" . $responseIns->getStatus(); // To get response status
-        echo "Message:" . $responseIns->getMessage(); // To get response message
-        echo "Code:" . $responseIns->getCode(); // To get status code
-        echo "Details:" . json_encode($responseIns->getDetails());
+        //echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
+        //echo "Status:" . $responseIns->getStatus(); // To get response status
+        //echo "Message:" . $responseIns->getMessage(); // To get response message
+        //echo "Code:" . $responseIns->getCode(); // To get status code
+        //echo "Details:" . json_encode($responseIns->getDetails());
     }
 
     public function createRecords($module_api_name, $registro = array())
@@ -103,11 +103,11 @@ class Zoho
         array_push($records, $record); // pushing the record to the array.
         $responseIn = $moduleIns->createRecords($records); // updating the records.$trigger,$lar_id are optional
         foreach ($responseIn->getEntityResponses() as $responseIns) {
-            echo "HTTP Status Code:" . $responseIn->getHttpStatusCode(); // To get http response code
-            echo "Status:" . $responseIns->getStatus(); // To get response status
-            echo "Message:" . $responseIns->getMessage(); // To get response message
-            echo "Code:" . $responseIns->getCode(); // To get status code
-            echo "Details:" . json_encode($responseIns->getDetails());
+            //echo "HTTP Status Code:" . $responseIn->getHttpStatusCode(); // To get http response code
+            //echo "Status:" . $responseIns->getStatus(); // To get response status
+            //echo "Message:" . $responseIns->getMessage(); // To get response message
+            //echo "Code:" . $responseIns->getCode(); // To get status code
+            //echo "Details:" . json_encode($responseIns->getDetails());
             $details = json_decode(json_encode($responseIns->getDetails()), true);
         }
         return $details["id"];
@@ -117,11 +117,11 @@ class Zoho
     {
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
         $responseIns = $record->uploadAttachment($path); // $filePath - absolute path of the attachment to be uploaded.
-        echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
-        echo "Status:" . $responseIns->getStatus(); // To get response status
-        echo "Message:" . $responseIns->getMessage(); // To get response message
-        echo "Code:" . $responseIns->getCode(); // To get status code
-        echo "Details:" . $responseIns->getDetails()['id'];
+        //echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
+        //echo "Status:" . $responseIns->getStatus(); // To get response status
+        //echo "Message:" . $responseIns->getMessage(); // To get response message
+        //echo "Code:" . $responseIns->getCode(); // To get status code
+        //echo "Details:" . $responseIns->getDetails()['id'];
     }
 
     public function getRecords($module_api_name, $page = 1, $per_page = 200)
@@ -132,9 +132,9 @@ class Zoho
             $response = $moduleIns->getRecords($param_map);
             return $response->getData();
         } catch (ZCRMException $ex) {
-            echo $ex->getMessage(); // To get ZCRMException error message
-            echo $ex->getExceptionCode(); // To get ZCRMException error code
-            echo $ex->getFile(); // To get the file name that throws the Exception
+            //echo $ex->getMessage(); // To get ZCRMException error message
+            //echo $ex->getExceptionCode(); // To get ZCRMException error code
+            //echo $ex->getFile(); // To get the file name that throws the Exception
         }
     }
 
@@ -142,10 +142,10 @@ class Zoho
     {
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
         $responseIns = $record->delete();
-        echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
-        echo "Status:" . $responseIns->getStatus(); // To get response status
-        echo "Message:" . $responseIns->getMessage(); // To get response message
-        echo "Code:" . $responseIns->getCode(); // To get status code
-        echo "Details:" . json_encode($responseIns->getDetails());
+        //echo "HTTP Status Code:" . $responseIns->getHttpStatusCode(); // To get http response code
+        //echo "Status:" . $responseIns->getStatus(); // To get response status
+        //echo "Message:" . $responseIns->getMessage(); // To get response message
+        //echo "Code:" . $responseIns->getCode(); // To get status code
+        //echo "Details:" . json_encode($responseIns->getDetails());
     }
 }

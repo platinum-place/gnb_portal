@@ -1,5 +1,5 @@
-<div class="card-group" style="font-size: small;">
-    <div class="card">
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <b>Nombre</b> <br>
@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <?= $detalles->getFieldValue("Nombre") . " " . $detalles->getFieldValue("Apellido") ?> <br>
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <b>Tel. Residencia</b> <br>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <?= $detalles->getFieldValue("Tel_Residencia") ?> <br>

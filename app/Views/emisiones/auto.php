@@ -47,8 +47,8 @@
 </div>
 
 <h5 class="d-flex justify-content-center bg-primary text-white">COBERTURAS</h5>
-<div class="card-group" style="font-size: small;">
-    <div class="card">
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-title">
                 <b>DAÑOS PROPIOS</b> <br>
@@ -59,8 +59,6 @@
                 Incendio y Robo
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <b>RESPONSABILIDAD CIVIL</b> <br>
                 Daños Propiedad Ajena <br>
@@ -70,14 +68,10 @@
                 Lesiones/Muerte más de 1 Pas
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <b>RIESGOS CONDUCTOR</b> <br>
                 <b>FIANZA JUDICIAL</b>
             </p>
-
-            <hr>
 
             <p class="card-title">
                 <b>COBERTURAS ADICIONALES</b> <br>
@@ -86,8 +80,6 @@
                 En Caso de Accidente
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <b>PRIMA NETA</b> <br>
                 <b>ISC</b> <br>
@@ -95,7 +87,8 @@
             </p>
         </div>
     </div>
-    <div class="card">
+    
+    <div class="card border-0">
         <div class="card-body">
             <?php
             $riesgo_compresivo = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Riesgos_comprensivos') / 100);
@@ -111,8 +104,6 @@
                 RD$ <?= number_format($incendio, 2) ?>
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <br>
                 RD$ <?= number_format($plan->getFieldValue('Da_os_propiedad_ajena'), 2) ?> <br>
@@ -122,14 +113,10 @@
                 RD$ <?= number_format($plan->getFieldValue('Lesiones_muerte_m_s_1_pas'), 2) ?>
             </p>
 
-            <hr>
-
             <p class="card-title">
                 RD$ <?= number_format($plan->getFieldValue('Riesgos_conductor'), 2) ?> <br>
                 RD$ <?= number_format($plan->getFieldValue('Fianza_judicial'), 2) ?>
             </p>
-
-            <hr>
 
             <p class="card-title">
                 <br>
@@ -151,8 +138,6 @@
                 }
                 ?>
             </p>
-
-            <hr>
 
             <p class="card-title">
                 <?php

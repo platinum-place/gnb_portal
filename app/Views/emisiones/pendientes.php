@@ -2,39 +2,6 @@
 
 <?= $this->section('content') ?>
 
-<!-- formulario para buscar usando la api  -->
-<!-- solo es necesario si el usuario es admin porque puede haber mas de 200 registros entre los demas usuarios -->
-<?php if (session('usuario')->getFieldValue("Title") == "Administrador") : ?>
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-search"></i>
-            Busqueda avanzada
-        </div>
-        <div class="card-body">
-            <form class="row" action="<?= site_url("emisiones") ?>" method="post">
-                <div class="col-md-4">
-                    <select class="form-select" name="opcion" required>
-                        <option value="codigo">No. emisión</option>
-                        <option value="nombre">Nombre del cliente</option>
-                        <option value="apellido">Apellido del cliente</option>
-                        <option value="id">RNC/Cédula del cliente</option>
-                    </select>
-                </div>
-
-                <div class="col-4">
-                    <input type="text" class="form-control" name="busqueda" required>
-                </div>
-
-                <div class="col-4">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    |
-                    <a href="<?= site_url("emisiones") ?>" class="btn btn-secondary">Limpiar</a>
-                </div>
-            </form>
-        </div>
-    </div>
-<?php endif ?>
-
 <div class="card mb-4">
     <div class="card-header">
         <i class="fas fa-table me-1"></i>
@@ -124,7 +91,6 @@
                             </div>
                         </div>
                     </div>
-                    <?php $cont++; ?>
                 <?php endforeach ?>
             </tbody>
         </table>

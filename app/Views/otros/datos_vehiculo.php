@@ -1,5 +1,5 @@
-<div class="card-group" style="font-size: small;">
-    <div class="card">
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <b>Marca</b> <br>
@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <?= $detalles->getFieldValue('Marca')->getLookupLabel() ?> <br>
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <b>Chasis</b> <br>
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    <div class="card">
+    <div class="card border-0">
         <div class="card-body">
             <p class="card-text">
                 <?= $detalles->getFieldValue("Chasis") ?> <br>

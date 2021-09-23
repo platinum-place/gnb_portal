@@ -45,8 +45,8 @@
 </div>
 
 <h5 class="d-flex justify-content-center bg-primary text-white">COBERTURAS</h5>
-<div class="card-group" style="font-size: small;">
-    <div class="card">
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
         <div class="card-body">
             <img src="<?= base_url("img/espacio.png") ?>" height="50" width="100">
 
@@ -59,8 +59,6 @@
                 Incendio y Robo
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <b>RESPONSABILIDAD CIVIL</b> <br>
                 Daños Propiedad Ajena <br>
@@ -70,14 +68,10 @@
                 Lesiones/Muerte más de 1 Pas
             </p>
 
-            <hr>
-
             <p class="card-title">
                 <b>RIESGOS CONDUCTOR</b> <br>
                 <b>FIANZA JUDICIAL</b>
             </p>
-
-            <hr>
 
             <p class="card-title">
                 <b>COBERTURAS ADICIONALES</b> <br>
@@ -85,8 +79,6 @@
                 Renta Vehí­culo <br>
                 En Caso de Accidente
             </p>
-
-            <hr>
 
             <p class="card-title">
                 <b>PRIMA NETA</b> <br>
@@ -104,7 +96,7 @@
             $colision = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Colisi_n_y_vuelco') / 100);
             $incendio = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Incendio_y_robo') / 100);
             ?>
-            <div class="card">
+            <div class="card border-0">
                 <div class="card-body">
                     <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getEntityId() . ".png") ?>" height="50" width="100">
                     <p class="card-title">
@@ -116,8 +108,6 @@
                         RD$ <?= number_format($incendio, 2) ?>
                     </p>
 
-                    <hr>
-
                     <p class="card-title">
                         <br>
                         RD$ <?= number_format($plan->getFieldValue('Da_os_propiedad_ajena'), 2) ?> <br>
@@ -127,14 +117,10 @@
                         RD$ <?= number_format($plan->getFieldValue('Lesiones_muerte_m_s_1_pas'), 2) ?>
                     </p>
 
-                    <hr>
-
                     <p class="card-title">
                         RD$ <?= number_format($plan->getFieldValue('Riesgos_conductor'), 2) ?> <br>
                         RD$ <?= number_format($plan->getFieldValue('Fianza_judicial'), 2) ?>
                     </p>
-
-                    <hr>
 
                     <p class="card-title">
                         <br>
@@ -156,8 +142,6 @@
                         }
                         ?>
                     </p>
-
-                    <hr>
 
                     <p class="card-title">
                         RD$ <?= number_format($lineItem->getNetTotal() - $lineItem->getNetTotal() * 0.16, 2) ?> <br>

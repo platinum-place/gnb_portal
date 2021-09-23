@@ -17,7 +17,7 @@
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
                     <th>Suma Asegurado</th>
-                    <th>Vendedor</th>
+                    <th>Referidor</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
@@ -29,7 +29,7 @@
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
                     <th>Suma Asegurado</th>
-                    <th>Vendedor</th>
+                    <th>Referidor</th>
                     <th>Opciones</th>
                 </tr>
             </tfoot>
