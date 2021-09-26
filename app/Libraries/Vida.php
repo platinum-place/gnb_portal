@@ -2,12 +2,87 @@
 
 namespace App\Libraries;
 
+use App\Models\Cotizacion;
+use zcrmsdk\crm\crud\ZCRMRecord;
 use App\Models\Reporte;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class EmisionesAuto extends Emisiones
+class Vida extends Zoho
 {
+    protected function calcular_edad($fecha)
+    {
+        list($ano, $mes, $dia) = explode("-", $fecha);
+        $ano_diferencia  = date("Y") - $ano;
+        $mes_diferencia = date("m") - $mes;
+        $dia_diferencia   = date("d") - $dia;
+        if ($dia_diferencia < 0 || $mes_diferencia < 0)
+            $ano_diferencia--;
+        return $ano_diferencia;
+    }
+
+    public function verificar_limites(Cotizacion $cotizacion, ZCRMRecord $plan)
+    {
+        //verificar limite de plazo
+        if ($cotizacion->plazo > $plan->getFieldValue('Plazo_max')) {
+            return "El plazo es mayor al limite establecido.";
+        }
+
+        //verificar limite suma
+        if ($cotizacion->suma > $plan->getFieldValue('Suma_asegurada_max')) {
+            return "La suma asegurada es mayor al limite establecido.";
+        }
+    }
+
+    public function calcular_prima(Cotizacion $cotizacion, ZCRMRecord $plan)
+    {
+        //inicializar valores vacios
+        $deudor = 0;
+        $codeudor = 0;
+
+        //encontrar la tasa
+        $criterio = "Plan:equals:" . $plan->getEntityId();
+        $tasas = $this->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
+
+        foreach ((array)$tasas as $tasa) {
+            //verificar limite de edad
+            if (
+                $this->calcular_edad($cotizacion->fecha_deudor) > $tasa->getFieldValue('Edad_min')
+                and
+                $this->calcular_edad($cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
+            ) {
+                $deudor = $tasa->getFieldValue('Name') / 100;
+            } else {
+                return "La edad del deudor no esta dentro del limite permitido.";
+            }
+
+            if (!empty($cotizacion->fecha_codeudor)) {
+                if (
+                    $this->calcular_edad($cotizacion->fecha_codeudor) > $tasa->getFieldValue('Edad_min')
+                    and
+                    $this->calcular_edad($cotizacion->fecha_codeudor) < $tasa->getFieldValue('Edad_max')
+                ) {
+                    $codeudor = $tasa->getFieldValue('Name') / 100;
+                } else {
+                    return "La edad del codeudor no esta dentro del limite permitido.";
+                }
+            }
+        }
+
+        //calcular prima un deudor
+        $prima_deudor = ($cotizacion->suma / 1000) * $deudor;
+
+        //calcular prima si existe un codeudor
+        if (!empty($cotizacion->fecha_codeudor)) {
+            $prima_codeudor = ($cotizacion->suma / 1000) * ($codeudor - $deudor);
+        } else {
+            $prima_codeudor = 0;
+        }
+
+        //retornar la union de ambas primas
+        return $prima_deudor + $prima_codeudor;
+    }
+
     public function generar_reporte(Reporte $reporte)
     {
         //iniciar las librerias de la api para generar excel
@@ -33,7 +108,7 @@ class EmisionesAuto extends Emisiones
 
         //titulos del reporte
         $sheet->setCellValue('D1', session("usuario")->getFieldValue("Account_Name")->getLookupLabel());
-        $sheet->setCellValue('D2', 'EMISIONES PLAN AUTO');
+        $sheet->setCellValue('D2', 'EMISIONES PLAN VIDA');
         $sheet->setCellValue('D4', 'Generado por:');
         $sheet->setCellValue('E4', session("usuario")->getFieldValue("First_Name") . " " . session("usuario")->getFieldValue("Last_Name"));
         $sheet->setCellValue('D5', 'Desde:');
@@ -49,19 +124,17 @@ class EmisionesAuto extends Emisiones
         $sheet->setCellValue('E12', 'Aseguradora');
         $sheet->setCellValue('F12', 'Suma asegurada');
         $sheet->setCellValue('G12', 'Prima');
-        $sheet->setCellValue('H12', 'Cliente');
+        $sheet->setCellValue('H12', 'Deudor');
         $sheet->setCellValue('I12', 'RNC/Cédula');
         $sheet->setCellValue('J12', 'Tel. Residencia');
         $sheet->setCellValue('K12', 'Fecha de nacimiento');
         $sheet->setCellValue('L12', 'Dirección');
-        $sheet->setCellValue('M12', 'Marca');
-        $sheet->setCellValue('N12', 'Modelo');
-        $sheet->setCellValue('O12', 'Año');
-        $sheet->setCellValue('P12', 'Color');
-        $sheet->setCellValue('Q12', 'Placa');
-        $sheet->setCellValue('R12', 'Chasis');
-        $sheet->setCellValue('S12', 'Tipo vehículo');
-        $sheet->setCellValue('T12', 'Estado vehículo');
+        $sheet->setCellValue('M12', 'Codeudor');
+        $sheet->setCellValue('N12', 'RNC/Cédula Codeudor');
+        $sheet->setCellValue('O12', 'Tel. Residencia Codeudor');
+        $sheet->setCellValue('P12', 'Fecha de nacimiento Codeudor');
+        $sheet->setCellValue('Q12', 'Dirección Codeudor');
+        $sheet->setCellValue('R12', 'Plazo');
 
         //inicializar contadores
         $cont = 1;
@@ -88,22 +161,20 @@ class EmisionesAuto extends Emisiones
                 $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Suma_asegurada'));
                 $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Prima'));
 
-                //valores relacionados al cliente
+                //valores relacionados al deudor
                 $sheet->setCellValue('H' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
                 $sheet->setCellValue('I' . $pos, $emision->getFieldValue('RNC_C_dula'));
                 $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Tel_Residencia'));
                 $sheet->setCellValue('K' . $pos, $emision->getFieldValue('Fecha_de_nacimiento'));
                 $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Direcci_n'));
 
-                //valores relacionados al vehiculo
-                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Marca')->getLookupLabel());
-                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('Modelo')->getLookupLabel());
-                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('A_o'));
-                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Color'));
-                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Placa'));
-                $sheet->setCellValue('R' . $pos, $emision->getFieldValue('Chasis'));
-                $sheet->setCellValue('S' . $pos, $emision->getFieldValue('Tipo_veh_culo'));
-                $sheet->setCellValue('T' . $pos, $emision->getFieldValue('Condiciones'));
+                //valores relacionados al codeudor
+                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Nombre_codeudor') . " " . $emision->getFieldValue('Apellido_codeudor'));
+                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('RNC_C_dula_codeudor'));
+                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Tel_Residencia_codeudor'));
+                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Fecha_de_nacimiento_codeudor'));
+                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Direcci_n_codeudor'));
+                $sheet->setCellValue('R' . $pos, $emision->getFieldValue('Plazo'));
 
                 //contadores
                 $cont++;
@@ -114,7 +185,7 @@ class EmisionesAuto extends Emisiones
         //cambiar el color de fondo de un rango de celdas
         $spreadsheet
             ->getActiveSheet()
-            ->getStyle('A12:T12')
+            ->getStyle('A12:R12')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
@@ -122,7 +193,7 @@ class EmisionesAuto extends Emisiones
 
         //cambiar el color de fuente de un rango de celdas
         $spreadsheet->getActiveSheet()
-            ->getStyle('A12:T12')
+            ->getStyle('A12:R12')
             ->getFont()
             ->getColor()
             ->setARGB("FFFFFF");
@@ -140,14 +211,12 @@ class EmisionesAuto extends Emisiones
         $sheet->getColumnDimension('J')->setWidth(20);
         $sheet->getColumnDimension('K')->setWidth(20);
         $sheet->getColumnDimension('L')->setWidth(20);
-        $sheet->getColumnDimension('M')->setWidth(20);
-        $sheet->getColumnDimension('N')->setWidth(20);
-        $sheet->getColumnDimension('O')->setWidth(20);
-        $sheet->getColumnDimension('P')->setWidth(20);
-        $sheet->getColumnDimension('Q')->setWidth(20);
-        $sheet->getColumnDimension('R')->setWidth(20);
-        $sheet->getColumnDimension('T')->setWidth(20);
-        $sheet->getColumnDimension('S')->setWidth(20);
+        $sheet->getColumnDimension('M')->setWidth(30);
+        $sheet->getColumnDimension('N')->setWidth(30);
+        $sheet->getColumnDimension('O')->setWidth(30);
+        $sheet->getColumnDimension('P')->setWidth(30);
+        $sheet->getColumnDimension('Q')->setWidth(30);
+        $sheet->getColumnDimension('R')->setWidth(30);
 
         //ruta del excel
         $doc = WRITEPATH . 'uploads/reporte.xlsx';

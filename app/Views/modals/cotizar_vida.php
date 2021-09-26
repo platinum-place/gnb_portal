@@ -1,8 +1,8 @@
-<div class="modal fade" id="cotizar_vida" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="cotizar_vida" tabindex="-1" aria-labelledby="labelvida" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Cotización de Plan Vida</h5>
+        <h5 class="modal-title" id="labelvida">Cotización de Plan Vida</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -14,7 +14,7 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Fecha de Nacimiento Codeudor</label>
+            <label class="form-label">Fecha de Nacimiento Codeudor (Si aplica)</label>
             <input type="date" class="form-control" id="codeudor" name="codeudor">
           </div>
 

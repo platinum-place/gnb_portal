@@ -15,9 +15,11 @@
                             <th scope="col">Comentario</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         <!-- contador para saber si existen valores vacios, para no permitir continuar de ser el caso -->
                         <?php $cont = 0 ?>
+
                         <?php foreach ($cotizacion->planes as $plan) : ?>
                             <tr>
                                 <td><?= $plan["aseguradora"] ?></td>
@@ -33,9 +35,10 @@
                         <?php endforeach ?>
                     </tbody>
                 </table>
+
                 <?php if ($cont > 0) : ?>
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completar_cotizacion">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#completar_<?= $cotizacion->tipo ?>">
                         Continuar
                     </button>
                 <?php endif ?>
@@ -92,9 +95,18 @@
 
 <!-- Formularios a utilizar -->
 <?= $this->section('modal') ?>
+
 <!-- Modal para completar la cotizacion -->
 <?php if (!empty($cotizacion)) : ?>
-    <?= $this->include('modals/completar_cotizacion') ?>
+    <?php if ($cotizacion->tipo == "auto") : ?>
+        <?= $this->include('modals/completar_auto') ?>
+
+    <?php elseif ($cotizacion->tipo == "vida") : ?>
+        <?= $this->include('modals/completar_vida') ?>
+
+
+
+    <?php endif ?>
 <?php endif ?>
 <!-- Modal para auto -->
 <?= $this->include('modals/cotizar_auto') ?>

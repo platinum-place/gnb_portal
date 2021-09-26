@@ -29,7 +29,7 @@
 </div>
 
 <!-- cliente -->
-<h5 class="d-flex justify-content-center bg-primary text-white">CLIENTE</h5>
+<h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL CLIENTE</h5>
 <?= $this->include('otros/datos_cliente') ?>
 
 <div class="col-12">
@@ -37,7 +37,7 @@
 </div>
 
 <!-- vehiculo -->
-<h5 class="d-flex justify-content-center bg-primary text-white">VEHÍCULO</h5>
+<h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL VEHÍCULO</h5>
 <?= $this->include('otros/datos_vehiculo') ?>
 
 <div class="col-12">
@@ -48,7 +48,7 @@
 <div class="card-group border" style="font-size: small;">
     <div class="card border-0">
         <div class="card-body">
-            <img src="<?= base_url("img/espacio.png") ?>" height="50" width="100">
+            <img src="<?= base_url("img/espacio.png") ?>" height="50" width="150">
 
             <p class="card-title">
                 <b>DAÑOS PROPIOS</b> <br>
@@ -98,7 +98,7 @@
             ?>
             <div class="card border-0">
                 <div class="card-body">
-                    <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getEntityId() . ".png") ?>" height="50" width="100">
+                    <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getEntityId() . ".png") ?>" height="50" width="150">
                     <p class="card-title">
                         <br>
                         RD$<?= number_format($riesgo_compresivo, 2) ?><br>

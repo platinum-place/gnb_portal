@@ -2,8 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Auto;
 use App\Libraries\Emisiones as LibrariesEmisiones;
-use App\Libraries\EmisionesAuto;
+use App\Libraries\Vida;
 use App\Models\Reporte;
 
 class Emisiones extends BaseController
@@ -145,10 +146,7 @@ class Emisiones extends BaseController
         }
 
         //vista
-        return view("emisiones/emitir", [
-            "titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
-            "cotizacion" => $cotizacion
-        ]);
+        return view("emisiones/emitir", ["titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),  "cotizacion" => $cotizacion]);
     }
 
     public function descargar($id)
@@ -171,6 +169,16 @@ class Emisiones extends BaseController
         switch ($detalles->getFieldValue("Tipo")) {
             case 'Auto':
                 return view('emisiones/auto', [
+                    "detalles" => $detalles,
+                    "plan" => $plan,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'Vida':
+                return view('emisiones/vida', [
                     "detalles" => $detalles,
                     "plan" => $plan,
                     "neta" => $neta,
@@ -225,64 +233,68 @@ class Emisiones extends BaseController
             $reporte->hasta = $this->request->getPost("hasta");
             $reporte->tipo = $this->request->getPost("tipo");
 
+            //decidir que tipo de libreria sera utilizada
             switch ($this->request->getPost("tipo")) {
-                case 'Incendio':
-
+                case 'Vida':
+                    //libreria para emisiones
+                    $libreria = new Vida;
                     break;
 
                 case 'Auto':
                     //libreria para emisiones
-                    $libreria = new EmisionesAuto;
-
-                    //verifica si existen reportes
-                    //en caso de si haber emisiones, el array de emisiones ya tendra la primera pagina de objetos
-                    $libreria->emisiones_existentes($reporte);
-
-                    //si no encontro registros sale de la funcion
-                    if (empty($reporte->emisiones)) {
-                        session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-                        return redirect()->to(site_url("reportes"));
-                    } else {
-                        //iniciar el contador desde la segunda pagina
-                        $pag = 2;
-
-                        //rellenar el array con todos los objetos posibles
-                        do {
-                            //contamos la cantidad de objetos
-                            $cantidad_actual = count($reporte->emisiones);
-
-                            //si no existe una segunda pagina de objetos, entonces ya tendran los necesarios
-                            $libreria->emisiones_existentes($reporte, $pag);
-
-                            //volmeos a contar los objetos
-                            $cantidad_aumentada = count($reporte->emisiones);
-
-                            //si el array aumento significa que existen mas objetos que buscar
-                            //si no debemos salir
-                            if ($cantidad_aumentada > $cantidad_actual) {
-                                $pag++;
-                            } else {
-                                $pag = 0;
-                            }
-                        } while ($pag > 0);
-
-                        $ruta_reporte = $libreria->generar_reporte($reporte);
-
-                        //forzar al navegador a descargar el archivo
-                        //es necesario no tener echo antes de descargar
-                        header('Content-Description: File Transfer');
-                        header('Content-Type: application/octet-stream');
-                        header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
-                        header('Expires: 0');
-                        header('Cache-Control: must-revalidate');
-                        header('Pragma: public');
-                        header('Content-Length: ' . filesize($ruta_reporte));
-                        readfile($ruta_reporte);
-                        //eliminar el archivo descargado
-                        unlink($ruta_reporte);
-                    }
-
+                    $libreria = new Auto;
                     break;
+            }
+
+            //verifica si existen reportes
+            //en caso de si haber emisiones, el array de emisiones ya tendra la primera pagina de objetos
+            //la libreria no importa porque solo es necesario la extension de la api zoho
+            $reporte->emisiones_existentes($libreria);
+
+            //si no encontro registros sale de la funcion
+            if (empty($reporte->emisiones)) {
+                session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
+                return redirect()->to(site_url("emisiones/reportes"));
+            } else {
+                //iniciar el contador desde la segunda pagina
+                $pag = 2;
+
+                //rellenar el array con todos los objetos posibles
+                do {
+                    //contamos la cantidad de objetos
+                    $cantidad_actual = count($reporte->emisiones);
+
+                    //si no existe una segunda pagina de objetos, entonces ya tendran los necesarios
+                    //la libreria no importa porque solo es necesario la extension de la api zoho
+                    $reporte->emisiones_existentes($libreria, $pag);
+
+                    //volmeos a contar los objetos
+                    $cantidad_aumentada = count($reporte->emisiones);
+
+                    //si el array aumento significa que existen mas objetos que buscar
+                    //si no debemos salir
+                    if ($cantidad_aumentada > $cantidad_actual) {
+                        $pag++;
+                    } else {
+                        $pag = 0;
+                    }
+                } while ($pag > 0);
+
+                //crear reporte segun la libreria elegida
+                $ruta_reporte = $libreria->generar_reporte($reporte);
+
+                //forzar al navegador a descargar el archivo
+                //es necesario no tener echo antes de descargar
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($ruta_reporte));
+                readfile($ruta_reporte);
+                //eliminar el archivo descargado
+                unlink($ruta_reporte);
             }
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Libraries;
 
-use App\Models\Reporte;
 use zcrmsdk\crm\crud\ZCRMRecord;
 use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
@@ -90,22 +89,5 @@ class Emisiones extends Zoho
         }
 
         return $details["id"];
-    }
-
-    //verifica si existen reportes del tipo definido
-    public function emisiones_existentes(Reporte $reporte, $pag = 1, $cant = 200)
-    {
-        //en caso de que el usuario sea admin
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "((Tipo:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . "))";
-        } else {
-            $criteria = "((Tipo:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
-
-        //genera emisiones
-        if ($emisiones = $this->searchRecordsByCriteria("Sales_Orders", $criteria, $pag, $cant)) {
-            //actumula las emisiones debajo de las existentes
-            $reporte->emisiones = array_merge($reporte->emisiones, $emisiones);
-        }
     }
 }

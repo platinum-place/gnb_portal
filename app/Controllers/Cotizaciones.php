@@ -3,105 +3,58 @@
 namespace App\Controllers;
 
 use App\Libraries\Cotizaciones as LibrariesCotizaciones;
-use App\Libraries\CotizacionesAuto;
-use App\Models\Cotizacion;
 
 class Cotizaciones extends BaseController
 {
     public function index()
     {
-        $cotizaciones = new LibrariesCotizaciones;
-        return view("cotizaciones/index", [
-            "titulo" => "Cotizar",
-            "marcas" => $cotizaciones->lista_marcas()
-        ]);
+        //cargar la libreria para hacer uso de una funcion de la api
+        $libreria = new LibrariesCotizaciones;
+        //libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
+        $marcas = $libreria->getRecords("Marcas");
+        //formatear el resultado para ordenarlo alfabeticamente en forma descendente
+        asort($marcas);
+        return view("cotizaciones/index", ["titulo" => "Cotizar", "marcas" => $marcas]);
     }
 
     //funcion post
     public function mostrarModelos()
     {
-        $cotizaciones = new LibrariesCotizaciones;
+        //cargar la libreria para hacer uso de una funcion de la api
+        $libreria = new LibrariesCotizaciones;
+
+        //inicializar el contador
         $pag = 1;
+
+        //criterio de aseguir por la api
+        $criteria = "Marca:equals:" . $this->request->getPost("marcaid");
+
+        //repetir en secuencia para obtener todo los modelos de una misma marca, 
+        //teniendo en cuenta que pueden ser mas de 200 en algunos casos
+        // por tanto en necesario recontar la sentencia pero variando en paginas para superar el limite de la api
         do {
-            $modelos = $cotizaciones->lista_modelos($this->request->getPost("marcaid"), $pag);
+
+            //obtener los modelos empezando por la primera pagina
+            $modelos =  $libreria->searchRecordsByCriteria("Modelos", $criteria, $pag);
+
+            //en caso de encontrar valores
             if (!empty($modelos)) {
+
+                //formatear el resultado para ordenarlo alfabeticamente en forma descendente
                 asort($modelos);
+
+                //aumentar el contador
                 $pag++;
+
+                //mostrar los valores en forma de option para luego ser mostrados en dentro de un select
                 foreach ($modelos as $modelo) {
                     echo '<option value="' . $modelo->getEntityId() . "," . $modelo->getFieldValue('Tipo') . '">' . strtoupper($modelo->getFieldValue('Name')) . '</option>';
                 }
             } else {
+                //igualar a 0 el contador para salir del ciclo
                 $pag = 0;
             }
         } while ($pag > 0);
-    }
-
-    //funcion post
-    public function cotizarAuto()
-    {
-        //datos relacionados al modelo, dividios en un array
-        $modelo = explode(",", $this->request->getPost("modelo"));
-        //libreria para cotizar auto
-        $libreria = new CotizacionesAuto;
-        //modelo para cotizacion
-        $cotizacion = new Cotizacion;
-        //asignando valores al objeto
-        $cotizacion->tipo = "Auto";
-        $cotizacion->modeloid = $modelo[0];
-        $cotizacion->modelotipo = $modelo[1];
-        $cotizacion->suma = $this->request->getPost("suma");
-        $cotizacion->ano = $this->request->getPost("ano");
-        $cotizacion->uso = $this->request->getPost("uso");
-        $cotizacion->plan = $this->request->getPost("plan");
-        $cotizacion->estado = $this->request->getPost("estado");
-        $cotizacion->marcaid = $this->request->getPost("marca");
-        //planes relacionados al banco
-        $planes = $libreria->lista_planes("Auto");
-        foreach ($planes as $plan) {
-            //inicializacion de variables
-            $comentario = "";
-            $prima = 0;
-            //verificaciones
-            $comentario = $libreria->verificar_limites($cotizacion, $plan);
-            $comentario = $libreria->verificar_restringido($cotizacion, $plan);
-            //si no hubo un excepcion
-            if (empty($comentario)) {
-                //calcular tasa
-                $tasa = $libreria->calcular_tasa($cotizacion, $plan);
-                //calcular recargo
-                $recargo = $libreria->calcular_recargo($cotizacion, $plan);
-                //calcular prima
-                $prima = $libreria->calcular_prima($cotizacion, $tasa, $recargo);
-                //si el valor de la prima es muy bajo
-                if ($prima > 0 and $prima < $plan->getFieldValue('Prima_m_nima')) {
-                    $prima = $plan->getFieldValue('Prima_m_nima');
-                }
-                //en caso de ser mensual
-                if ($cotizacion->plan == "Mensual full") {
-                    $prima = $prima / 12;
-                }
-                //en caso de haber algun problema
-                if ($prima == 0) {
-                    $comentario = "No existen tasas para el año o tipo del vehículo.";
-                }
-            }
-            //lista con los resultados de cada calculo
-            $cotizacion->planes[] = [
-                "aseguradora" => $plan->getFieldValue('Vendor_Name')->getLookupLabel(),
-                "aseguradoraid" => $plan->getFieldValue('Vendor_Name')->getEntityId(),
-                "planid" => $plan->getEntityId(),
-                "prima" => round($prima - ($prima * 0.16)),
-                "neta" => round($prima * 0.16),
-                "total" => round($prima),
-                "suma" =>  $cotizacion->suma,
-                "comentario" => $comentario
-            ];
-        }
-        session()->setFlashdata('alerta', '¡Cotización creada exitosamente! Para descargar la cotización, haz clic en "Continuar" y completa el formulario.');
-        //valores de la vista, en caso de querer hacer otra cotizacion
-        $marcas = $libreria->getRecords("Marcas");
-        asort($marcas);
-        return view("cotizaciones/index", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
     }
 
     public function cotizar()
@@ -181,11 +134,13 @@ class Cotizaciones extends BaseController
     {
         //libreria para cotizaciones
         $libreria = new LibrariesCotizaciones;
+
         if (session('usuario')->getFieldValue("Title") == "Administrador") {
             $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
         } else {
             $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
         }
+
         //lista de todas las cotizaciones
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criteria);
         return view("cotizaciones/buscar", ["titulo" => "Buscar Cotización", "cotizaciones" => $cotizaciones]);
@@ -195,8 +150,10 @@ class Cotizaciones extends BaseController
     {
         //libreria para cotizaciones
         $libreria = new LibrariesCotizaciones;
+        
         //obtener datos de la cotizacion
         $detalles = $libreria->getRecord("Quotes", $id);
+
         switch ($detalles->getFieldValue("Tipo")) {
             case 'Vida':
                 return view('cotizaciones/vida', ["detalles" => $detalles, "libreria" => $libreria]);
@@ -212,11 +169,14 @@ class Cotizaciones extends BaseController
     {
         //libreria para cotizaciones
         $libreria = new LibrariesCotizaciones;
+
         //obtener los todos los adjuntos del plan, normalmente es solo uno
         $attachments = $libreria->getAttachments("Products", $id);
+
         foreach ($attachments as $attchmentIns) {
             //descargar un documento en el servidor local
             $file = $libreria->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
+
             //forzar al navegador a descargar el archivo
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
@@ -236,8 +196,10 @@ class Cotizaciones extends BaseController
     {
         //libreria para cotizaciones
         $libreria = new LibrariesCotizaciones;
+
         //obtener datos de la cotizacion
         $cotizacion = $libreria->getRecord("Quotes", $id);
+
         if ($this->request->getPost()) {
             //datos generales para crear una cotizacion
             $registro = [
@@ -251,6 +213,7 @@ class Cotizaciones extends BaseController
                 "Tel_Residencia" => $this->request->getPost("tel_residencia"),
                 "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
             ];
+
             //en caso de haber un codeudor
             if ($this->request->getPost("nombre_codeudor")) {
                 $codeudor = [
@@ -260,13 +223,14 @@ class Cotizaciones extends BaseController
                     "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
                     "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
                     "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
-                    "Fecha_de_nacimiento_codeudor" => $this->request->getPost("fecha_nacimiento_codeudor"),
                     "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
                     "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
                 ];
+                
                 //actualiza el array general
                 $registro = array_merge($registro, $codeudor);
             }
+
             //en caso de haber un vehiculo
             if ($this->request->getPost("chasis")) {
                 $vehiculo = [
@@ -274,14 +238,19 @@ class Cotizaciones extends BaseController
                     "Color" => $this->request->getPost("color"),
                     "Placa" => $this->request->getPost("placa"),
                 ];
+
                 //actualiza el array general
                 $registro = array_merge($registro, $vehiculo);
             }
+
+            //agregar los cambios al registro en el crm
             $libreria->update("Quotes", $id, $registro);
             //alerta general cuando se edita una cotizacion en el crm
             session()->setFlashdata('alerta', "¡Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . " editada exitosamente!.");
+            
             return redirect()->to(site_url("emisiones/emitir/$id"));
         }
+
         return view("cotizaciones/editar", [
             "titulo" => "Editar Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
             "cotizacion" => $cotizacion

@@ -2,31 +2,37 @@
 
 namespace App\Controllers;
 
+use App\Libraries\Auto as LibrariesAuto;
 use App\Libraries\Cotizaciones;
-use App\Libraries\Vida as LibrariesVida;
 use App\Models\Cotizacion;
 
-class Vida extends BaseController
+class Auto extends BaseController
 {
     //funcion post
     public function cotizar()
     {
         //libreria para cotizar
-        $libreria = new LibrariesVida;
+        $libreria = new LibrariesAuto;
 
         //modelo para cotizacion
         $cotizacion = new Cotizacion;
 
-        //instanciar el modelo de cotizacion y solo usar los valores relacionados
-        $cotizacion->plan = "Vida";
-        $cotizacion->fecha_deudor = $this->request->getPost("deudor");
-        $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
-        $cotizacion->plazo = $this->request->getPost("plazo");
+        //datos relacionados al modelo, dividios en un array
+        $modelo = explode(",", $this->request->getPost("modelo"));
+
+        //asignando valores al objeto
+        $cotizacion->tipo = "auto";
+        $cotizacion->modeloid = $modelo[0];
+        $cotizacion->modelotipo = $modelo[1];
         $cotizacion->suma = $this->request->getPost("suma");
-        $cotizacion->tipo = "vida";
+        $cotizacion->ano = $this->request->getPost("ano");
+        $cotizacion->uso = $this->request->getPost("uso");
+        $cotizacion->plan = $this->request->getPost("plan");
+        $cotizacion->estado = $this->request->getPost("estado");
+        $cotizacion->marcaid = $this->request->getPost("marca");
 
         //planes relacionados al banco
-        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Vida))";
+        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Auto))";
         $planes =  $libreria->searchRecordsByCriteria("Products", $criterio);
 
         foreach ($planes as $plan) {
@@ -36,16 +42,32 @@ class Vida extends BaseController
 
             //verificaciones
             $comentario = $libreria->verificar_limites($cotizacion, $plan);
+            $comentario = $libreria->verificar_restringido($cotizacion, $plan);
 
             //si no hubo un excepcion
             if (empty($comentario)) {
+                //calcular tasa
+                $tasa = $libreria->calcular_tasa($cotizacion, $plan);
+
+                //calcular recargo
+                $recargo = $libreria->calcular_recargo($cotizacion, $plan);
+
                 //calcular prima
-                $prima = $libreria->calcular_prima($cotizacion, $plan);
+                $prima = $libreria->calcular_prima($cotizacion, $tasa, $recargo);
+
+                //si el valor de la prima es muy bajo
+                if ($prima > 0 and $prima < $plan->getFieldValue('Prima_m_nima')) {
+                    $prima = $plan->getFieldValue('Prima_m_nima');
+                }
+
+                //en caso de ser mensual
+                if ($cotizacion->plan == "Mensual full") {
+                    $prima = $prima / 12;
+                }
 
                 //en caso de haber algun problema
-                if (is_string($prima)) {
-                    $comentario = $prima;
-                    $prima = 0;
+                if ($prima == 0) {
+                    $comentario = "No existen tasas para el año o tipo del vehículo.";
                 }
             }
 
@@ -79,8 +101,10 @@ class Vida extends BaseController
     {
         //pasa la tabla de cotizacion en array para agregarla al registro
         $planes = json_decode($this->request->getPost("planes"), true);
+
         //datos generales para crear una cotizacion
         $fecha_limite = date("Y-m-d", strtotime(date("Y-m-d") . "+ 10 days"));
+
         $registro = [
             "Subject" => "Cotización",
             "Valid_Till" => $fecha_limite,
@@ -96,26 +120,18 @@ class Vida extends BaseController
             "Tel_Residencia" => $this->request->getPost("tel_residencia"),
             "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
             "Plan" => $this->request->getPost("plan"),
-            "Tipo" =>  $this->request->getPost("tipo"),
+            "Tipo" =>  "Auto",
             "Suma_asegurada" => $this->request->getPost("suma"),
-            "Plazo" => $this->request->getPost("plazo")
+            "A_o" => $this->request->getPost("ano"),
+            "Marca" => $this->request->getPost("marcaid"),
+            "Modelo" => $this->request->getPost("modeloid"),
+            "Uso" => $this->request->getPost("uso"),
+            "Tipo_veh_culo" => $this->request->getPost("modelotipo"),
+            "Chasis" => $this->request->getPost("chasis"),
+            "Color" => $this->request->getPost("color"),
+            "Placa" => $this->request->getPost("placa"),
+            "Condiciones" => $this->request->getPost("estado")
         ];
-        //en caso de haber un codeudor
-        if ($this->request->getPost("nombre_codeudor")) {
-            $codeudor = [
-                "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
-                "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
-                "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
-                "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
-                "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
-                "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
-                "Fecha_de_nacimiento_codeudor" => $this->request->getPost("fecha_codeudor"),
-                "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
-                "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
-            ];
-            //actualiza el array general
-            $registro = array_merge($registro, $codeudor);
-        }
 
         //libreria para cotizaciones
         $libreria = new Cotizaciones;
