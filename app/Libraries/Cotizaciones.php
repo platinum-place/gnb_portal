@@ -8,6 +8,18 @@ use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
 
 class Cotizaciones extends Zoho
 {
+    public function lista()
+    {
+        if (session('usuario')->getFieldValue("Title") == "Administrador") {
+            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
+        } else {
+            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
+        }
+
+        //lista de todas las cotizaciones
+       return $this->searchRecordsByCriteria("Quotes", $criteria);
+    }
+
     //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...
     //funciones del sdk relacionadas al inventario y impuestos
     public function crear_cotizacion($cotizacion, array $planes)

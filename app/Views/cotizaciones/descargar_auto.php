@@ -30,7 +30,7 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL CLIENTE</h5>
-<?= $this->include('otros/datos_cliente') ?>
+<?= $this->include('layouts/datos_cliente') ?>
 
 <div class="col-12">
     &nbsp;
@@ -38,7 +38,7 @@
 
 <!-- vehiculo -->
 <h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL VEHÍCULO</h5>
-<?= $this->include('otros/datos_vehiculo') ?>
+<?= $this->include('layouts/datos_vehiculo') ?>
 
 <div class="col-12">
     &nbsp;

@@ -4,7 +4,7 @@ namespace App\Libraries;
 
 use App\Models\Cotizacion;
 
-class Vida extends Cotizaciones
+class Desempleo extends Cotizaciones
 {
     protected function calcular_edad($fecha)
     {
@@ -30,11 +30,11 @@ class Vida extends Cotizaciones
         }
     }
 
-    public function calcular_prima(Cotizacion $cotizacion, $plan)
+    public function calcular_prima(Cotizacion $cotizacion,$plan)
     {
         //inicializar valores vacios
-        $deudor = 0;
-        $codeudor = 0;
+        $vida = 0;
+        $desempleo = 0;
 
         //encontrar la tasa
         $criterio = "Plan:equals:" . $plan->getEntityId();
@@ -47,42 +47,24 @@ class Vida extends Cotizaciones
                 and
                 $this->calcular_edad($cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
             ) {
-                $deudor = $tasa->getFieldValue('Name') / 100;
+                $vida = $tasa->getFieldValue('Name') / 100;
+                $desempleo = $tasa->getFieldValue('Desempleo');
             } else {
                 return "La edad del deudor no esta dentro del limite permitido.";
             }
-
-            if (!empty($cotizacion->fecha_codeudor)) {
-                if (
-                    $this->calcular_edad($cotizacion->fecha_codeudor) > $tasa->getFieldValue('Edad_min')
-                    and
-                    $this->calcular_edad($cotizacion->fecha_codeudor) < $tasa->getFieldValue('Edad_max')
-                ) {
-                    $codeudor = $tasa->getFieldValue('Name') / 100;
-                } else {
-                    return "La edad del codeudor no esta dentro del limite permitido.";
-                }
-            }
         }
-
-        //calcular prima un deudor
-        $prima_deudor = ($cotizacion->suma / 1000) * $deudor;
-
-        //calcular prima si existe un codeudor
-        if (!empty($cotizacion->fecha_codeudor)) {
-            $prima_codeudor = ($cotizacion->suma / 1000) * ($codeudor - $deudor);
-        } else {
-            $prima_codeudor = 0;
-        }
+        //calcular prima
+        $prima_vida = ($cotizacion->suma / 1000) * $vida;
+        $prima_desempleo = ($cotizacion->cuota / 1000) * $desempleo;
 
         //retornar la union de ambas primas
-        return $prima_deudor + $prima_codeudor;
+        return $prima_vida + $prima_desempleo;
     }
 
     public function cotizar(Cotizacion $cotizacion)
     {
         //planes relacionados al banco
-        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Vida))";
+        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Desempleo))";
         $planes =  $this->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$planes as $plan) {

@@ -8,11 +8,6 @@ use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
 
 class Emisiones extends Zoho
 {
-    public $lista = array();
-    public $polizas = 0;
-    public $vencidas = 0;
-    public $pendiente = 0;
-
     public function lista($pag = 1, $cantidad = 200)
     {
         //en caso de que el usuario sea admin
@@ -24,35 +19,6 @@ class Emisiones extends Zoho
 
         //retornar todas las emisiones
         return $this->searchRecordsByCriteria("Sales_Orders", $criterio, $pag, $cantidad);
-    }
-
-    public function resumen()
-    {
-        //obtener las emisiones
-        $emisiones = $this->lista();
-
-        foreach ((array)$emisiones as $emision) {
-            //filtrar por  mes y año actual
-            if (date("Y-m", strtotime($emision->getCreatedTime())) == date("Y-m")) {
-                foreach ($emision->getLineItems() as $lineItem) {
-                    //contador del nombre de las aseguradoras
-                    $this->lista[] =  $lineItem->getDescription();
-                }
-
-                //contador en general
-                $this->polizas++;
-
-                //contador para las emisiones que aun no ha sido revisadas
-                if ($emision->getFieldValue('Status') == "Pendiente") {
-                    $this->pendiente++;
-                }
-            }
-
-            //contador para las emisiones que vencen en el mes y año actual
-            if (date("Y-m", strtotime($emision->getFieldValue('Due_Date'))) == date("Y-m")) {
-                $this->vencidas++;
-            }
-        }
     }
 
     public function crear_emision($emision, $plan)

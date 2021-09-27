@@ -28,7 +28,7 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL DEUDOR</h5>
-<?= $this->include('otros/datos_cliente') ?>
+<?= $this->include('layouts/datos_cliente') ?>
 
 <?php if (!empty($detalles->getFieldValue("Nombre_codeudor"))) : ?>
     <div class="col-12">
@@ -103,7 +103,6 @@
 
             <p class="card-title">
                 <b>Suma Asegurada</b> <br>
-
                 <b>Plazo</b>
             </p>
 
@@ -132,7 +131,6 @@
 
                     <p class="card-title">
                         RD<?= number_format($detalles->getFieldValue("Suma_asegurada"), 2) ?> <br>
-
                         <?= $detalles->getFieldValue("Plazo") ?> meses
                     </p>
 

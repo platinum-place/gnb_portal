@@ -3,37 +3,34 @@
 <?= $this->section('content') ?>
 
 <!-- formulario para buscar usando la api  -->
-<!-- solo es necesario si el usuario es admin porque puede haber mas de 200 registros entre los demas usuarios -->
-<?php if (session('usuario')->getFieldValue("Title") == "Administrador") : ?>
-    <div class="card mb-4">
-        <div class="card-header">
-            <i class="fas fa-search"></i>
-            Busqueda avanzada
-        </div>
-        <div class="card-body">
-            <form class="row" action="<?= site_url("emisiones") ?>" method="post">
-                <div class="col-md-4">
-                    <select class="form-select" name="opcion" required>
-                        <option value="codigo">No. emisión</option>
-                        <option value="nombre">Nombre del cliente</option>
-                        <option value="apellido">Apellido del cliente</option>
-                        <option value="id">RNC/Cédula del cliente</option>
-                    </select>
-                </div>
-
-                <div class="col-4">
-                    <input type="text" class="form-control" name="busqueda" required>
-                </div>
-
-                <div class="col-4">
-                    <button type="submit" class="btn btn-primary">Buscar</button>
-                    |
-                    <a href="<?= site_url("emisiones") ?>" class="btn btn-secondary">Limpiar</a>
-                </div>
-            </form>
-        </div>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-search"></i>
+        Busqueda avanzada
     </div>
-<?php endif ?>
+    <div class="card-body">
+        <form class="row" action="<?= site_url("emisiones") ?>" method="post">
+            <div class="col-md-4">
+                <select class="form-select" name="opcion" required>
+                    <option value="codigo">No. emisión</option>
+                    <option value="nombre">Nombre del cliente</option>
+                    <option value="apellido">Apellido del cliente</option>
+                    <option value="id">RNC/Cédula del cliente</option>
+                </select>
+            </div>
+
+            <div class="col-4">
+                <input type="text" class="form-control" name="busqueda" required>
+            </div>
+
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                |
+                <a href="<?= site_url("emisiones") ?>" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div class="card mb-4">
     <div class="card-header">
@@ -50,7 +47,6 @@
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Tipo</th>
-                    <th>Estado</th>
                     <th>Suma Asegurada</th>
                     <th>Referidor</th>
                     <th>Opciones</th>
@@ -64,7 +60,6 @@
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Plan</th>
-                    <th>Estado</th>
                     <th>Suma Asegurada</th>
                     <th>Referidor</th>
                 </tr>
@@ -82,7 +77,6 @@
                         </td>
                         <td><?= $emision->getFieldValue('RNC_C_dula') ?></td>
                         <td><?= $emision->getFieldValue('Plan') ?> </td>
-                        <td><?= $emision->getFieldValue('Status') ?> </td>
                         <td>RD$<?= number_format($emision->getFieldValue('Suma_asegurada'), 2) ?></td>
                         <td><?= $emision->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                         <td>
@@ -103,7 +97,8 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="label<?= $cont ?>">
-                                        Adjuntar a emisión a nombre de
+                                        Adjuntar documentos a emisión no. <?= $emision->getFieldValue('SO_Number') ?>
+                                        , a nombre de
                                         <?= $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido') ?>
                                     </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

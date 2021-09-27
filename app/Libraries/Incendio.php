@@ -4,20 +4,11 @@ namespace App\Libraries;
 
 use App\Models\Cotizacion;
 
-class Vida extends Cotizaciones
+class Incendio extends Cotizaciones
 {
-    protected function calcular_edad($fecha)
-    {
-        list($ano, $mes, $dia) = explode("-", $fecha);
-        $ano_diferencia  = date("Y") - $ano;
-        $mes_diferencia = date("m") - $mes;
-        $dia_diferencia   = date("d") - $dia;
-        if ($dia_diferencia < 0 || $mes_diferencia < 0)
-            $ano_diferencia--;
-        return $ano_diferencia;
-    }
+    /*
 
-    public function verificar_limites(Cotizacion $cotizacion, $plan)
+    public function verificar_limites(Cotizacion $cotizacion, ZCRMRecord $plan)
     {
         //verificar limite de plazo
         if ($cotizacion->plazo > $plan->getFieldValue('Plazo_max')) {
@@ -29,12 +20,11 @@ class Vida extends Cotizaciones
             return "La suma asegurada es mayor al limite establecido.";
         }
     }
-
+    */
     public function calcular_prima(Cotizacion $cotizacion, $plan)
     {
         //inicializar valores vacios
-        $deudor = 0;
-        $codeudor = 0;
+        $prima = 0;
 
         //encontrar la tasa
         $criterio = "Plan:equals:" . $plan->getEntityId();
@@ -42,47 +32,17 @@ class Vida extends Cotizaciones
 
         foreach ((array)$tasas as $tasa) {
             //verificar limite de edad
-            if (
-                $this->calcular_edad($cotizacion->fecha_deudor) > $tasa->getFieldValue('Edad_min')
-                and
-                $this->calcular_edad($cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
-            ) {
-                $deudor = $tasa->getFieldValue('Name') / 100;
-            } else {
-                return "La edad del deudor no esta dentro del limite permitido.";
-            }
-
-            if (!empty($cotizacion->fecha_codeudor)) {
-                if (
-                    $this->calcular_edad($cotizacion->fecha_codeudor) > $tasa->getFieldValue('Edad_min')
-                    and
-                    $this->calcular_edad($cotizacion->fecha_codeudor) < $tasa->getFieldValue('Edad_max')
-                ) {
-                    $codeudor = $tasa->getFieldValue('Name') / 100;
-                } else {
-                    return "La edad del codeudor no esta dentro del limite permitido.";
-                }
-            }
-        }
-
-        //calcular prima un deudor
-        $prima_deudor = ($cotizacion->suma / 1000) * $deudor;
-
-        //calcular prima si existe un codeudor
-        if (!empty($cotizacion->fecha_codeudor)) {
-            $prima_codeudor = ($cotizacion->suma / 1000) * ($codeudor - $deudor);
-        } else {
-            $prima_codeudor = 0;
+            $prima = ($cotizacion->suma / 100) * $tasa->getFieldValue('Name') / 100;;
         }
 
         //retornar la union de ambas primas
-        return $prima_deudor + $prima_codeudor;
+        return $prima;
     }
 
     public function cotizar(Cotizacion $cotizacion)
     {
         //planes relacionados al banco
-        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Vida))";
+        $criterio = "((Corredor:equals:" . session("usuario")->getFieldValue("Account_Name")->getEntityId() . ") and (Product_Category:equals:Incendio))";
         $planes =  $this->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$planes as $plan) {
@@ -91,7 +51,7 @@ class Vida extends Cotizaciones
             $prima = 0;
 
             //verificaciones
-            $comentario = $this->verificar_limites($cotizacion, $plan);
+            //$comentario = $this->verificar_limites($cotizacion, $plan);
 
             //si no hubo un excepcion
             if (empty($comentario)) {

@@ -17,5 +17,8 @@ class Cotizacion
     public $uso;
     public $plan;
     public $estado;
+    public $cuota;
+    public $construccion;
+    public $riesgo;
     public $planes = array();
 }

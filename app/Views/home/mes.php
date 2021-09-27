@@ -12,12 +12,10 @@
             <thead>
                 <tr>
                     <th>Fecha Emisión</th>
-                    <th>Fecha Vencimiento</th>
                     <th>No.</th>
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Tipo</th>
-                    <th>Estado</th>
                     <th>Suma Asegurada</th>
                     <th>Referidor</th>
                     <th>Opciones</th>
@@ -26,12 +24,10 @@
             <tfoot>
                 <tr>
                     <th>Fecha Emisión</th>
-                    <th>Fecha Vencimiento</th>
                     <th>No. emisión</th>
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Plan</th>
-                    <th>Estado</th>
                     <th>Suma Asegurada</th>
                     <th>Referidor</th>
                 </tr>
@@ -43,14 +39,12 @@
                     <?php if (date("m/Y", strtotime($emision->getCreatedTime())) == date("m/Y")) : ?>
                         <tr>
                             <td><?= date("d/m/Y", strtotime($emision->getCreatedTime())) ?></td>
-                            <td><?= date("d/m/Y", strtotime($emision->getFieldValue('Due_Date'))) ?></td>
                             <td><?= $emision->getFieldValue('SO_Number') ?></td>
                             <td>
                                 <?= $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido') ?>
                             </td>
                             <td><?= $emision->getFieldValue('RNC_C_dula') ?></td>
                             <td><?= $emision->getFieldValue('Plan') ?> </td>
-                            <td><?= $emision->getFieldValue('Status') ?> </td>
                             <td>RD$<?= number_format($emision->getFieldValue('Suma_asegurada'), 2) ?></td>
                             <td><?= $emision->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                             <td>

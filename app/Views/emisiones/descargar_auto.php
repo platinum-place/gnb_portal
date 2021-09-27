@@ -32,7 +32,7 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">CLIENTE</h5>
-<?= $this->include('otros/datos_cliente') ?>
+<?= $this->include('layouts/datos_cliente') ?>
 
 <div class="col-12">
     &nbsp;
@@ -40,7 +40,7 @@
 
 <!-- vehiculo -->
 <h5 class="d-flex justify-content-center bg-primary text-white">VEHÍCULO</h5>
-<?= $this->include('otros/datos_vehiculo') ?>
+<?= $this->include('layouts/datos_vehiculo') ?>
 
 <div class="col-12">
     &nbsp;
@@ -140,11 +140,9 @@
             </p>
 
             <p class="card-title">
-                <?php
-                echo "RD$" . $neta . "<br>";
-                echo "RD$" . $isc . "<br>";
-                echo "RD$" . $total;
-                ?>
+                RD$ <?= number_format($neta, 2) ?> <br>
+                RD$ <?= number_format($isc, 2) ?> <br>
+                RD$ <?= number_format($total, 2) ?>
             </p>
         </div>
     </div>

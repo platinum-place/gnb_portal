@@ -18,11 +18,11 @@
 
 <body class="sb-nav-fixed">
     <!-- Aqui se cargara el navbar -->
-    <?= $this->include('sections/navbar') ?>
+    <?= $this->include('layouts/navbar') ?>
 
     <div id="layoutSidenav">
         <!-- Aqui se cargara el sidebar -->
-        <?= $this->include('sections/sidebar') ?>
+        <?= $this->include('layouts/sidebar') ?>
 
         <div id="layoutSidenav_content">
             <main>

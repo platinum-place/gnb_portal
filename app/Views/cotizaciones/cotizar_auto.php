@@ -1,14 +1,18 @@
-<div class="modal fade" id="cotizar_auto" tabindex="-1" aria-labelledby="labelauto" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="labelauto">Cotización de Plan Auto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
+<?= $this->extend('layouts/app') ?>
 
-            <form method="POST" action="<?= site_url("auto/cotizar") ?>">
-                <input type="text" hidden value="auto" name="cotizacion">
-                <div class="modal-body">
+<?= $this->section('content') ?>
+
+<!-- Tabla con la cotizacion -->
+<?php if (!empty($cotizacion->planes)) : ?>
+    <?= $this->include('cotizaciones/tabla') ?>
+<?php endif ?>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="<?= site_url("cotizaciones/cotizar_auto") ?>">
+                
                     <div class="mb-3">
                         <label class="form-label">Marca</label>
                         <select name="marca" class="form-control selectpicker" id="marca" onchange="modelosAJAX(this)" required data-live-search="true">
@@ -62,16 +66,17 @@
                             <option value="Usado">Usado</option>
                         </select>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Cotizar</button>
-                </div>
-            </form>
+
+                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                        <button type="submit" class="btn btn-success">Cotizar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
+<?= $this->endSection() ?>
 
 <!-- Librerias adicionales -->
 

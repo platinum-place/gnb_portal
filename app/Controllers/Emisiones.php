@@ -2,21 +2,16 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Auto;
 use App\Libraries\Emisiones as LibrariesEmisiones;
-use App\Libraries\Vida;
-use App\Models\Reporte;
+use App\Libraries\Reportes;
+use App\Libraries\Zoho;
 
 class Emisiones extends BaseController
 {
     public function index()
     {
-        //en caso de que el usuario sea admin
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
-        } else {
-            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
+        //libreria para emisiones
+        $libreria = new LibrariesEmisiones;
 
         if ($this->request->getPost()) {
             switch ($this->request->getPost("opcion")) {
@@ -36,15 +31,13 @@ class Emisiones extends BaseController
                     $criteria = "((SO_Number:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
                     break;
             }
+
+            $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
+            return view("emisiones/index", ["titulo" => "Emisiones de " . $this->request->getPost("busqueda"), "emisiones" => $emisiones]);
         }
 
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
-
         //lista de emisiones
-        $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
-
-        //vista
+        $emisiones = $libreria->lista();
         return view("emisiones/index", ["titulo" => "Emisiones", "emisiones" => $emisiones]);
     }
 
@@ -152,7 +145,7 @@ class Emisiones extends BaseController
     public function descargar($id)
     {
         //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
+        $libreria = new Zoho;
 
         //obtener datoss de la emision
         $detalles = $libreria->getRecord("Sales_Orders", $id);
@@ -160,15 +153,16 @@ class Emisiones extends BaseController
         foreach ($detalles->getLineItems() as $lineItem) {
             //obtener datos del plan
             $plan = $libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
-            $neta = number_format($lineItem->getNetTotal() - $lineItem->getNetTotal() * 0.16, 2);
-            $isc = number_format($lineItem->getNetTotal() * 0.16, 2);
-            $total = number_format($lineItem->getNetTotal(), 2);
         }
+
+        $neta = $detalles->getFieldValue("Prima") - ($detalles->getFieldValue("Prima") * 0.16);
+        $isc = $detalles->getFieldValue("Prima") * 0.16;
+        $total = $detalles->getFieldValue("Prima");
 
         //selecion de vista
         switch ($detalles->getFieldValue("Tipo")) {
             case 'Auto':
-                return view('emisiones/auto', [
+                return view('emisiones/descargar_auto', [
                     "detalles" => $detalles,
                     "plan" => $plan,
                     "neta" => $neta,
@@ -178,7 +172,27 @@ class Emisiones extends BaseController
                 break;
 
             case 'Vida':
-                return view('emisiones/vida', [
+                return view('emisiones/descargar_vida', [
+                    "detalles" => $detalles,
+                    "plan" => $plan,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'incendio':
+                return view('emisiones/descargar_incendio', [
+                    "detalles" => $detalles,
+                    "plan" => $plan,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'desempleo':
+                return view('emisiones/descargar_desempleo', [
                     "detalles" => $detalles,
                     "plan" => $plan,
                     "neta" => $neta,
@@ -193,7 +207,7 @@ class Emisiones extends BaseController
     public function adjuntar($id)
     {
         //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
+        $libreria = new Zoho;
 
         //los archivos debe ser subida al servidor para luego ser adjuntados al registro
         if ($documentos = $this->request->getFiles()) {
@@ -228,28 +242,15 @@ class Emisiones extends BaseController
     {
         if ($this->request->getPost()) {
             //modelo de reporte
-            $reporte = new Reporte;
+            $reporte = new Reportes;
             $reporte->desde = $this->request->getPost("desde");
             $reporte->hasta = $this->request->getPost("hasta");
             $reporte->tipo = $this->request->getPost("tipo");
 
-            //decidir que tipo de libreria sera utilizada
-            switch ($this->request->getPost("tipo")) {
-                case 'Vida':
-                    //libreria para emisiones
-                    $libreria = new Vida;
-                    break;
-
-                case 'Auto':
-                    //libreria para emisiones
-                    $libreria = new Auto;
-                    break;
-            }
-
             //verifica si existen reportes
             //en caso de si haber emisiones, el array de emisiones ya tendra la primera pagina de objetos
             //la libreria no importa porque solo es necesario la extension de la api zoho
-            $reporte->emisiones_existentes($libreria);
+            $reporte->emisiones_existentes();
 
             //si no encontro registros sale de la funcion
             if (empty($reporte->emisiones)) {
@@ -266,7 +267,7 @@ class Emisiones extends BaseController
 
                     //si no existe una segunda pagina de objetos, entonces ya tendran los necesarios
                     //la libreria no importa porque solo es necesario la extension de la api zoho
-                    $reporte->emisiones_existentes($libreria, $pag);
+                    $reporte->emisiones_existentes($pag);
 
                     //volmeos a contar los objetos
                     $cantidad_aumentada = count($reporte->emisiones);
@@ -280,8 +281,25 @@ class Emisiones extends BaseController
                     }
                 } while ($pag > 0);
 
+
                 //crear reporte segun la libreria elegida
-                $ruta_reporte = $libreria->generar_reporte($reporte);
+                switch ($this->request->getPost("tipo")) {
+                    case 'vida':
+                        $ruta_reporte = $reporte->vida();
+                        break;
+
+                    case 'auto':
+                        $ruta_reporte = $reporte->auto();
+                        break;
+
+                    case 'desempleo':
+                        $ruta_reporte = $reporte->desempleo();
+                        break;
+
+                    case 'incendio':
+                        $ruta_reporte = $reporte->incendio();
+                        break;
+                }
 
                 //forzar al navegador a descargar el archivo
                 //es necesario no tener echo antes de descargar
@@ -300,59 +318,5 @@ class Emisiones extends BaseController
 
         //vista
         return view("emisiones/reportes", ["titulo" => "Reporte de Pólizas Emitidas"]);
-    }
-
-    public function pendientes()
-    {
-        //en caso de que el usuario sea admin
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "((Status:equals:Pendiente) and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . "))";
-        } else {
-            $criteria = "((Statusequals:Pendiente) and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
-
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
-        //lista de emisiones
-        $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
-
-        //vista
-        return view("emisiones/pendientes", ["titulo" => "Emisiones Pendientes", "emisiones" => $emisiones]);
-    }
-
-    public function mes()
-    {
-        //en caso de que el usuario sea admin
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
-        } else {
-            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
-
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
-        //lista de emisiones
-        $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
-
-        //vista
-        return view("emisiones/pendientes", ["titulo" => "Emisiones Del Mes", "emisiones" => $emisiones]);
-    }
-
-    public function vencidas()
-    {
-        //en caso de que el usuario sea admin
-        if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId();
-        } else {
-            $criteria = "((Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
-        }
-
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
-        //lista de emisiones
-        $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
-
-        //vista
-        return view("emisiones/vencidas", ["titulo" => "Emisiones En Vencimiento Este Mes", "emisiones" => $emisiones]);
     }
 }
