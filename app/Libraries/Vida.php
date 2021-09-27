@@ -48,8 +48,6 @@ class Vida extends Cotizaciones
                 $this->calcular_edad($cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
             ) {
                 $deudor = $tasa->getFieldValue('Name') / 100;
-            } else {
-                return "La edad del deudor no esta dentro del limite permitido.";
             }
 
             if (!empty($cotizacion->fecha_codeudor)) {
@@ -59,10 +57,12 @@ class Vida extends Cotizaciones
                     $this->calcular_edad($cotizacion->fecha_codeudor) < $tasa->getFieldValue('Edad_max')
                 ) {
                     $codeudor = $tasa->getFieldValue('Name') / 100;
-                } else {
-                    return "La edad del codeudor no esta dentro del limite permitido.";
                 }
             }
+        }
+
+        if ($deudor == 0) {
+            return "La edad del deudor no esta dentro del limite permitido.";
         }
 
         //calcular prima un deudor
@@ -70,6 +70,10 @@ class Vida extends Cotizaciones
 
         //calcular prima si existe un codeudor
         if (!empty($cotizacion->fecha_codeudor)) {
+            if ($codeudor == 0) {
+                return "La edad del codeudor no esta dentro del limite permitido.";
+            }
+
             $prima_codeudor = ($cotizacion->suma / 1000) * ($codeudor - $deudor);
         } else {
             $prima_codeudor = 0;
