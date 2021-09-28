@@ -58,7 +58,7 @@ class Zoho
         //echo "HTTP Status Code:" . $fileResponseIns->getHttpStatusCode();
         //echo "File Name:" . $fileResponseIns->getFileName();
         $stream = $fileResponseIns->getFileContent();
-        var_dump($stream);
+        //var_dump($stream);
         fputs($fp, $stream);
         fclose($fp);
         return $file;

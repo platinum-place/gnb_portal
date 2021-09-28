@@ -13,6 +13,9 @@ class Casos extends BaseController
         $libreria = new Zoho;
         $caso = $libreria->getRecord("Cases", $id);
 
+        return view("casos/accidente", ["titulo" => $caso->getFieldValue('TUA'), "caso" => $caso, "api" => $libreria]);
+
+
         // Creating the new document...
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
 
