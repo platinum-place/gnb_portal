@@ -302,7 +302,14 @@ class Emisiones extends BaseController
                 }
 
                 //forzar al navegador a descargar el archivo
+
+                //funciona en ambos ambientes
+                $nombre = "Reporte " . $this->request->getPost("tipo") . " " . date("d-m-Y");
+                return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
+
+                //no funciona en ambiente de produccion, solo en desarrollo local
                 //es necesario no tener echo antes de descargar
+                /*
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
                 header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
@@ -313,6 +320,7 @@ class Emisiones extends BaseController
                 readfile($ruta_reporte);
                 //eliminar el archivo descargado
                 unlink($ruta_reporte);
+                */
             }
         }
 
