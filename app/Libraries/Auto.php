@@ -13,6 +13,15 @@ class Auto extends Cotizaciones
             return "Uso del vehículo restringido.";
         }
 
+        //verificar suma
+        if (
+            $cotizacion->suma < $plan->getFieldValue('Suma_asegurada_min')
+            and
+            $cotizacion->suma > $plan->getFieldValue('Suma_asegurada_max')
+        ) {
+            return "La suma asegurada no esta dentro de los limites.";
+        }
+
         //verificar antiguedad
         if ((date("Y") - $cotizacion->ano) > $plan->getFieldValue('Max_antig_edad')) {
             return "La antigüedad del vehículo es mayor al limite establecido.";
@@ -24,7 +33,8 @@ class Auto extends Cotizaciones
         foreach ((array)$marcas as $marca) {
             if (empty($marca->getFieldValue('Modelo'))) {
                 return "Marca restrigida.";
-            } elseif ($cotizacion->modeloid == $marca->getFieldValue('Modelo')) {
+            }
+            if ($cotizacion->modeloid == $marca->getFieldValue('Modelo')->getEntityId()) {
                 return "Modelo restrigido.";
             }
         }
