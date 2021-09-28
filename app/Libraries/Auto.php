@@ -69,23 +69,17 @@ class Auto extends Cotizaciones
 
         foreach ((array)$recargos as $recargo) {
             if (
-                empty($recargo->getFieldValue('Modelo'))
-                and
-                empty($recargo->getFieldValue('Desde'))
-                and
-                empty($recargo->getFieldValue('Hasta'))
-                and
-                empty($recargo->getFieldValue('Tipo'))
-            ) {
-                $valorrecargo = $recargo->getFieldValue('Name') / 100;
-            } elseif (
-                $cotizacion->modeloid == $recargo->getFieldValue('Modelo')
-            ) {
-                $valorrecargo = $recargo->getFieldValue('Name') / 100;
-            } elseif (
-                $cotizacion->ano > $recargo->getFieldValue('Desde')
-                and
-                $cotizacion->ano < $recargo->getFieldValue('Hasta')
+                ($cotizacion->ano > $recargo->getFieldValue('Desde')
+                    and
+                    $cotizacion->ano < $recargo->getFieldValue('Hasta')
+                    and
+                    $recargo->getFieldValue('Tipo') == $cotizacion->modelotipo)
+                or
+                ($cotizacion->modeloid == $recargo->getFieldValue('Modelo'))
+                or
+                ($recargo->getFieldValue('Tipo') == $cotizacion->modelotipo)
+                or
+                ($cotizacion->ano > $recargo->getFieldValue('Desde'))
             ) {
                 $valorrecargo = $recargo->getFieldValue('Name') / 100;
             }
