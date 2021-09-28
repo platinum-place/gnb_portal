@@ -14,7 +14,8 @@
         "laminas/laminas-escaper": "^2.8",
         "psr/log": "^1.1",
         "zohocrm/php-sdk-archive": "^2.2",
-        "phpoffice/phpspreadsheet": "^1.18"
+        "phpoffice/phpspreadsheet": "^1.18",
+        "phpoffice/phpword": "^0.18.2"
     },
     "require-dev": {
         "codeigniter/coding-standard": "^1.1",
