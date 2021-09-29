@@ -9,12 +9,21 @@ class Casos extends BaseController
 {
     public function word($id)
     {
+        //ruta donde se guardaran los documentos
+        $ruta_servidor =  WRITEPATH . 'uploads/';
+
+        //vaciar la carpeta donde se guardan los documentos
+        $files = array_diff(scandir($ruta_servidor), array('.', '..'));
+        foreach ($files as $file) {
+            if (!is_dir($ruta_servidor . $file)) {
+                unlink($ruta_servidor . $file);
+            }
+        }
+
+
         //obtener datos del caso
         $libreria = new Zoho;
         $caso = $libreria->getRecord("Cases", $id);
-
-        return view("casos/accidente", ["titulo" => $caso->getFieldValue('TUA'), "caso" => $caso, "api" => $libreria]);
-
 
         // Creating the new document...
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
@@ -139,8 +148,11 @@ class Casos extends BaseController
         $fotos = $libreria->getAttachments("Cases", $caso->getEntityId());
 
         foreach ((array)$fotos as $foto) {
-            $ruta = $libreria->downloadAttachment("Cases", $caso->getEntityId(), $foto->getId(), WRITEPATH . 'uploads');
-            $section->addImage($ruta, ["width" => 500, 'align' => 'left']);
+            $imagen = $libreria->downloadAttachment("Cases", $caso->getEntityId(), $foto->getId(),  $ruta_servidor);
+            $nombre = uniqid() . '.png';
+            $ruta_final = $ruta_servidor . $nombre;
+            rename($imagen,   $ruta_final);
+            $section->addImage($ruta_final, ["width" => 500, 'align' => 'left']);
         }
 
         # Para que no diga que se abre en modo de compatibilidad
