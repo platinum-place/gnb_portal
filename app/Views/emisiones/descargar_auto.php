@@ -19,7 +19,6 @@
     <div class="col-4">
         <p style="text-align: right">
             <b>No.</b> <?= $detalles->getFieldValue('SO_Number') ?> <br>
-            <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
             <b>Desde</b> <?= date("d/m/Y", strtotime($detalles->getCreatedTime())) ?> <br>
             <b>Hasta</b> <?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?>
         </p>
@@ -87,7 +86,7 @@
             </p>
         </div>
     </div>
-    
+
     <div class="card border-0">
         <div class="card-body">
             <?php
@@ -160,37 +159,52 @@
     <div class="col-6 border">
         <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getEntityId() . ".png") ?>" width="150" height="50">
 
-        <div class="card-group">
-            <div class="card border-0">
-                <div class="card-body">
-                    <p>
-                        <b>Póliza</b><br>
-                        <b>Marca</b> <br>
-                        <b>Modelo</b> <br>
-                        <b>Chasis</b> <br>
-                        <b>Placa</b> <br>
-                        <b>Año</b> <br>
-                        <b>Desde</b> <br>
-                        <b>Hasta</b>
-                    </p>
-                </div>
-            </div>
+        <table class="table table-sm table-borderless">
+            <tbody>
+                <tr>
+                    <th scope="col">Póliza</th>
+                    <td><?= $plan->getFieldValue('P_liza') ?></td>
+                </tr>
 
-            <div class="card border-0">
-                <div class="card-body">
-                    <p>
-                        <?= $plan->getFieldValue('P_liza') ?> <br>
-                        <?= $detalles->getFieldValue('Marca')->getLookupLabel() ?> <br>
-                        <?= $detalles->getFieldValue('Modelo')->getLookupLabel() ?> <br>
-                        <?= $detalles->getFieldValue('Chasis') ?> <br>
-                        <?= $detalles->getFieldValue('Placa') ?> <br>
-                        <?= $detalles->getFieldValue('A_o') ?><br>
-                        <?= date("d/m/Y", strtotime($detalles->getCreatedTime())) ?><br>
-                        <?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?>
-                    </p>
-                </div>
-            </div>
-        </div>
+                <tr>
+                    <th scope="col">Marca</th>
+                    <td><?= $detalles->getFieldValue('Marca')->getLookupLabel() ?></td>
+                </tr>
+
+                <tr>
+                    <th scope="col">Modelo</th>
+                    <td><?= $detalles->getFieldValue('Modelo')->getLookupLabel() ?></td>
+                </tr>
+
+                <tr>
+                    <th scope="col">Chasis</th>
+                    <td><?= $detalles->getFieldValue("Chasis") ?></td>
+                </tr>
+
+                <tr>
+                    <th scope="col">Placa</th>
+                    <td><?= $detalles->getFieldValue("Placa") ?></td>
+                </tr>
+
+
+                <tr>
+                    <th scope="col">Año</th>
+                    <td><?= $detalles->getFieldValue("A_o") ?></td>
+                </tr>
+
+
+                <tr>
+                    <th scope="col">Desde</th>
+                    <td><?= date("d/m/Y", strtotime($detalles->getCreatedTime()))  ?></td>
+                </tr>
+
+
+                <tr>
+                    <th scope="col">Hasta</th>
+                    <td><?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="col-6 border">

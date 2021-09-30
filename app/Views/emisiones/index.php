@@ -47,7 +47,6 @@
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Tipo</th>
-                    <th>Suma Asegurada</th>
                     <th>Referidor</th>
                     <th>Opciones</th>
                 </tr>
@@ -60,7 +59,6 @@
                     <th>Nombre Cliente</th>
                     <th>RNC/Cédula Cliente</th>
                     <th>Plan</th>
-                    <th>Suma Asegurada</th>
                     <th>Referidor</th>
                 </tr>
             </tfoot>
@@ -77,7 +75,6 @@
                         </td>
                         <td><?= $emision->getFieldValue('RNC_C_dula') ?></td>
                         <td><?= $emision->getFieldValue('Plan') ?> </td>
-                        <td>RD$<?= number_format($emision->getFieldValue('Suma_asegurada'), 2) ?></td>
                         <td><?= $emision->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                         <td>
                             <a href="<?= site_url("emisiones/descargar/" . $emision->getEntityId()) ?>" title="Descargar" target="__blank">

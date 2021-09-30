@@ -16,7 +16,6 @@
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
-                    <th>Suma Asegurado</th>
                     <th>Referidor</th>
                     <th>Opciones</th>
                 </tr>
@@ -28,7 +27,6 @@
                     <th>Nombre del cliente</th>
                     <th>RNC/Cédula del cliente</th>
                     <th>Tipo</th>
-                    <th>Suma Asegurado</th>
                     <th>Referidor</th>
                     <th>Opciones</th>
                 </tr>
@@ -43,7 +41,6 @@
                         </td>
                         <td><?= $cotizacion->getFieldValue('RNC_C_dula') ?></td>
                         <td><?= $cotizacion->getFieldValue('Tipo') ?> </td>
-                        <td>RD$<?= number_format($cotizacion->getFieldValue('Suma_asegurada'), 2) ?></td>
                         <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                         <td>
                             <a href="<?= site_url("emisiones/emitir/" . $cotizacion->getEntityId()) ?>" title="Emitir">
