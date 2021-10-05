@@ -60,16 +60,4 @@ class Cotizaciones extends Zoho
 
         return $details["id"];
     }
-
-    public function calcular_prima_incendio($tasa, $suma)
-    {
-        return ($suma / 100) * ($tasa->getFieldValue('Name') / 100);
-    }
-
-    public function calcular_prima_desempleo($tasa, $suma, $cuota)
-    {
-        $vida = ($suma / 1000) * ($tasa->getFieldValue('Name') / 100);
-        $desempleo = ($cuota / 1000) * $tasa->getFieldValue('Desempleo');
-        return $vida + $desempleo;
-    }
 }

@@ -3,16 +3,19 @@
 namespace App\Controllers;
 
 use App\Libraries\Emisiones as LibrariesEmisiones;
-use App\Libraries\Reportes;
-use App\Libraries\Zoho;
 
 class Emisiones extends BaseController
 {
-    public function index()
-    {
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
+    protected $libreria;
 
+    function __construct()
+    {
+        //cargar la libreria para hacer uso de una funcion de la api
+        $this->libreria = new LibrariesEmisiones;
+    }
+
+    public function index()
+    {;
         if ($this->request->getPost()) {
             switch ($this->request->getPost("opcion")) {
                 case 'nombre':
@@ -32,22 +35,19 @@ class Emisiones extends BaseController
                     break;
             }
 
-            $emisiones = $libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
+            $emisiones = $this->libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
             return view("emisiones/index", ["titulo" => "Emisiones de " . $this->request->getPost("busqueda"), "emisiones" => $emisiones]);
         }
 
         //lista de emisiones
-        $emisiones = $libreria->lista();
+        $emisiones = $this->libreria->lista();
         return view("emisiones/index", ["titulo" => "Emisiones", "emisiones" => $emisiones]);
     }
 
     public function emitir($cotizacionid)
     {
-        //libreria para emisiones
-        $libreria = new LibrariesEmisiones;
-
         //obtener los datos de la cotizacion, la funcion es heredada de la libreria del api
-        $cotizacion = $libreria->getRecord("Quotes", $cotizacionid);
+        $cotizacion = $this->libreria->getRecord("Quotes", $cotizacionid);
 
         if ($this->request->getPost()) {
             //obtener los datos del plan elegido
@@ -104,10 +104,10 @@ class Emisiones extends BaseController
             ];
 
             //crea la cotizacion el en crm
-            $emisionid = $libreria->crear_emision($emision, $plan);
+            $emisionid = $this->libreria->crear_emision($emision, $plan);
 
             //eliminar la cotizacion
-            $libreria->delete("Quotes", $cotizacionid);
+            $this->libreria->delete("Quotes", $cotizacionid);
 
             //los archivos debe ser subida al servidor para luego ser adjuntados al registro
             if ($documentos = $this->request->getFiles()) {
@@ -123,7 +123,7 @@ class Emisiones extends BaseController
                         $ruta = WRITEPATH . 'uploads/' . $newName;
 
                         //funcion para adjuntar el archivo
-                        $libreria->uploadAttachment("Sales_Orders", $emisionid, $ruta);
+                        $this->libreria->uploadAttachment("Sales_Orders", $emisionid, $ruta);
 
                         //borrar el archivo del servidor local
                         unlink($ruta);
@@ -139,20 +139,20 @@ class Emisiones extends BaseController
         }
 
         //vista
-        return view("emisiones/emitir", ["titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),  "cotizacion" => $cotizacion]);
+        return view("emisiones/emitir", [
+            "titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
+            "cotizacion" => $cotizacion
+        ]);
     }
 
     public function descargar($id)
     {
-        //libreria para emisiones
-        $libreria = new Zoho;
-
         //obtener datoss de la emision
-        $detalles = $libreria->getRecord("Sales_Orders", $id);
+        $detalles = $this->libreria->getRecord("Sales_Orders", $id);
 
         foreach ($detalles->getLineItems() as $lineItem) {
             //obtener datos del plan
-            $plan = $libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
+            $plan = $this->libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
         }
 
         $neta = $detalles->getFieldValue("Prima") - ($detalles->getFieldValue("Prima") * 0.16);
@@ -201,130 +201,5 @@ class Emisiones extends BaseController
                 ]);
                 break;
         }
-    }
-
-    //funcion post
-    public function adjuntar($id)
-    {
-        //libreria para emisiones
-        $libreria = new Zoho;
-
-        //los archivos debe ser subida al servidor para luego ser adjuntados al registro
-        if ($documentos = $this->request->getFiles()) {
-            foreach ($documentos['documentos'] as $documento) {
-                if ($documento->isValid() && !$documento->hasMoved()) {
-                    //cambiar el nombre del archivo
-                    $newName = $documento->getRandomName();
-
-                    //subir el archivo al servidor
-                    $documento->move(WRITEPATH . 'uploads', $newName);
-
-                    //ruta del archivo subido
-                    $ruta = WRITEPATH . 'uploads/' . $newName;
-
-                    //funcion para adjuntar el archivo
-                    $libreria->uploadAttachment("Sales_Orders", $id, $ruta);
-
-                    //borrar el archivo del servidor local
-                    unlink($ruta);
-                }
-            }
-
-            //alerta
-            session()->setFlashdata('alerta', "¡Documentos adjuntados correctamente!.");
-
-            //limpiar post
-            return redirect()->to(site_url("emisiones"));
-        }
-    }
-
-    public function reportes()
-    {
-        if ($this->request->getPost()) {
-            //modelo de reporte
-            $reporte = new Reportes;
-            $reporte->desde = $this->request->getPost("desde");
-            $reporte->hasta = $this->request->getPost("hasta");
-            $reporte->tipo = $this->request->getPost("tipo");
-
-            //verifica si existen reportes
-            //en caso de si haber emisiones, el array de emisiones ya tendra la primera pagina de objetos
-            //la libreria no importa porque solo es necesario la extension de la api zoho
-            $reporte->emisiones_existentes();
-
-            //si no encontro registros sale de la funcion
-            if (empty($reporte->emisiones)) {
-                session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-                return redirect()->to(site_url("emisiones/reportes"));
-            } else {
-                //iniciar el contador desde la segunda pagina
-                $pag = 2;
-
-                //rellenar el array con todos los objetos posibles
-                do {
-                    //contamos la cantidad de objetos
-                    $cantidad_actual = count($reporte->emisiones);
-
-                    //si no existe una segunda pagina de objetos, entonces ya tendran los necesarios
-                    //la libreria no importa porque solo es necesario la extension de la api zoho
-                    $reporte->emisiones_existentes($pag);
-
-                    //volmeos a contar los objetos
-                    $cantidad_aumentada = count($reporte->emisiones);
-
-                    //si el array aumento significa que existen mas objetos que buscar
-                    //si no debemos salir
-                    if ($cantidad_aumentada > $cantidad_actual) {
-                        $pag++;
-                    } else {
-                        $pag = 0;
-                    }
-                } while ($pag > 0);
-
-
-                //crear reporte segun la libreria elegida
-                switch ($this->request->getPost("tipo")) {
-                    case 'vida':
-                        $ruta_reporte = $reporte->vida();
-                        break;
-
-                    case 'auto':
-                        $ruta_reporte = $reporte->auto();
-                        break;
-
-                    case 'desempleo':
-                        $ruta_reporte = $reporte->desempleo();
-                        break;
-
-                    case 'incendio':
-                        $ruta_reporte = $reporte->incendio();
-                        break;
-                }
-
-                //forzar al navegador a descargar el archivo
-
-                //funciona en ambos ambientes
-                $nombre = "Reporte " . $this->request->getPost("tipo") . " " . date("d-m-Y");
-                return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
-
-                //no funciona en ambiente de produccion, solo en desarrollo local
-                //es necesario no tener echo antes de descargar
-                /*
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($ruta_reporte));
-                readfile($ruta_reporte);
-                //eliminar el archivo descargado
-                unlink($ruta_reporte);
-                */
-            }
-        }
-
-        //vista
-        return view("emisiones/reportes", ["titulo" => "Reporte de Pólizas Emitidas"]);
     }
 }

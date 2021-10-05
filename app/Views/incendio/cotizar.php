@@ -11,7 +11,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-            <form method="POST" action="<?= site_url("cotizaciones/cotizar_incendio") ?>">
+                <form method="POST" action="<?= site_url("incendio/cotizar") ?>">
 
                     <div class="mb-3">
                         <label class="form-label">Valor de la Propiedad</label>

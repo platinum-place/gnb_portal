@@ -11,8 +11,8 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="<?= site_url("cotizaciones/cotizar_auto") ?>">
-                
+                <form method="POST" action="<?= site_url("auto/cotizar") ?>">
+
                     <div class="mb-3">
                         <label class="form-label">Marca</label>
                         <select name="marca" class="form-control selectpicker" id="marca" onchange="modelosAJAX(this)" required data-live-search="true">
@@ -96,7 +96,7 @@
     function modelosAJAX(val) {
         $.ajax({
             type: 'ajax',
-            url: "<?= site_url('cotizaciones/mostrarModelos') ?>",
+            url: "<?= site_url('auto/modelos') ?>",
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             },

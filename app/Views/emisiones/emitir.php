@@ -72,7 +72,7 @@
 <!-- Funcion para cargar una url con codigo php cuando hagan una solicitud con ajax -->
 <script>
     function botonDescargar(val) {
-        var boton = '<a target="__blank" href="<?= site_url("cotizaciones/documentos/") ?>' + val.value + '" class="btn btn-secondary mb-3">Descargar condicionado</a>';
+        var boton = '<a target="__blank" href="<?= site_url("adjuntos/cotizacion") ?>' + val.value + '" class="btn btn-secondary mb-3">Descargar condicionado</a>';
         document.getElementById("boton").innerHTML = boton;
     }
 </script>

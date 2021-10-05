@@ -6,13 +6,20 @@ use App\Libraries\Zoho;
 
 class Login extends BaseController
 {
+    protected $libreria;
+
+    function __construct()
+    {
+        //cargar la libreria para hacer uso de una funcion de la api
+        $this->libreria = new Zoho;
+    }
+
     public function index()
     {
         if ($this->request->getPost()) {
-            $libreria = new Zoho;
             $criterio = "((Email:equals:" . $this->request->getPost("correo") . ") and (Contrase_a:equals:" . $this->request->getPost("pass") . "))";
-            $usuarios = $libreria->searchRecordsByCriteria("Contacts", $criterio, 1, 1);
-            
+            $usuarios = $this->libreria->searchRecordsByCriteria("Contacts", $criterio, 1, 1);
+
             //buscar el todos los usuarios con el correo y contraseña sean iguales
             //los correos son campos unicos en el crm
             foreach ((array)$usuarios as $usuario) {
@@ -40,8 +47,7 @@ class Login extends BaseController
 
     public function editar()
     {
-        $libreria = new Zoho;
-        $libreria->update("Contacts", session('usuario')->getEntityId(), ["Contrase_a" => $this->request->getPost("pass")]);
+        $this->libreria->update("Contacts", session('usuario')->getEntityId(), ["Contrase_a" => $this->request->getPost("pass")]);
         //alerta
         session()->setFlashdata('alerta', 'La contraseña ha sido actualizada.');
         //recargar la pagina para limpiar el post

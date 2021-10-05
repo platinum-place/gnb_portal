@@ -6,7 +6,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-                <form method="POST" action="<?= site_url("emisiones/reportes") ?>">
+                <form method="POST" action="<?= site_url("reportes") ?>">
                     <h6>Datos del reporte</h6>
                     <hr>
                     <div class="mb-3">

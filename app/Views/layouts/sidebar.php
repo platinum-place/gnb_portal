@@ -31,7 +31,7 @@
                     Buscar Emisión
                 </a>
 
-                <a class="nav-link" href="<?= site_url("emisiones/reportes") ?>">
+                <a class="nav-link" href="<?= site_url("reportes") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                     Generar Reporte
                 </a>

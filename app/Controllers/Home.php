@@ -6,17 +6,23 @@ use App\Libraries\Emisiones;
 
 class Home extends BaseController
 {
+    protected $libreria;
+
+    function __construct()
+    {
+        //cargar la libreria para hacer uso de una funcion de la api
+        $this->libreria = new Emisiones;
+    }
+
     public function index()
     {
-        $libreria = new Emisiones;
-
         $lista = array();
         $polizas = 0;
         $vencidas = 0;
         $pendiente = 0;
 
         //obtener las emisiones
-        $emisiones = $libreria->lista();
+        $emisiones = $this->libreria->lista();
 
         foreach ((array)$emisiones as $emision) {
             //filtrar por  mes y año actual
@@ -52,27 +58,15 @@ class Home extends BaseController
 
     public function mes()
     {
-        //libreria para emisiones
-        $libreria = new Emisiones;
         //lista de emisiones
-        $emisiones = $libreria->lista();
-
-        return view("home/mes", [
-            "titulo" => "Emisiones Del Mes",
-            "emisiones" => $emisiones
-        ]);
+        $emisiones = $this->libreria->lista();
+        return view("home/mes", ["titulo" => "Emisiones Del Mes", "emisiones" => $emisiones]);
     }
 
     public function vencidas()
     {
-        //libreria para emisiones
-        $libreria = new Emisiones;
         //lista de emisiones
-        $emisiones = $libreria->lista();
-
-        return view("home/vencidas", [
-            "titulo" => "Emisiones En Vencimiento Este Mes",
-            "emisiones" => $emisiones
-        ]);
+        $emisiones = $this->libreria->lista();
+        return view("home/vencidas", ["titulo" => "Emisiones En Vencimiento Este Mes", "emisiones" => $emisiones]);
     }
 }

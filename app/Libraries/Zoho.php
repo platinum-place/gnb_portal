@@ -96,10 +96,12 @@ class Zoho
     {
         $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance($module_api_name); //to get the instance of the module
         $records = array();
+
         $record = ZCRMRecord::getInstance($module_api_name, null);  //To get ZCRMRecord instance
         foreach ($registro as $campo => $valor) {
             $record->setFieldValue($campo, $valor); //This function use to set FieldApiName and value similar to all other FieldApis and Custom field
         }
+
         array_push($records, $record); // pushing the record to the array.
         $responseIn = $moduleIns->createRecords($records); // updating the records.$trigger,$lar_id are optional
         foreach ($responseIn->getEntityResponses() as $responseIns) {
@@ -110,6 +112,7 @@ class Zoho
             //echo "Details:" . json_encode($responseIns->getDetails());
             $details = json_decode(json_encode($responseIns->getDetails()), true);
         }
+        
         return $details["id"];
     }
 

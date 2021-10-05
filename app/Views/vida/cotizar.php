@@ -11,7 +11,7 @@
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-            <form method="POST" action="<?= site_url("cotizaciones/cotizar_vida") ?>">
+                <form method="POST" action="<?= site_url("vida/cotizar") ?>">
 
                     <div class="mb-3">
                         <label class="form-label">Fecha de Nacimiento Deudor</label>
