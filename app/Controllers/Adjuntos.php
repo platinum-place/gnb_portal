@@ -90,13 +90,8 @@ class Adjuntos extends BaseController
         }
 
         $emision = $this->libreria->getRecord("Sales_Orders", $id);
-
-        $titulo = "Adjuntar documentos a emisión no. " . $emision->getFieldValue('SO_Number') .
-            ", a nombre de " . $emision->getFieldValue('Nombre') . ' ' .
-            $emision->getFieldValue('Apellido');
-
+        $titulo = "Adjuntar documentos a emisión a nombre de " . $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido');
         $adjuntos = $this->libreria->getAttachments("Sales_Orders", $id);
-
         return view("adjuntos/emisiones", ["titulo" => $titulo, "emision" => $emision, "adjuntos" => $adjuntos]);
     }
 }

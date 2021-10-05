@@ -16,10 +16,7 @@
                         </thead>
 
                         <tbody>
-                            <!-- contador para saber si existen valores vacios, para no permitir continuar de ser el caso -->
-                            <?php $cont = 0 ?>
-
-                            <?php foreach ($adjuntos as $adjunto) : ?>
+                            <?php foreach ((array)$lista as $adjunto) : ?>
                                 <tr>
                                     <td><?= $adjunto->getFileName() ?></td>
                                     <td>

@@ -31,6 +31,7 @@ class Zoho
     public function getRecord($module_api_name, $record_id)
     {
         $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance($module_api_name); // To get module instance
+
         try {
             $response = $moduleIns->getRecord($record_id); // To get module record
             return $response->getData(); // To get response data
@@ -45,8 +46,15 @@ class Zoho
     {
         $record = ZCRMRestClient::getInstance()->getRecordInstance($module_api_name, $record_id); // To get record instance
         $param_map = array("page" => $page, "per_page" => $per_page); // key-value pair containing all the parameters - optional
-        $responseIns = $record->getAttachments($param_map); // to get the attachments
-        return $responseIns->getData(); // to get the attachments in form of ZCRMAttachment instance array
+
+        try {
+            $responseIns = $record->getAttachments($param_map); // to get the attachments
+            return $responseIns->getData(); // to get the attachments in form of ZCRMAttachment instance array
+        } catch (ZCRMException $ex) {
+            //echo $ex->getMessage(); // To get ZCRMException error message
+            //echo $ex->getExceptionCode(); // To get ZCRMException error code
+            //echo $ex->getFile(); // To get the file name that throws the Exception
+        }
     }
 
     public function downloadAttachment($module_api_name, $record_id, $attachment_id, $filePath)
@@ -112,7 +120,7 @@ class Zoho
             //echo "Details:" . json_encode($responseIns->getDetails());
             $details = json_decode(json_encode($responseIns->getDetails()), true);
         }
-        
+
         return $details["id"];
     }
 
