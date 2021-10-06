@@ -25,6 +25,7 @@ class Desempleo extends BaseController
             $cotizacion->plazo = $this->request->getPost("plazo");
             $cotizacion->tipo = "Desempleo";
             $cotizacion->plan = "Vida/Desempleo";
+            $cotizacion->crm = "TU ASISTENCIA SALUD";
             $cotizacion->fecha_deudor = $this->request->getPost("deudor");
             $cotizacion->cuota = $this->request->getPost("cuota");
 

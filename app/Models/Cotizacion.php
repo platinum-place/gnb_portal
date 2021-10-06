@@ -20,5 +20,6 @@ class Cotizacion
     public $cuota;
     public $construccion;
     public $riesgo;
+    public $crm;
     public $planes = array();
 }

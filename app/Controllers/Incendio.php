@@ -25,6 +25,7 @@ class Incendio extends BaseController
             $cotizacion->plazo = $this->request->getPost("plazo");
             $cotizacion->tipo = "Incendio";
             $cotizacion->plan = "Incendio Hipotecario";
+            $cotizacion->crm = "TU ASISTENCIA HOGAR";
             $cotizacion->cuota = $this->request->getPost("cuota");
 
             //cotizar en libreria

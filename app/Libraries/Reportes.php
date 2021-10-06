@@ -11,9 +11,9 @@ class Reportes extends Zoho
     {
         //en caso de que el usuario sea admin
         if (session('usuario')->getFieldValue("Title") == "Administrador") {
-            $criteria = "((Tipo:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . "))";
+            $criteria = "((Tipo_portal:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . "))";
         } else {
-            $criteria = "((Tipo:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
+            $criteria = "((Tipo_portal:equals:" . $reporte->tipo . ") and (Account_Name:equals:" . session('usuario')->getFieldValue("Account_Name")->getEntityId() . ") and (Contact_Name:equals:" . session('usuario')->getEntityId() . "))";
         }
 
         //verifica si existen reportes
@@ -28,12 +28,12 @@ class Reportes extends Zoho
 
             //si no existe una segunda pagina de objetos, entonces ya tendran los necesarios
             //la libreria no importa porque solo es necesario la extension de la api zoho
-            if ($emisiones = $this->searchRecordsByCriteria("Sales_Orders", $criteria, $pag)) {
+            if ($emisiones = $this->searchRecordsByCriteria("Deals", $criteria, $pag)) {
                 //actumula el array debajo del primer array
                 $reporte->emisiones = array_merge($reporte->emisiones, $emisiones);
             }
 
-            //volmeos a contar los objetos
+            //volveos a contar los objetos
             $cantidad_aumentada = count($reporte->emisiones);
 
             //si el array aumento significa que existen mas objetos que buscar

@@ -77,6 +77,7 @@ class Cotizaciones extends BaseController
                 "Chasis" => $this->request->getPost("chasis"),
                 "Color" => $this->request->getPost("color"),
                 "Placa" => $this->request->getPost("placa"),
+                "Tipo_crm" => $this->request->getPost("tipo_crm"),
             ];
 
             //agregar los cambios al registro en el crm

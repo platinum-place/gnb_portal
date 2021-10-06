@@ -6,6 +6,7 @@ use App\Models\Cotizacion;
 use App\Models\Reporte;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Vida extends Zoho
 {
     protected function calcular_edad($fecha)
@@ -171,11 +172,7 @@ class Vida extends Zoho
         $sheet->setCellValue('J12', 'Tel. Residencia');
         $sheet->setCellValue('K12', 'Fecha de nacimiento');
         $sheet->setCellValue('L12', 'Dirección');
-        $sheet->setCellValue('M12', 'Codeudor');
-        $sheet->setCellValue('N12', 'RNC/Cédula Codeudor');
-        $sheet->setCellValue('O12', 'Tel. Residencia Codeudor');
-        $sheet->setCellValue('P12', 'Fecha de nacimiento Codeudor');
-        $sheet->setCellValue('Q12', 'Dirección Codeudor');
+        $sheet->setCellValue('M12', 'Aplica Codeudor');
 
         //inicializar contadores
         $cont = 1;
@@ -183,38 +180,35 @@ class Vida extends Zoho
 
         foreach ($reporte->emisiones as $emisiones => $emision) {
             if (
-                date("Y-m-d", strtotime($emision->getCreatedTime())) >= $reporte->desde
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) >= $reporte->desde
                 and
-                date("Y-m-d", strtotime($emision->getCreatedTime())) <= $reporte->hasta
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) <= $reporte->hasta
             ) {
                 //obtener los datos del plan
-                //no tenemos problemas porque solo es un plan
-                foreach ($emision->getLineItems() as $lineItem) {
-                    $aseguradora = $lineItem->getDescription();
-                }
+                $plan = $this->getRecord("Products", $emision->getFieldValue("Coberturas")->getEntityId());
 
                 //valores de la tabla
                 $sheet->setCellValue('A' . $pos, $cont);
                 $sheet->setCellValue('B' . $pos, $emision->getFieldValue('Contact_Name')->getLookupLabel());
                 $sheet->setCellValue('C' . $pos, $emision->getFieldValue('Plazo'));
                 $sheet->setCellValue('D' . $pos, $emision->getFieldValue('Plan'));
-                $sheet->setCellValue('E' . $pos, $aseguradora);
+                $sheet->setCellValue('E' . $pos, $plan->getFieldValue('Vendor_Name')->getLookupLabel());
                 $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Suma_asegurada'));
-                $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Prima'));
+                $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Amount'));
 
                 //valores relacionados al deudor
-                $sheet->setCellValue('H' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
-                $sheet->setCellValue('I' . $pos, $emision->getFieldValue('RNC_C_dula'));
-                $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Tel_Residencia'));
-                $sheet->setCellValue('K' . $pos, $emision->getFieldValue('Fecha_de_nacimiento'));
-                $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Direcci_n'));
+                $deudor = $this->getRecord("Leads", $emision->getFieldValue("Cliente")->getEntityId());
+                $sheet->setCellValue('H' . $pos, $deudor->getFieldValue('First_Name') . " " . $deudor->getFieldValue('Last_Name'));
+                $sheet->setCellValue('I' . $pos, $deudor->getFieldValue('RNC_C_dula'));
+                $sheet->setCellValue('J' . $pos, $deudor->getFieldValue('Mobile'));
+                $sheet->setCellValue('K' . $pos, $deudor->getFieldValue('Fecha_de_nacimiento'));
+                $sheet->setCellValue('L' . $pos, $deudor->getFieldValue('Street'));
 
-                //valores relacionados al codeudor
-                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Nombre_codeudor') . " " . $emision->getFieldValue('Apellido_codeudor'));
-                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('RNC_C_dula_codeudor'));
-                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Tel_Residencia_codeudor'));
-                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Fecha_de_nacimiento_codeudor'));
-                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Direcci_n_codeudor'));
+                if (!empty($emision->getFieldValue("Codeudor"))) {
+                    $sheet->setCellValue('M' . $pos, "Si");
+                } else {
+                    $sheet->setCellValue('M' . $pos, "No");
+                }
 
                 //contadores
                 $cont++;
@@ -225,7 +219,7 @@ class Vida extends Zoho
         //cambiar el color de fondo de un rango de celdas
         $spreadsheet
             ->getActiveSheet()
-            ->getStyle('A12:Q12')
+            ->getStyle('A12:M12')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
@@ -233,7 +227,7 @@ class Vida extends Zoho
 
         //cambiar el color de fuente de un rango de celdas
         $spreadsheet->getActiveSheet()
-            ->getStyle('A12:Q12')
+            ->getStyle('A12:M12')
             ->getFont()
             ->getColor()
             ->setARGB("FFFFFF");
@@ -252,10 +246,6 @@ class Vida extends Zoho
         $sheet->getColumnDimension('K')->setWidth(20);
         $sheet->getColumnDimension('L')->setWidth(20);
         $sheet->getColumnDimension('M')->setWidth(30);
-        $sheet->getColumnDimension('N')->setWidth(30);
-        $sheet->getColumnDimension('O')->setWidth(30);
-        $sheet->getColumnDimension('P')->setWidth(30);
-        $sheet->getColumnDimension('Q')->setWidth(30);
 
         //ruta del excel
         $doc = WRITEPATH . 'uploads/reporte.xlsx';

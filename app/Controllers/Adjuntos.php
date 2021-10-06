@@ -44,7 +44,7 @@ class Adjuntos extends BaseController
         $json = json_decode($json, true);
 
         //descargar un documento en el servidor local
-        $file = $this->libreria->downloadAttachment("Sales_Orders", $json[0], $json[1], WRITEPATH . "uploads");
+        $file = $this->libreria->downloadAttachment("Deals", $json[0], $json[1], WRITEPATH . "uploads");
 
         //forzar al navegador a descargar el archivo
         header('Content-Description: File Transfer');
@@ -74,7 +74,7 @@ class Adjuntos extends BaseController
                         $ruta = WRITEPATH . 'uploads/' . $documento->getClientName();
 
                         //funcion para adjuntar el archivo
-                        $this->libreria->uploadAttachment("Sales_Orders", $id, $ruta);
+                        $this->libreria->uploadAttachment("Deals", $id, $ruta);
 
                         //borrar el archivo del servidor local
                         unlink($ruta);
@@ -89,9 +89,9 @@ class Adjuntos extends BaseController
             }
         }
 
-        $emision = $this->libreria->getRecord("Sales_Orders", $id);
-        $titulo = "Adjuntar documentos a emisión a nombre de " . $emision->getFieldValue('Nombre') . ' ' . $emision->getFieldValue('Apellido');
-        $adjuntos = $this->libreria->getAttachments("Sales_Orders", $id);
+        $emision = $this->libreria->getRecord("Deals", $id);
+        $titulo = "Adjuntar documentos a emisión, a nombre de " . $emision->getFieldValue('Cliente')->getLookupLabel();
+        $adjuntos = $this->libreria->getAttachments("Deals", $id);
         return view("adjuntos/emisiones", ["titulo" => $titulo, "emision" => $emision, "adjuntos" => $adjuntos]);
     }
 }

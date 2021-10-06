@@ -12,15 +12,16 @@
         <h4 class="text-center text-uppercase">
             resumen <br>
             seguro vehí­culo de motor <br>
-            plan <?= $detalles->getFieldValue('Plan') ?>
+            plan <?= $emision->getFieldValue('Plan') ?>
         </h4>
     </div>
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>No.</b> <?= $detalles->getFieldValue('SO_Number') ?> <br>
-            <b>Desde</b> <?= date("d/m/Y", strtotime($detalles->getCreatedTime())) ?> <br>
-            <b>Hasta</b> <?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?>
+            <b>No.</b> <?= $emision->getFieldValue('Numeraci_n') ?> <br>
+            <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
+            <b>Desde</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Fecha_de_inicio'))) ?> <br>
+            <b>Hasta</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Closing_Date'))) ?>
         </p>
     </div>
 </div>
@@ -31,7 +32,63 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">CLIENTE</h5>
-<?= $this->include('layouts/datos_cliente') ?>
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <td><?= $deudor->getFieldValue("First_Name") . " " . $deudor->getFieldValue("Last_Name") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">RNC/Cédula</th>
+                        <td><?= $deudor->getFieldValue("RNC_C_dula") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Email</th>
+                        <td><?= $deudor->getFieldValue("Email") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Fecha de Nacimiento</th>
+                        <td><?= $deudor->getFieldValue("Fecha_de_nacimiento") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Tel. Residencia</th>
+                        <td><?= $deudor->getFieldValue("Phone") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Celular</th>
+                        <td><?= $deudor->getFieldValue("Mobile") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Trabajo</th>
+                        <td><?= $deudor->getFieldValue("Fax") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Dirección</th>
+                        <td><?= $deudor->getFieldValue("Street") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <div class="col-12">
     &nbsp;
@@ -39,7 +96,63 @@
 
 <!-- vehiculo -->
 <h5 class="d-flex justify-content-center bg-primary text-white">VEHÍCULO</h5>
-<?= $this->include('layouts/datos_vehiculo') ?>
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Marca</th>
+                        <td><?= $vehiculo->getFieldValue('Marca') ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Modelo</th>
+                        <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Año</th>
+                        <td><?= $vehiculo->getFieldValue("A_o") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Color</th>
+                        <td><?= $vehiculo->getFieldValue("Color") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Tipo</th>
+                        <td><?= $vehiculo->getFieldValue("Tipo") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Chasis</th>
+                        <td><?= $vehiculo->getFieldValue("Name") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Placa</th>
+                        <td><?= $vehiculo->getFieldValue("Placa") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Suma asegurada</th>
+                        <td>RD$<?= number_format($emision->getFieldValue("Suma_asegurada"), 2) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <div class="col-12">
     &nbsp;
@@ -90,9 +203,9 @@
     <div class="card border-0">
         <div class="card-body">
             <?php
-            $riesgo_compresivo = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Riesgos_comprensivos') / 100);
-            $colision = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Colisi_n_y_vuelco') / 100);
-            $incendio = $detalles->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Incendio_y_robo') / 100);
+            $riesgo_compresivo = $emision->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Riesgos_comprensivos') / 100);
+            $colision = $emision->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Colisi_n_y_vuelco') / 100);
+            $incendio = $emision->getFieldValue('Suma_asegurada') * ($plan->getFieldValue('Incendio_y_robo') / 100);
             ?>
             <p class="card-title">
                 <br>
@@ -168,40 +281,40 @@
 
                 <tr>
                     <th scope="col">Marca</th>
-                    <td><?= $detalles->getFieldValue('Marca')->getLookupLabel() ?></td>
+                    <td><?= $vehiculo->getFieldValue('Marca') ?></td>
                 </tr>
 
                 <tr>
                     <th scope="col">Modelo</th>
-                    <td><?= $detalles->getFieldValue('Modelo')->getLookupLabel() ?></td>
+                    <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
                 </tr>
 
                 <tr>
                     <th scope="col">Chasis</th>
-                    <td><?= $detalles->getFieldValue("Chasis") ?></td>
+                    <td><?= $vehiculo->getFieldValue("Name") ?></td>
                 </tr>
 
                 <tr>
                     <th scope="col">Placa</th>
-                    <td><?= $detalles->getFieldValue("Placa") ?></td>
+                    <td><?= $vehiculo->getFieldValue("Placa") ?></td>
                 </tr>
 
 
                 <tr>
                     <th scope="col">Año</th>
-                    <td><?= $detalles->getFieldValue("A_o") ?></td>
+                    <td><?= $vehiculo->getFieldValue("A_o") ?></td>
                 </tr>
 
 
                 <tr>
                     <th scope="col">Desde</th>
-                    <td><?= date("d/m/Y", strtotime($detalles->getCreatedTime()))  ?></td>
+                    <td><?= date("d/m/Y", strtotime($emision->getFieldValue('Fecha_de_inicio')))  ?></td>
                 </tr>
 
 
                 <tr>
                     <th scope="col">Hasta</th>
-                    <td><?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?></td>
+                    <td><?= date("d/m/Y", strtotime($emision->getFieldValue('Closing_Date'))) ?></td>
                 </tr>
             </tbody>
         </table>
@@ -274,7 +387,7 @@
 <?= $this->section('js') ?>
 <!-- Tiempo para que la pagina se imprima y luego se cierre -->
 <script>
-    document.title = "Emisión No. " + <?= $detalles->getFieldValue('SO_Number') ?>; // Cambiamos el título
+    document.title = "Emisión No. " + <?= $emision->getFieldValue('Numeraci_n') ?>; // Cambiamos el título
     setTimeout(function() {
         window.print();
         window.close();

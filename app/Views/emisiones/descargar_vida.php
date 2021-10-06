@@ -16,10 +16,10 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>No.</b> <?= $detalles->getFieldValue('SO_Number') ?> <br>
+            <b>No.</b> <?= $emision->getFieldValue('Numeraci_n') ?> <br>
             <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
-            <b>Desde</b> <?= date("d/m/Y", strtotime($detalles->getCreatedTime())) ?> <br>
-            <b>Hasta</b> <?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?>
+            <b>Desde</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Fecha_de_inicio'))) ?> <br>
+            <b>Hasta</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Closing_Date'))) ?>
         </p>
     </div>
 </div>
@@ -30,9 +30,65 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL DEUDOR</h5>
-<?= $this->include('layouts/datos_cliente') ?>
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <td><?= $deudor->getFieldValue("First_Name") . " " . $deudor->getFieldValue("Last_Name") ?></td>
+                    </tr>
 
-<?php if (!empty($detalles->getFieldValue("Nombre_codeudor"))) : ?>
+                    <tr>
+                        <th scope="col">RNC/Cédula</th>
+                        <td><?= $deudor->getFieldValue("RNC_C_dula") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Email</th>
+                        <td><?= $deudor->getFieldValue("Email") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Fecha de Nacimiento</th>
+                        <td><?= $deudor->getFieldValue("Fecha_de_nacimiento") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Tel. Residencia</th>
+                        <td><?= $deudor->getFieldValue("Phone") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Celular</th>
+                        <td><?= $deudor->getFieldValue("Mobile") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Trabajo</th>
+                        <td><?= $deudor->getFieldValue("Fax") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Dirección</th>
+                        <td><?= $deudor->getFieldValue("Street") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<?php if (!empty($emision->getFieldValue("Codeudor"))) : ?>
     <div class="col-12">
         &nbsp;
     </div>
@@ -41,45 +97,57 @@
     <div class="card-group border" style="font-size: small;">
         <div class="card border-0">
             <div class="card-body">
-                <p class="card-text">
-                    <b>Nombre</b> <br>
-                    <b>RNC/Cédula</b> <br>
-                    <b>Email</b> <br>
-                    <b>Fecha de Nacimiento</b>
-                </p>
+                <table class="table table-sm table-borderless">
+                    <tbody>
+                        <tr>
+                            <th scope="col">Nombre</th>
+                            <td><?= $codeudor->getFieldValue("First_Name") . " " . $codeudor->getFieldValue("Last_Name") ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">RNC/Cédula</th>
+                            <td><?= $codeudor->getFieldValue("RNC_C_dula") ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Email</th>
+                            <td><?= $codeudor->getFieldValue("Email") ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Fecha de Nacimiento</th>
+                            <td><?= $codeudor->getFieldValue("Fecha_de_nacimiento") ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="card border-0">
             <div class="card-body">
-                <p class="card-text">
-                    <?= $detalles->getFieldValue("Nombre_codeudor") . " " . $detalles->getFieldValue("Apellido_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("RNC_C_dula_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("Correo_electr_nico_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("Fecha_de_nacimiento_codeudor") ?>
-                </p>
-            </div>
-        </div>
+                <table class="table table-sm table-borderless">
+                    <tbody>
+                        <tr>
+                            <th scope="col">Tel. Residencia</th>
+                            <td><?= $codeudor->getFieldValue("Phone") ?></td>
+                        </tr>
 
-        <div class="card border-0">
-            <div class="card-body">
-                <p class="card-text">
-                    <b>Tel. Residencia</b> <br>
-                    <b>Tel. Celular</b> <br>
-                    <b>Tel. Trabajo</b> <br>
-                    <b>Dirección</b>
-                </p>
-            </div>
-        </div>
+                        <tr>
+                            <th scope="col">Tel. Celular</th>
+                            <td><?= $codeudor->getFieldValue("Mobile") ?></td>
+                        </tr>
 
-        <div class="card border-0">
-            <div class="card-body">
-                <p class="card-text">
-                    <?= $detalles->getFieldValue("Tel_Residencia_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("Tel_Celular_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("Tel_Trabajo_codeudor") ?> <br>
-                    <?= $detalles->getFieldValue("Direcci_n_codeudor") ?>
-                </p>
+                        <tr>
+                            <th scope="col">Tel. Trabajo</th>
+                            <td><?= $codeudor->getFieldValue("Fax") ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Dirección</th>
+                            <td><?= $codeudor->getFieldValue("Street") ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -96,7 +164,7 @@
             <p class="card-title">
                 <b>Fecha Deudor</b>
 
-                <?php if ($detalles->getFieldValue("Fecha_de_nacimiento_codeudor")) : ?>
+                <?php if (!empty($emision->getFieldValue("Codeudor"))) : ?>
                     <br> <b>Fecha Codeudor</b>
                 <?php endif ?>
             </p>
@@ -117,16 +185,16 @@
     <div class="card border-0">
         <div class="card-body">
             <p class="card-title">
-                <?= $detalles->getFieldValue("Fecha_de_nacimiento") ?>
+                <?= $deudor->getFieldValue("Fecha_de_nacimiento") ?>
 
-                <?php if ($detalles->getFieldValue("Fecha_de_nacimiento_codeudor")) {
-                    echo "<br>" . $detalles->getFieldValue("Fecha_de_nacimiento_codeudor");
-                } ?>
+                <?php if (!empty($emision->getFieldValue("Codeudor"))) : ?>
+                    <br> <?= $codeudor->getFieldValue("Fecha_de_nacimiento") ?>
+                <?php endif ?>
             </p>
 
             <p class="card-title">
-                RD<?= number_format($detalles->getFieldValue("Suma_asegurada"), 2) ?> <br>
-                <?= $detalles->getFieldValue("Plazo") ?> meses
+                RD<?= number_format($emision->getFieldValue("Suma_asegurada"), 2) ?> <br>
+                <?= $emision->getFieldValue("Plazo") ?> meses
             </p>
 
             <p class="card-title">
@@ -142,8 +210,8 @@
     &nbsp;
 </div>
 
-<div class="card-group border" style="font-size: small;">
-    <div class="card border-0">
+<div class="card-group" style="font-size: small;">
+    <div class="card">
         <div class="card-body">
             <h6 class="card-title text-center">REQUISITOS DEL DEUDOR</h6>
             <?php $requisitos = $plan->getFieldValue("Requisitos_deudor"); ?>
@@ -155,8 +223,8 @@
         </div>
     </div>
 
-    <?php if ($detalles->getFieldValue("Fecha_de_nacimiento_codeudor")) : ?>
-        <div class="card border-0">
+    <?php if (!empty($emision->getFieldValue("Codeudor"))) : ?>
+        <div class="card">
             <div class="card-body">
                 <h6 class="card-title text-center">REQUISITOS DEL CODEUDOR</h6>
                 <?php $requisitos = $plan->getFieldValue("Requisitos_codeudor"); ?>
@@ -186,7 +254,7 @@
 <?= $this->section('js') ?>
 <!-- Tiempo para que la pagina se imprima y luego se cierre -->
 <script>
-    document.title = "Emisión No. " + <?= $detalles->getFieldValue('SO_Number') ?>; // Cambiamos el título
+    document.title = "Emisión No. " + <?= $emision->getFieldValue('Numeraci_n') ?>; // Cambiamos el título
     setTimeout(function() {
         window.print();
         window.close();

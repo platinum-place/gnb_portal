@@ -13,10 +13,10 @@
                         <label class="form-label">Plan</label>
                         <select class="form-select" id="tipo" name="tipo" required>
                             <option value="" disabled selected>Selecciona un tipo</option>
-                            <option value="auto">Auto</option>
-                            <option value="vida">Vida</option>
-                            <option value="desempleo">Vida/Desempleo</option>
-                            <option value="incendio">Incendio Hipotecario</option>
+                            <option value="Auto">Auto</option>
+                            <option value="Vida">Vida</option>
+                            <option value="Desempleo">Vida/Desempleo</option>
+                            <option value="Incendio">Incendio Hipotecario</option>
                         </select>
                     </div>
 
@@ -45,11 +45,11 @@
 <!-- hace que el rango de clic del campo de fecha sea mas grande -->
 <style>
     #desde::-webkit-calendar-picker-indicator {
-        padding-left: 70%;
+        padding-left: 80%;
     }
 
     #hasta::-webkit-calendar-picker-indicator {
-        padding-left: 70%;
+        padding-left: 80%;
     }
 </style>
 <?= $this->endSection() ?>

@@ -204,7 +204,6 @@ class Auto extends Zoho
         $sheet->setCellValue('P12', 'Placa');
         $sheet->setCellValue('Q12', 'Chasis');
         $sheet->setCellValue('R12', 'Tipo vehículo');
-        $sheet->setCellValue('S12', 'Estado vehículo');
 
         //inicializar contadores
         $cont = 1;
@@ -212,40 +211,43 @@ class Auto extends Zoho
 
         foreach ($reporte->emisiones as $emisiones => $emision) {
             if (
-                date("Y-m-d", strtotime($emision->getCreatedTime())) >= $reporte->desde
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) >= $reporte->desde
                 and
-                date("Y-m-d", strtotime($emision->getCreatedTime())) <= $reporte->hasta
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) <= $reporte->hasta
             ) {
                 //obtener los datos del plan
-                //no tenemos problemas porque solo es un plan
-                foreach ($emision->getLineItems() as $lineItem) {
-                    $aseguradora = $lineItem->getDescription();
-                }
+                $plan = $this->getRecord("Products", $emision->getFieldValue("Coberturas")->getEntityId());
 
                 //valores de la tabla
                 $sheet->setCellValue('A' . $pos, $cont);
                 $sheet->setCellValue('B' . $pos, $emision->getFieldValue('Contact_Name')->getLookupLabel());
                 $sheet->setCellValue('C' . $pos, $emision->getFieldValue('Plan'));
-                $sheet->setCellValue('D' . $pos, $aseguradora);
+                $sheet->setCellValue('D' . $pos, $plan->getFieldValue('Vendor_Name')->getLookupLabel());
                 $sheet->setCellValue('E' . $pos, $emision->getFieldValue('Suma_asegurada'));
-                $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Prima'));
+                $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Amount'));
 
                 //valores relacionados al cliente
-                $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
-                $sheet->setCellValue('H' . $pos, $emision->getFieldValue('RNC_C_dula'));
-                $sheet->setCellValue('I' . $pos, $emision->getFieldValue('Tel_Residencia'));
-                $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Fecha_de_nacimiento'));
-                $sheet->setCellValue('K' . $pos, $emision->getFieldValue('Direcci_n'));
+                $deudor = $this->getRecord("Leads", $emision->getFieldValue("Cliente")->getEntityId());
+                $sheet->setCellValue('G' . $pos, $deudor->getFieldValue("First_Name") . " " . $deudor->getFieldValue("Last_Name"));
+                $sheet->setCellValue('H' . $pos, $deudor->getFieldValue('RNC_C_dula'));
+                $sheet->setCellValue('I' . $pos, $deudor->getFieldValue('Mobile'));
+                $sheet->setCellValue('J' . $pos, $deudor->getFieldValue('Fecha_de_nacimiento'));
+                $sheet->setCellValue('K' . $pos, $deudor->getFieldValue('Street'));
 
                 //valores relacionados al vehiculo
-                $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Marca')->getLookupLabel());
-                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Modelo')->getLookupLabel());
-                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('A_o'));
-                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Color'));
-                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Placa'));
-                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Chasis'));
-                $sheet->setCellValue('R' . $pos, $emision->getFieldValue('Tipo_veh_culo'));
-                $sheet->setCellValue('S' . $pos, $emision->getFieldValue('Condiciones'));
+                $criterio = "Trato:equals:" . $emision->getEntityId();
+                $bienes = $this->searchRecordsByCriteria("Bienes", $criterio, 1, 1);
+                foreach ($bienes as $bien) {
+                    $vehiculo = $bien;
+                }
+
+                $sheet->setCellValue('L' . $pos, $vehiculo->getFieldValue('Marca'));
+                $sheet->setCellValue('M' . $pos, $vehiculo->getFieldValue('Modelo'));
+                $sheet->setCellValue('N' . $pos, $vehiculo->getFieldValue('A_o'));
+                $sheet->setCellValue('O' . $pos, $vehiculo->getFieldValue('Color'));
+                $sheet->setCellValue('P' . $pos, $vehiculo->getFieldValue('Placa'));
+                $sheet->setCellValue('Q' . $pos, $vehiculo->getFieldValue('Name'));
+                $sheet->setCellValue('R' . $pos, $vehiculo->getFieldValue('Tipo'));
 
                 //contadores
                 $cont++;
@@ -256,7 +258,7 @@ class Auto extends Zoho
         //cambiar el color de fondo de un rango de celdas
         $spreadsheet
             ->getActiveSheet()
-            ->getStyle('A12:S12')
+            ->getStyle('A12:R12')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()
@@ -264,7 +266,7 @@ class Auto extends Zoho
 
         //cambiar el color de fuente de un rango de celdas
         $spreadsheet->getActiveSheet()
-            ->getStyle('A12:S12')
+            ->getStyle('A12:R12')
             ->getFont()
             ->getColor()
             ->setARGB("FFFFFF");
@@ -288,8 +290,6 @@ class Auto extends Zoho
         $sheet->getColumnDimension('P')->setWidth(20);
         $sheet->getColumnDimension('Q')->setWidth(20);
         $sheet->getColumnDimension('R')->setWidth(20);
-        $sheet->getColumnDimension('T')->setWidth(20);
-        $sheet->getColumnDimension('S')->setWidth(20);
 
         //ruta del excel
         $doc = WRITEPATH . 'uploads/reporte.xlsx';

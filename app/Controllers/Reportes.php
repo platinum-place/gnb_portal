@@ -36,22 +36,21 @@ class Reportes extends BaseController
                 session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
                 return redirect()->to(site_url("reportes"));
             } else {
-
                 //instanciar una libreria para el cuerpo del reporte
                 switch ($this->request->getPost("tipo")) {
-                    case 'vida':
+                    case 'Vida':
                         $libreria = new Vida;
                         break;
 
-                    case 'auto':
+                    case 'Auto':
                         $libreria = new Auto;
                         break;
 
-                    case 'desempleo':
+                    case 'Desempleo':
                         $libreria = new Desempleo;
                         break;
 
-                    case 'incendio':
+                    case 'Incendio':
                         $libreria = new Incendio;
                         break;
                 }

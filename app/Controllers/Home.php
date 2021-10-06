@@ -19,30 +19,24 @@ class Home extends BaseController
         $lista = array();
         $polizas = 0;
         $vencidas = 0;
-        $pendiente = 0;
 
         //obtener las emisiones
         $emisiones = $this->libreria->lista();
 
         foreach ((array)$emisiones as $emision) {
             //filtrar por  mes y año actual
-            if (date("Y-m", strtotime($emision->getCreatedTime())) == date("Y-m")) {
-                foreach ($emision->getLineItems() as $lineItem) {
-                    //contador del nombre de las aseguradoras
-                    $lista[] =  $lineItem->getDescription();
-                }
+            if (date("Y-m", strtotime($emision->getFieldValue('Fecha_de_inicio'))) == date("Y-m")) {
+                //detalles de las coberturas
+                $coberturas = $this->libreria->getRecord("Products", $emision->getFieldValue('Coberturas')->getEntityId());
+                //contador del nombre de las aseguradoras
+                $lista[] =  $coberturas->getFieldValue('Vendor_Name')->getLookupLabel();
 
                 //contador en general
                 $polizas++;
-
-                //contador para las emisiones que aun no ha sido revisadas
-                if ($emision->getFieldValue('Status') == "Pendiente") {
-                    $pendiente++;
-                }
             }
 
             //contador para las emisiones que vencen en el mes y año actual
-            if (date("Y-m", strtotime($emision->getFieldValue('Due_Date'))) == date("Y-m")) {
+            if (date("Y-m", strtotime($emision->getFieldValue('Closing_Date'))) == date("Y-m")) {
                 $vencidas++;
             }
         }
@@ -52,7 +46,6 @@ class Home extends BaseController
             "lista" => array_count_values($lista),
             "polizas" => $polizas,
             "vencidas" => $vencidas,
-            "pendiente" => $pendiente
         ]);
     }
 

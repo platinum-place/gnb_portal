@@ -16,10 +16,10 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>No.</b> <?= $detalles->getFieldValue('SO_Number') ?> <br>
+            <b>No.</b> <?= $emision->getFieldValue('Numeraci_n') ?> <br>
             <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
-            <b>Desde</b> <?= date("d/m/Y", strtotime($detalles->getCreatedTime())) ?> <br>
-            <b>Hasta</b> <?= date("d/m/Y", strtotime($detalles->getFieldValue('Due_Date'))) ?>
+            <b>Desde</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Fecha_de_inicio'))) ?> <br>
+            <b>Hasta</b> <?= date("d/m/Y", strtotime($emision->getFieldValue('Closing_Date'))) ?>
         </p>
     </div>
 </div>
@@ -30,7 +30,63 @@
 
 <!-- cliente -->
 <h5 class="d-flex justify-content-center bg-primary text-white">DATOS DEL CLIENTE</h5>
-<?= $this->include('layouts/datos_cliente') ?>
+<div class="card-group border" style="font-size: small;">
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <td><?= $deudor->getFieldValue("First_Name") . " " . $deudor->getFieldValue("Last_Name") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">RNC/Cédula</th>
+                        <td><?= $deudor->getFieldValue("RNC_C_dula") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Email</th>
+                        <td><?= $deudor->getFieldValue("Email") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Fecha de Nacimiento</th>
+                        <td><?= $deudor->getFieldValue("Fecha_de_nacimiento") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card border-0">
+        <div class="card-body">
+            <table class="table table-sm table-borderless">
+                <tbody>
+                    <tr>
+                        <th scope="col">Tel. Residencia</th>
+                        <td><?= $deudor->getFieldValue("Phone") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Celular</th>
+                        <td><?= $deudor->getFieldValue("Mobile") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Tel. Trabajo</th>
+                        <td><?= $deudor->getFieldValue("Fax") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Dirección</th>
+                        <td><?= $deudor->getFieldValue("Street") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <div class="col-12">
     &nbsp;
@@ -57,9 +113,9 @@
     <div class="card border-0">
         <div class="card-body">
             <p class="card-title">
-                RD<?= number_format($detalles->getFieldValue("Suma_asegurada"), 2) ?> <br>
-                RD<?= number_format($detalles->getFieldValue("Cuota"), 2) ?> <br>
-                <?= $detalles->getFieldValue("Plazo") ?> meses
+                RD<?= number_format($emision->getFieldValue("Suma_asegurada"), 2) ?> <br>
+                RD<?= number_format($emision->getFieldValue("Cuota"), 2) ?> <br>
+                <?= $emision->getFieldValue("Plazo") ?> meses
             </p>
 
             <p class="card-title">
@@ -87,7 +143,7 @@
 <?= $this->section('js') ?>
 <!-- Tiempo para que la pagina se imprima y luego se cierre -->
 <script>
-    document.title = "Emisión No. " + <?= $detalles->getFieldValue('SO_Number') ?>; // Cambiamos el título
+    document.title = "Emisión No. " + <?= $emision->getFieldValue('Numeraci_n') ?>; // Cambiamos el título
     setTimeout(function() {
         window.print();
         window.close();

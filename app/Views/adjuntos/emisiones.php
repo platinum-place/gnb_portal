@@ -16,7 +16,7 @@
                         </thead>
 
                         <tbody>
-                            <?php foreach ((array)$lista as $adjunto) : ?>
+                            <?php foreach ((array)$adjuntos as $adjunto) : ?>
                                 <tr>
                                     <td><?= $adjunto->getFileName() ?></td>
                                     <td>

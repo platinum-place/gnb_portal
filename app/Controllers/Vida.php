@@ -25,6 +25,7 @@ class Vida extends BaseController
             $cotizacion->plazo = $this->request->getPost("plazo");
             $cotizacion->tipo = "Vida";
             $cotizacion->plan = "Vida";
+            $cotizacion->crm = "TU ASISTENCIA SALUD";
             $cotizacion->fecha_deudor = $this->request->getPost("deudor");
             $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
 

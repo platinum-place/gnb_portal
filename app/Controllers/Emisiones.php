@@ -18,30 +18,94 @@ class Emisiones extends BaseController
     {;
         if ($this->request->getPost()) {
             switch ($this->request->getPost("opcion")) {
-                case 'nombre':
-                    $criteria = "((Nombre:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'apellido':
-                    $criteria = "((Apellido:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
-                case 'id':
-                    $criteria = "((RNC_C_dula:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
-                    break;
-
                 case 'codigo':
-                    $criteria = "((SO_Number:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
+                    $criteria = "((Numeraci_n:equals:" . $this->request->getPost("busqueda") . ") and (Account_Name:equals:" .  session("usuario")->getFieldValue("Account_Name")->getEntityId() . "))";
                     break;
             }
 
-            $emisiones = $this->libreria->searchRecordsByCriteria("Sales_Orders", $criteria);
+            $emisiones = $this->libreria->searchRecordsByCriteria("Deals", $criteria);
             return view("emisiones/index", ["titulo" => "Emisiones de " . $this->request->getPost("busqueda"), "emisiones" => $emisiones]);
         }
 
         //lista de emisiones
         $emisiones = $this->libreria->lista();
         return view("emisiones/index", ["titulo" => "Emisiones", "emisiones" => $emisiones]);
+    }
+
+    public function descargar($id)
+    {
+        //obtener datoss de la emision
+        $emision = $this->libreria->getRecord("Deals", $id);
+
+        //informacion sobre las coberturas, la aseguradora,las coberturas
+        $plan = $this->libreria->getRecord("Products", $emision->getFieldValue("Coberturas")->getEntityId());
+
+        //informacion sobre el cliente
+        $deudor = $this->libreria->getRecord("Leads", $emision->getFieldValue("Cliente")->getEntityId());
+        if (!empty($emision->getFieldValue("Codeudor"))) {
+            $codeudor = $this->libreria->getRecord("Leads", $emision->getFieldValue("Codeudor")->getEntityId());
+        }
+
+        //resumen de las primas
+        $neta = $emision->getFieldValue("Amount") - ($emision->getFieldValue("Amount") * 0.16);
+        $isc = $emision->getFieldValue("Amount") * 0.16;
+        $total = $emision->getFieldValue("Amount");
+
+        //selecion de vista
+        switch ($emision->getFieldValue("Tipo_portal")) {
+            case 'Auto':
+                //buscar todo los bienes, normalmente solo uno, que representa el vehiculo
+                $criterio = "Trato:equals:$id";
+                $bienes = $this->libreria->searchRecordsByCriteria("Bienes", $criterio, 1, 1);
+                foreach ($bienes as $bien) {
+                    $vehiculo = $bien;
+                }
+
+                return view('emisiones/descargar_auto', [
+                    "emision" => $emision,
+                    "plan" => $plan,
+                    "deudor" => $deudor,
+                    "vehiculo" => $vehiculo,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'Vida':
+                return view('emisiones/descargar_vida', [
+                    "emision" => $emision,
+                    "plan" => $plan,
+                    "deudor" => $deudor,
+                    "codeudor" => $codeudor,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'incendio':
+                return view('emisiones/descargar_incendio', [
+                    "emision" => $emision,
+                    "plan" => $plan,
+                    "deudor" => $deudor,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+
+            case 'desempleo':
+                return view('emisiones/descargar_desempleo', [
+                    "emision" => $emision,
+                    "plan" => $plan,
+                    "deudor" => $deudor,
+                    "neta" => $neta,
+                    "isc" => $isc,
+                    "total" => $total,
+                ]);
+                break;
+        }
     }
 
     public function emitir($cotizacionid)
@@ -53,58 +117,39 @@ class Emisiones extends BaseController
             //obtener los datos del plan elegido
             foreach ($cotizacion->getLineItems() as $lineItem) {
                 if ($this->request->getPost("planid") == $lineItem->getProduct()->getEntityId()) {
-                    $plan["total"] = round($lineItem->getNetTotal(), 2);
-                    $plan["aseguradora"] = $lineItem->getDescription();
-                    $plan["planid"] = $lineItem->getProduct()->getEntityId();
+                    $total = round($lineItem->getNetTotal(), 2);
+                    $planid = $lineItem->getProduct()->getEntityId();
                 }
             }
 
+            //
+            //crear cliente
+            //
+            $clienteid = $this->libreria->crear_cliente($cotizacion);
+
+            //
+            //crear codeudor
+            //
+            if (!empty($cotizacion->getFieldValue("Nombre_codeudor"))) {
+                $codeudorid = $this->libreria->crear_codeudor($cotizacion);
+            } else {
+                $codeudorid = null;
+            }
+
+            //
+            //Crear emision
+            //
             //array que representa al registro que se creara
             //necesita los valores de la cotizacion y el formulario
             //algunos valores, como el plan y la fecha, son fijos
-            $emision = [
-                "Subject" => "Emisión desde portal IT",
-                "Due_Date" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 years")),
-                "Prima" => round($plan["total"], 2),
-                "Cuota" => $cotizacion->getFieldValue("Cuota"),
-                "Tipo" =>  $cotizacion->getFieldValue("Tipo"),
-                "Account_Name" => session("usuario")->getFieldValue("Account_Name")->getEntityId(),
-                "Contact_Name" =>  session("usuario")->getEntityId(),
-                "Plan" => $cotizacion->getFieldValue("Plan"),
-                "Suma_asegurada" =>  $cotizacion->getFieldValue("Suma_asegurada"),
-                "Status" => "Pendiente",
-                "Plazo" => $cotizacion->getFieldValue("Plazo"),
-                "Nombre" => $cotizacion->getFieldValue("Nombre"),
-                "Apellido" => $cotizacion->getFieldValue("Apellido"),
-                "Fecha_de_nacimiento" => $cotizacion->getFieldValue("Fecha_de_nacimiento"),
-                "RNC_C_dula" => $cotizacion->getFieldValue("RNC_C_dula"),
-                "Correo_electr_nico" => $cotizacion->getFieldValue("Correo_electr_nico"),
-                "Direcci_n" => $cotizacion->getFieldValue("Direcci_n"),
-                "Tel_Celular" => $cotizacion->getFieldValue("Tel_Celular"),
-                "Tel_Residencia" => $cotizacion->getFieldValue("Tel_Residencia"),
-                "Tel_Trabajo" => $cotizacion->getFieldValue("Tel_Trabajo"),
-                "Nombre_codeudor" => $cotizacion->getFieldValue("Nombre_codeudor"),
-                "Apellido_codeudor" => $cotizacion->getFieldValue("Apellido_codeudor"),
-                "Tel_Celular_codeudor" => $cotizacion->getFieldValue("Tel_Celular_codeudor"),
-                "Tel_Residencia_codeudor" => $cotizacion->getFieldValue("Tel_Residencia_codeudor"),
-                "Tel_Trabajo_codeudor" => $cotizacion->getFieldValue("Tel_Trabajo_codeudor"),
-                "RNC_C_dula_codeudor" => $cotizacion->getFieldValue("RNC_C_dula_codeudor"),
-                "Fecha_de_nacimiento_codeudor" => $cotizacion->getFieldValue("Fecha_de_nacimiento_codeudor"),
-                "Direcci_n_codeudor" => $cotizacion->getFieldValue("Direcci_n_codeudor"),
-                "Correo_electr_nico_codeudor" => $cotizacion->getFieldValue("Correo_electr_nico_codeudor"),
-                "A_o" => $cotizacion->getFieldValue("A_o"),
-                "Marca" => $cotizacion->getFieldValue("Marca"),
-                "Modelo" => $cotizacion->getFieldValue("Modelo"),
-                "Uso" => $cotizacion->getFieldValue("Uso"),
-                "Tipo_veh_culo" => $cotizacion->getFieldValue("Tipo_veh_culo"),
-                "Chasis" => $cotizacion->getFieldValue("Chasis"),
-                "Color" => $cotizacion->getFieldValue("Color"),
-                "Placa" => $cotizacion->getFieldValue("Placa"),
-                "Condiciones" => $cotizacion->getFieldValue("Condiciones"),
-            ];
+            $emisionid = $this->libreria->crear_emision($cotizacion, $total, $planid, $clienteid, $codeudorid);
 
-            //crea la cotizacion el en crm
-            $emisionid = $this->libreria->crear_emision($emision, $plan);
+            //
+            //crear bien
+            //
+            if (!empty($cotizacion->getFieldValue("Marca"))) {
+                $bienid = $this->libreria->crear_bien($cotizacion, $emisionid);
+            }
 
             //eliminar la cotizacion
             $this->libreria->delete("Quotes", $cotizacionid);
@@ -113,17 +158,14 @@ class Emisiones extends BaseController
             if ($documentos = $this->request->getFiles()) {
                 foreach ($documentos['documentos'] as $documento) {
                     if ($documento->isValid() && !$documento->hasMoved()) {
-                        //cambiar el nombre del archivo
-                        $newName = $documento->getRandomName();
-
                         //subir el archivo al servidor
-                        $documento->move(WRITEPATH . 'uploads', $newName);
+                        $documento->move(WRITEPATH . 'uploads');
 
                         //ruta del archivo subido
-                        $ruta = WRITEPATH . 'uploads/' . $newName;
+                        $ruta = WRITEPATH . 'uploads/' . $documento->getClientName();
 
                         //funcion para adjuntar el archivo
-                        $this->libreria->uploadAttachment("Sales_Orders", $emisionid, $ruta);
+                        $this->libreria->uploadAttachment("Deals", $emisionid, $ruta);
 
                         //borrar el archivo del servidor local
                         unlink($ruta);
@@ -132,74 +174,13 @@ class Emisiones extends BaseController
             }
 
             //alerta
-            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en estado proceso de validación. Mientras, puedes descargar un certificado de emisión o adjuntar mas documentos.");
+            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en proceso de validación. Mientras, puedes descargar un certificado de emisión o adjuntar mas documentos.");
 
             //limpiar post
             return redirect()->to(site_url("emisiones"));
         }
 
         //vista
-        return view("emisiones/emitir", [
-            "titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    public function descargar($id)
-    {
-        //obtener datoss de la emision
-        $detalles = $this->libreria->getRecord("Sales_Orders", $id);
-
-        foreach ($detalles->getLineItems() as $lineItem) {
-            //obtener datos del plan
-            $plan = $this->libreria->getRecord("Products", $lineItem->getProduct()->getEntityId());
-        }
-
-        $neta = $detalles->getFieldValue("Prima") - ($detalles->getFieldValue("Prima") * 0.16);
-        $isc = $detalles->getFieldValue("Prima") * 0.16;
-        $total = $detalles->getFieldValue("Prima");
-
-        //selecion de vista
-        switch ($detalles->getFieldValue("Tipo")) {
-            case 'Auto':
-                return view('emisiones/descargar_auto', [
-                    "detalles" => $detalles,
-                    "plan" => $plan,
-                    "neta" => $neta,
-                    "isc" => $isc,
-                    "total" => $total,
-                ]);
-                break;
-
-            case 'Vida':
-                return view('emisiones/descargar_vida', [
-                    "detalles" => $detalles,
-                    "plan" => $plan,
-                    "neta" => $neta,
-                    "isc" => $isc,
-                    "total" => $total,
-                ]);
-                break;
-
-            case 'incendio':
-                return view('emisiones/descargar_incendio', [
-                    "detalles" => $detalles,
-                    "plan" => $plan,
-                    "neta" => $neta,
-                    "isc" => $isc,
-                    "total" => $total,
-                ]);
-                break;
-
-            case 'desempleo':
-                return view('emisiones/descargar_desempleo', [
-                    "detalles" => $detalles,
-                    "plan" => $plan,
-                    "neta" => $neta,
-                    "isc" => $isc,
-                    "total" => $total,
-                ]);
-                break;
-        }
+        return view("emisiones/emitir", ["titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'), "cotizacion" => $cotizacion]);
     }
 }

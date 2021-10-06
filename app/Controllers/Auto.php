@@ -70,6 +70,7 @@ class Auto extends BaseController
             $cotizacion->estado = $this->request->getPost("estado");
             $cotizacion->marcaid = $this->request->getPost("marca");
             $cotizacion->tipo = "Auto";
+            $cotizacion->crm = "TU ASISTENCIA VIAL";
 
             //datos relacionados al modelo, dividios en un array
             $modelo = explode(",", $this->request->getPost("modelo"));

@@ -123,12 +123,12 @@ class Incendio extends Zoho
         $sheet->setCellValue('E12', 'Aseguradora');
         $sheet->setCellValue('F12', 'Valor de la Propiedad');
         $sheet->setCellValue('G12', 'Prima');
-        $sheet->setCellValue('H12', 'Cliente');
-        $sheet->setCellValue('I12', 'RNC/Cédula');
-        $sheet->setCellValue('J12', 'Tel. Residencia');
-        $sheet->setCellValue('K12', 'Fecha de nacimiento');
-        $sheet->setCellValue('L12', 'Dirección');
-        $sheet->setCellValue('M12', 'Valor del Préstamo');
+        $sheet->setCellValue('H12', 'Valor del Préstamo');
+        $sheet->setCellValue('I12', 'Cliente');
+        $sheet->setCellValue('J12', 'RNC/Cédula');
+        $sheet->setCellValue('K12', 'Tel. Residencia');
+        $sheet->setCellValue('L12', 'Fecha de nacimiento');
+        $sheet->setCellValue('M12', 'Dirección');
 
         //inicializar contadores
         $cont = 1;
@@ -136,33 +136,30 @@ class Incendio extends Zoho
 
         foreach ($reporte->emisiones as $emisiones => $emision) {
             if (
-                date("Y-m-d", strtotime($emision->getCreatedTime())) >= $reporte->desde
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) >= $reporte->desde
                 and
-                date("Y-m-d", strtotime($emision->getCreatedTime())) <= $reporte->hasta
+                date("Y-m-d", strtotime($emision->getFieldValue('Fecha_de_inicio'))) <= $reporte->hasta
             ) {
                 //obtener los datos del plan
-                //no tenemos problemas porque solo es un plan
-                foreach ($emision->getLineItems() as $lineItem) {
-                    $aseguradora = $lineItem->getDescription();
-                }
+                $plan = $this->getRecord("Products", $emision->getFieldValue("Coberturas")->getEntityId());
 
                 //valores de la tabla
                 $sheet->setCellValue('A' . $pos, $cont);
                 $sheet->setCellValue('B' . $pos, $emision->getFieldValue('Contact_Name')->getLookupLabel());
                 $sheet->setCellValue('C' . $pos, $emision->getFieldValue('Plazo'));
                 $sheet->setCellValue('D' . $pos, $emision->getFieldValue('Plan'));
-                $sheet->setCellValue('E' . $pos, $aseguradora);
+                $sheet->setCellValue('E' . $pos, $plan->getFieldValue('Vendor_Name')->getLookupLabel());
                 $sheet->setCellValue('F' . $pos, $emision->getFieldValue('Suma_asegurada'));
-                $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Prima'));
+                $sheet->setCellValue('G' . $pos, $emision->getFieldValue('Amount'));
+                $sheet->setCellValue('H' . $pos, $emision->getFieldValue('Cuota'));
 
                 //valores relacionados al deudor
-                $sheet->setCellValue('H' . $pos, $emision->getFieldValue('Nombre') . " " . $emision->getFieldValue('Apellido'));
-                $sheet->setCellValue('I' . $pos, $emision->getFieldValue('RNC_C_dula'));
-                $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Tel_Residencia'));
-                $sheet->setCellValue('K' . $pos, $emision->getFieldValue('Fecha_de_nacimiento'));
-                $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Direcci_n'));
-
-                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Cuota'));
+                $deudor = $this->getRecord("Leads", $emision->getFieldValue("Cliente")->getEntityId());
+                $sheet->setCellValue('I' . $pos, $deudor->getFieldValue('First_Name') . " " . $deudor->getFieldValue('Last_Name'));
+                $sheet->setCellValue('J' . $pos, $deudor->getFieldValue('RNC_C_dula'));
+                $sheet->setCellValue('K' . $pos, $deudor->getFieldValue('Mobile'));
+                $sheet->setCellValue('L' . $pos, $deudor->getFieldValue('Fecha_de_nacimiento'));
+                $sheet->setCellValue('M' . $pos, $deudor->getFieldValue('Street'));
 
                 //contadores
                 $cont++;

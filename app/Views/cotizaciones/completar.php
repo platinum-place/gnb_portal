@@ -145,6 +145,7 @@
                     <input type="text" hidden name="cuota" value="<?= $cotizacion->cuota ?>">
                     <input type="text" hidden name="plazo" value="<?= $cotizacion->plazo ?>">
                     <input type="text" hidden name="fecha_codeudor" value="<?= $cotizacion->fecha_codeudor ?>">
+                    <input type="text" hidden name="tipo_crm" value="<?= $cotizacion->tipo_crm ?>">
                 </div>
 
                 <div class="modal-footer">
