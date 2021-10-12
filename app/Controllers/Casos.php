@@ -20,7 +20,6 @@ class Casos extends BaseController
             }
         }
 
-
         //obtener datos del caso
         $libreria = new Zoho;
         $caso = $libreria->getRecord("Cases", $id);

@@ -2,52 +2,36 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Zoho;
+use App\Libraries\Login as LibrariesLogin;
 
 class Login extends BaseController
 {
-    protected $libreria;
-
-    function __construct()
-    {
-        //cargar la libreria para hacer uso de una funcion de la api
-        $this->libreria = new Zoho;
-    }
-
     public function index()
     {
         if ($this->request->getPost()) {
-            $criterio = "((Email:equals:" . $this->request->getPost("correo") . ") and (Contrase_a:equals:" . $this->request->getPost("pass") . "))";
-            $usuarios = $this->libreria->searchRecordsByCriteria("Contacts", $criterio, 1, 1);
+            $libreria = new LibrariesLogin;
+            $libreria->ingresar($this->request->getPost("correo"), $this->request->getPost("pass"));
 
-            //buscar el todos los usuarios con el correo y contraseña sean iguales
-            //los correos son campos unicos en el crm
-            foreach ((array)$usuarios as $usuario) {
-                //el objeto con las propiedades de la api pasa a ser una sesion
-                session()->set('usuario', $usuario);
-
-                //en caso de que el usuario sea admin
-                if ($usuario->getFieldValue("Title") == "Administrador") {
-                    session()->setFlashdata('alerta', 'Has iniciado sesión como administrador. Podrás visualizar las cotizaciones y emisiones de los demás usuarios.');
-                }
-
-                return redirect()->to(site_url());
-            }
-
-            //validar si creo alguna sesion
-            if (!session("usuario")) {
+            if (!session()->get("usuario")) {
                 //alerta que dara en caso de no encontrar ningun resultado
                 session()->setFlashdata('alerta', 'Usuario o contraseña incorrectos.');
-                return redirect()->to(site_url("login"));
+                return redirect()->to(site_url('login'));
+            } else {
+                //en caso de que el usuario sea admin
+                if (session("puesto") == "Administrador") {
+                    session()->setFlashdata('alerta', 'Has iniciado sesión como administrador. Podrás visualizar las cotizaciones y emisiones de los demás usuarios.');
+                }
+                return redirect()->to(site_url());
             }
         }
 
-        return view('login/index');
+        return view('login');
     }
 
     public function editar()
     {
-        $this->libreria->update("Contacts", session('usuario')->getEntityId(), ["Contrase_a" => $this->request->getPost("pass")]);
+        $libreria = new LibrariesLogin;
+        $libreria->update("Contacts", session('id'), ["Contrase_a" => $this->request->getPost("pass")]);
         //alerta
         session()->setFlashdata('alerta', 'La contraseña ha sido actualizada.');
         //recargar la pagina para limpiar el post
