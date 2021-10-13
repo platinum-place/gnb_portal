@@ -130,7 +130,7 @@ class Auto extends Cotizaciones
 
                 //en caso de haber algun problema
                 if ($prima == 0) {
-                    $comentario = "No existen tasas para el año o tipo del vehículo.";
+                    $comentario = "No existen tasas para el tipo del vehículo.";
                 }
             }
 

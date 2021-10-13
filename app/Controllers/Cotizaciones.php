@@ -64,7 +64,7 @@ class Cotizaciones extends BaseController
         $modeloid = null;
         $modelotipo = null;
 
-        switch ($this->request->getPost("tipo")) {
+        switch ($this->request->getPost("plan")) {
             case 'Vida':
                 $libreria = new Vida;
                 $cotizaciones = $libreria->cotizar(

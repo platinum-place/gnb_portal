@@ -15,7 +15,7 @@ class Home extends BaseController
             "lista" => $resumen["lista"],
             "polizas" => $resumen["polizas"],
             "vencidas" => $resumen["vencidas"],
-            "emisiones" => $resumen["emisiones"],
+            "cotizaciones" => $resumen["cotizaciones"],
         ]);
     }
 }

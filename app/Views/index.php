@@ -18,7 +18,7 @@
             </div>
 
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="<?= site_url("home/mes") ?>">Ver más</a>
+                <a class="small text-white stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#emisiones_mensuales">Ver más</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
@@ -32,7 +32,7 @@
             </div>
 
             <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="<?= site_url("home/vencidas") ?>">Ver más</a>
+                <a class="small text-white stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#emisiones_vencidas">Ver más</a>
                 <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
@@ -68,4 +68,10 @@
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+
+<?= $this->section('modal') ?>
+<?= $this->include('modals/emisiones_mensuales') ?>
+<?= $this->include('modals/emisiones_vencidas') ?>
 <?= $this->endSection() ?>

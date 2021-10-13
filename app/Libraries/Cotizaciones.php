@@ -25,23 +25,23 @@ class Cotizaciones extends Zoho
         $polizas = 0;
         $vencidas = 0;
 
-        $emisiones = $this->lista_cotizaciones();
-        foreach ((array)$emisiones as $emision) {
-            if ($emision->getFieldValue('Quote_Stage') == "Emitida") {
+        $cotizaciones = $this->lista_cotizaciones();
+        foreach ((array)$cotizaciones as $cotizacion) {
+            if ($cotizacion->getFieldValue('Quote_Stage') == "Emitida") {
                 //filtrar por  mes y año actual
-                if (date("Y-m", strtotime($emision->getCreatedTime())) == date("Y-m")) {
-                    $lista[] =  $emision->getFieldValue('Coberturas')->getLookupLabel();
+                if (date("Y-m", strtotime($cotizacion->getCreatedTime())) == date("Y-m")) {
+                    $lista[] =  $cotizacion->getFieldValue('Coberturas')->getLookupLabel();
                     $polizas++;
                 }
 
                 //contador para las emisiones que vencen en el mes y año actual
-                if (date("Y-m", strtotime($emision->getFieldValue('Valid_Till'))) == date("Y-m")) {
+                if (date("Y-m", strtotime($cotizacion->getFieldValue('Valid_Till'))) == date("Y-m")) {
                     $vencidas++;
                 }
             }
         }
 
-        return ["lista" => array_count_values($lista), "polizas" => $polizas, "vencidas" => $vencidas, "emisiones" => $emisiones];
+        return ["lista" => array_count_values($lista), "polizas" => $polizas, "vencidas" => $vencidas, "cotizaciones" => $cotizaciones];
     }
 
     //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...

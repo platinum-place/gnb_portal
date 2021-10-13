@@ -164,7 +164,7 @@
 
 <div class="row" style="font-size: small;">
     <div class="col-6 border">
-        <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->cotizacion() . ".png") ?>" width="150" height="50">
+        <img src="<?= base_url("img/aseguradoras/" . $plan->getFieldValue("Vendor_Name")->getLookupLabel() . ".png") ?>" width="150" height="50">
 
         <table class="table table-sm table-borderless">
             <tbody>
