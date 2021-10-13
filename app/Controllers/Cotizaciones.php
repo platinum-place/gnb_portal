@@ -6,6 +6,7 @@ use App\Libraries\Auto;
 use App\Libraries\Cotizaciones as LibrariesCotizaciones;
 use App\Libraries\Desempleo;
 use App\Libraries\Incendio;
+use App\Libraries\Reportes;
 use App\Libraries\Vida;
 
 class Cotizaciones extends BaseController
@@ -328,33 +329,30 @@ class Cotizaciones extends BaseController
 
         //detalles de la emision
         $titulo = "Adjuntar documentos a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido');
-
-        //documentos adjuntados
-        $adjuntos = $libreria->getAttachments("Quotes", $id);
-
-        return view("adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion, "adjuntos" => $adjuntos]);
+        return view("adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion]);
     }
 
     public function reportes()
     {
-        $libreria = new LibrariesCotizaciones;
-        $ruta_reporte = $libreria->generar_reporte($this->request->getPost("desde"), $this->request->getPost("hasta"));
+        if ($this->request->getPost()) {
+            $libreria = new Reportes;
+            $ruta_reporte = $libreria->generar_reporte($this->request->getPost("desde"), $this->request->getPost("hasta"));
 
-        //si no encontro registros
-        if (empty($ruta_reporte)) {
-            session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-            return redirect()->to(site_url());
-        }
+            //si no encontro registros
+            if (empty($ruta_reporte)) {
+                session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
+                return redirect()->to(site_url());
+            }
 
-        //forzar al navegador a descargar el archivo
+            //forzar al navegador a descargar el archivo
 
-        //funciona en ambos ambientes
-        $nombre = "Reporte it" . date("d-m-Y");
-        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
+            //funciona en ambos ambientes
+            $nombre = "Reporte " . date("d-m-Y");
+            return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
 
-        //no funciona en ambiente de produccion, solo en desarrollo local
-        //es necesario no tener echo antes de descargar
-        /*
+            //no funciona en ambiente de produccion, solo en desarrollo local
+            //es necesario no tener echo antes de descargar
+            /*
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
                 header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
@@ -366,5 +364,8 @@ class Cotizaciones extends BaseController
                 //eliminar el archivo descargado
                 unlink($ruta_reporte);
                 */
+        }
+
+        return view("reportes", ["titulo" => "Reporte de Emisiones"]);
     }
 }

@@ -43,8 +43,8 @@
                                 <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
                             </td>
                             <td><?= $cotizacion->getFieldValue('RNC_C_dula') ?></td>
-                            <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
                             <td><?= (!empty($cotizacion->getFieldValue('Nombre_codeudor'))) ? "Aplica" : "No aplica"; ?> </td>
+                            <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
                             <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                             <td>
                                 <?php if ($cotizacion->getFieldValue('Quote_Stage') == "Cotizando") : ?>
