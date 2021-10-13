@@ -17,7 +17,7 @@ class Cotizaciones extends BaseController
         $marcas = $libreria->getRecords("Marcas");
         //formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
-        return view("cotizaciones/index", ["titulo" => "Cotizar", "marcas" => $marcas]);
+        return view("cotizar", ["titulo" => "Cotizar", "marcas" => $marcas]);
     }
 
     //funcion post
@@ -56,238 +56,6 @@ class Cotizaciones extends BaseController
                 $pag = 0;
             }
         } while ($pag > 0);
-    }
-
-    //funcion post
-    public function completar()
-    {
-        //pasa la tabla de cotizacion en array para agregarla al registro
-        $cotizaciones = json_decode($this->request->getPost("cotizaciones"), true);
-
-        $registro = [
-            "Subject" => "Portal IT",
-            "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")),
-            "Account_Name" =>  session('cuenta_id'),
-            "Contact_Name" =>  session('usuario_id'),
-            "Condiciones" => $this->request->getPost("estado"),
-            "Quote_Stage" => "Cotizando",
-            "Nombre" => $this->request->getPost("nombre"),
-            "Apellido" => $this->request->getPost("apellido"),
-            "Fecha_de_nacimiento" => $this->request->getPost("fecha"),
-            "RNC_C_dula" => $this->request->getPost("rnc_cedula"),
-            "Correo_electr_nico" => $this->request->getPost("correo"),
-            "Direcci_n" => $this->request->getPost("direccion"),
-            "Tel_Celular" => $this->request->getPost("telefono"),
-            "Tel_Residencia" => $this->request->getPost("tel_residencia"),
-            "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
-            "Plan" => $this->request->getPost("plan"),
-            "Tipo" =>  $this->request->getPost("tipo"),
-            "Suma_asegurada" => $this->request->getPost("suma"),
-            "Plazo" => $this->request->getPost("plazo"),
-            "Cuota" => $this->request->getPost("cuota"),
-            "Prestamo" => $this->request->getPost("prestamo"),
-            "A_o" => $this->request->getPost("ano"),
-            "Marca" => $this->request->getPost("marcaid"),
-            "Modelo" => $this->request->getPost("modeloid"),
-            "Uso" => $this->request->getPost("uso"),
-            "Tipo_veh_culo" => $this->request->getPost("modelotipo"),
-            "Chasis" => $this->request->getPost("chasis"),
-            "Color" => $this->request->getPost("color"),
-            "Placa" => $this->request->getPost("placa"),
-            "Condiciones" => $this->request->getPost("estado"),
-            "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
-            "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
-            "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
-            "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
-            "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
-            "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
-            "Fecha_de_nacimiento_codeudor" => $this->request->getPost("fecha_codeudor"),
-            "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
-            "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
-        ];
-
-        //crea la cotizacion el en crm
-        $libreria = new LibrariesCotizaciones;
-        $id = $libreria->crear_cotizacion($registro, $cotizaciones);
-
-        //en caso de necesitar una alerta especifica
-        $alerta = view("alertas/cotizacion_exitosa");
-
-        //alerta general cuando se realiza una cotizacion en el crm
-        session()->setFlashdata('alerta', $alerta);
-        //vista para emitir
-        return redirect()->to(site_url("cotizaciones/emitir/$id"));
-    }
-
-    public function buscar($filtro)
-    {
-        $libreria = new LibrariesCotizaciones;
-        $cotizaciones = $libreria->lista_cotizaciones();
-        return view("cotizaciones/buscar", ["titulo" => "Buscar", "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
-    }
-
-    public function emitir($id)
-    {
-        $libreria = new LibrariesCotizaciones;
-        //obtener los datos de la cotizacion, la funcion es heredada de la libreria del api
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-
-        if ($this->request->getPost()) {
-            //obtener los datos del plan elegido
-            foreach ($cotizacion->getLineItems() as $lineItem) {
-                if ($this->request->getPost("planid") == $lineItem->getProduct()->getEntityId()) {
-                    $total = round($lineItem->getNetTotal(), 2);
-                    $planid = $lineItem->getProduct()->getEntityId();
-                }
-            }
-
-            $cambios = [
-                "Prima" => $total,
-                "Coberturas" => $planid,
-                "Quote_Stage" => "Emitida",
-                "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 years")),
-            ];
-
-            $libreria->update("Quotes", $$id, $cambios);
-
-            //los archivos debe ser subida al servidor para luego ser adjuntados al registro
-            if ($documentos = $this->request->getFiles()) {
-                $libreria->adjuntar_documentos($documentos['documentos'], $id);
-            }
-
-            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en proceso de validación. Mientras, puedes descargar un certificado de emisión o adjuntar mas documentos.");
-            return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
-        }
-
-        return view("cotizaciones/emitir", [
-            "titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'),
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    public function editar($id)
-    {
-        $libreria = new LibrariesCotizaciones;
-        //obtener datos de la cotizacion
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-
-        if ($this->request->getPost()) {
-            //datos generales para crear una cotizacion
-            $registro = [
-                "Nombre" => $this->request->getPost("nombre"),
-                "Apellido" => $this->request->getPost("apellido"),
-                "Fecha_de_nacimiento" => $this->request->getPost("fecha"),
-                "RNC_C_dula" => $this->request->getPost("rnc_cedula"),
-                "Correo_electr_nico" => $this->request->getPost("correo"),
-                "Direcci_n" => $this->request->getPost("direccion"),
-                "Tel_Celular" => $this->request->getPost("telefono"),
-                "Tel_Residencia" => $this->request->getPost("tel_residencia"),
-                "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
-                "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
-                "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
-                "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
-                "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
-                "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
-                "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
-                "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
-                "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor"),
-                "Chasis" => $this->request->getPost("chasis"),
-                "Color" => $this->request->getPost("color"),
-                "Placa" => $this->request->getPost("placa"),
-                "Tipo_crm" => $this->request->getPost("tipo_crm"),
-            ];
-
-            //agregar los cambios al registro en el crm
-            $this->libreria->update("Quotes", $id, $registro);
-            //alerta general cuando se edita una cotizacion en el crm
-            session()->setFlashdata('alerta', "¡Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . " editada exitosamente!.");
-
-            return redirect()->to(site_url("emisiones/emitir/$id"));
-        }
-
-        return view("cotizaciones/editar", [
-            "titulo" => "Editar Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . ", Plan " . $cotizacion->getFieldValue('Plan'),
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    public function condicionado($id)
-    {
-        $libreria = new LibrariesCotizaciones;
-        //obtener los todos los adjuntos del plan, normalmente es solo uno
-        $attachments = $libreria->getAttachments("Products", $id);
-
-        foreach ($attachments as $attchmentIns) {
-            //descargar un documento en el servidor local
-            $file = $libreria->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
-
-            //forzar al navegador a descargar el archivo
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            readfile($file);
-            //eliminar el archivo descargado
-            unlink($file);
-            exit;
-        }
-    }
-
-    public function adjuntar($id)
-    {
-        $libreria = new LibrariesCotizaciones;
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-
-        //los archivos debe ser subida al servidor para luego ser adjuntados al registro
-        if ($documentos = $this->request->getFiles()) {
-            $libreria->adjuntar_documentos($documentos['documentos'], $id);
-            session()->setFlashdata('alerta', "¡Documentos adjuntados correctamente!.");
-            return redirect()->to(site_url("cotizaciones/adjuntar/$id"));
-        }
-
-        //detalles de la emision
-        $titulo = "Adjuntar documentos a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido');
-
-        //documentos adjuntados
-        $adjuntos = $libreria->getAttachments("Quotes", $id);
-
-        return view("cotizaciones/adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion, "adjuntos" => $adjuntos]);
-    }
-
-    public function reportes()
-    {
-        $libreria = new LibrariesCotizaciones;
-        $ruta_reporte = $libreria->generar_reporte($this->request->getPost("desde"), $this->request->getPost("hasta"));
-
-        //si no encontro registros
-        if (empty($ruta_reporte)) {
-            session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-            return redirect()->to(site_url());
-        }
-
-        //forzar al navegador a descargar el archivo
-
-        //funciona en ambos ambientes
-        $nombre = "Reporte it" . date("d-m-Y");
-        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
-
-        //no funciona en ambiente de produccion, solo en desarrollo local
-        //es necesario no tener echo antes de descargar
-        /*
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($ruta_reporte));
-                readfile($ruta_reporte);
-                //eliminar el archivo descargado
-                unlink($ruta_reporte);
-                */
     }
 
     public function cotizar()
@@ -345,7 +113,13 @@ class Cotizaciones extends BaseController
         }
 
         if (!empty($cotizaciones)) {
-            echo view("modals/tabla_cotizacion", [
+            //libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
+            $marcas = $libreria->getRecords("Marcas");
+            //formatear el resultado para ordenarlo alfabeticamente en forma descendente
+            asort($marcas);
+            return view("cotizar", [
+                "titulo" => "Cotizar",
+                "marcas" => $marcas,
                 "cotizaciones" => $cotizaciones,
                 "plan" => $this->request->getPost("plan"),
                 "uso" => $this->request->getPost("uso"),
@@ -366,8 +140,229 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', 'No existen planes para cotizar.');
             return redirect()->to(site_url("cotizaciones"));
         }
+    }
 
-        //mostrar la vista principal
-        return $this->index();
+    //funcion post
+    public function completar()
+    {
+        //pasa la tabla de cotizacion en array para agregarla al registro
+        $cotizaciones = json_decode($this->request->getPost("cotizaciones"), true);
+
+        $registro = [
+            "Subject" => "Portal IT",
+            "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")),
+            "Account_Name" =>  session('cuenta_id'),
+            "Contact_Name" =>  session('usuario_id'),
+            "Condiciones" => $this->request->getPost("estado"),
+            "Quote_Stage" => "Cotizando",
+            "Nombre" => $this->request->getPost("nombre"),
+            "Apellido" => $this->request->getPost("apellido"),
+            "Fecha_de_nacimiento" => $this->request->getPost("fecha"),
+            "RNC_C_dula" => $this->request->getPost("rnc_cedula"),
+            "Correo_electr_nico" => $this->request->getPost("correo"),
+            "Direcci_n" => $this->request->getPost("direccion"),
+            "Tel_Celular" => $this->request->getPost("telefono"),
+            "Tel_Residencia" => $this->request->getPost("tel_residencia"),
+            "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
+            "Plan" => $this->request->getPost("plan"),
+            "Tipo" =>  $this->request->getPost("tipo"),
+            "Suma_asegurada" => $this->request->getPost("suma"),
+            "Plazo" => $this->request->getPost("plazo"),
+            "Cuota" => $this->request->getPost("cuota"),
+            "Prestamo" => $this->request->getPost("prestamo"),
+            "A_o" => $this->request->getPost("ano"),
+            "Marca" => $this->request->getPost("marcaid"),
+            "Modelo" => $this->request->getPost("modeloid"),
+            "Uso" => $this->request->getPost("uso"),
+            "Tipo_veh_culo" => $this->request->getPost("modelotipo"),
+            "Chasis" => $this->request->getPost("chasis"),
+            "Color" => $this->request->getPost("color"),
+            "Placa" => $this->request->getPost("placa"),
+            "Condiciones" => $this->request->getPost("estado"),
+            "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
+            "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
+            "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
+            "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
+            "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
+            "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
+            "Fecha_de_nacimiento_codeudor" => $this->request->getPost("fecha_codeudor"),
+            "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
+            "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
+        ];
+
+        //crea la cotizacion el en crm
+        $libreria = new LibrariesCotizaciones;
+        $id = $libreria->crear_cotizacion($registro, $cotizaciones);
+
+        session()->setFlashdata('alerta', "Procede a completar el formulario para emitir la cotización. Es posible retomar el proceso antes del " . date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")));
+        return redirect()->to(site_url("cotizaciones/emitir/$id"));
+    }
+
+    public function buscar($filtro)
+    {
+        $libreria = new LibrariesCotizaciones;
+        $cotizaciones = $libreria->lista_cotizaciones();
+        return view("cotizaciones/buscar", ["titulo" => "Buscar", "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
+    }
+
+    public function emitir($id)
+    {
+        $libreria = new LibrariesCotizaciones;
+        //obtener los datos de la cotizacion, la funcion es heredada de la libreria del api
+        $cotizacion = $libreria->getRecord("Quotes", $id);
+
+        if ($this->request->getPost()) {
+            //obtener los datos del plan elegido
+            foreach ($cotizacion->getLineItems() as $lineItem) {
+                if ($this->request->getPost("planid") == $lineItem->getProduct()->getEntityId()) {
+                    $total = round($lineItem->getNetTotal(), 2);
+                    $planid = $lineItem->getProduct()->getEntityId();
+                }
+            }
+
+            $cambios = [
+                "Prima" => $total,
+                "Coberturas" => $planid,
+                "Quote_Stage" => "Emitida",
+                "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 years")),
+            ];
+
+            $libreria->update("Quotes", $$id, $cambios);
+
+            //los archivos debe ser subida al servidor para luego ser adjuntados al registro
+            if ($documentos = $this->request->getFiles()) {
+                $libreria->adjuntar_documentos($documentos['documentos'], $id);
+            }
+
+            session()->setFlashdata('alerta', "¡Cotización emitida correctamente! La emisión estará en proceso de validación. Mientras, puedes descargar un certificado de emisión o adjuntar mas documentos.");
+            return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
+        }
+
+        return view("emitir", ["titulo" => "Emitir Cotización No. " . $cotizacion->getFieldValue('Quote_Number'), "cotizacion" => $cotizacion]);
+    }
+
+    public function condicionado($id)
+    {
+        $libreria = new LibrariesCotizaciones;
+        //obtener los todos los adjuntos del plan, normalmente es solo uno
+        $attachments = $libreria->getAttachments("Products", $id);
+
+        foreach ($attachments as $attchmentIns) {
+            //descargar un documento en el servidor local
+            $file = $libreria->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
+
+            //forzar al navegador a descargar el archivo
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . basename($file) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            readfile($file);
+            //eliminar el archivo descargado
+            unlink($file);
+            exit;
+        }
+    }
+
+    public function editar($id)
+    {
+        $libreria = new LibrariesCotizaciones;
+        //obtener datos de la cotizacion
+        $cotizacion = $libreria->getRecord("Quotes", $id);
+
+        if ($this->request->getPost()) {
+            //datos generales para crear una cotizacion
+            $registro = [
+                "Nombre" => $this->request->getPost("nombre"),
+                "Apellido" => $this->request->getPost("apellido"),
+                "Fecha_de_nacimiento" => $this->request->getPost("fecha"),
+                "RNC_C_dula" => $this->request->getPost("rnc_cedula"),
+                "Correo_electr_nico" => $this->request->getPost("correo"),
+                "Direcci_n" => $this->request->getPost("direccion"),
+                "Tel_Celular" => $this->request->getPost("telefono"),
+                "Tel_Residencia" => $this->request->getPost("tel_residencia"),
+                "Tel_Trabajo" => $this->request->getPost("tel_trabajo"),
+                "Nombre_codeudor" => $this->request->getPost("nombre_codeudor"),
+                "Apellido_codeudor" => $this->request->getPost("apellido_codeudor"),
+                "Tel_Celular_codeudor" => $this->request->getPost("telefono_codeudor"),
+                "Tel_Residencia_codeudor" => $this->request->getPost("tel_residencia_codeudor"),
+                "Tel_Trabajo_codeudor" => $this->request->getPost("tel_trabajo_codeudor"),
+                "RNC_C_dula_codeudor" => $this->request->getPost("rnc_cedula_codeudor"),
+                "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
+                "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor"),
+                "Chasis" => $this->request->getPost("chasis"),
+                "Color" => $this->request->getPost("color"),
+                "Placa" => $this->request->getPost("placa"),
+                "Tipo_crm" => $this->request->getPost("tipo_crm"),
+            ];
+
+            //agregar los cambios al registro en el crm
+            $this->libreria->update("Quotes", $id, $registro);
+            //alerta general cuando se edita una cotizacion en el crm
+            session()->setFlashdata('alerta', "¡Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . " editada exitosamente!.");
+
+            return redirect()->to(site_url("emisiones/emitir/$id"));
+        }
+
+        return view("cotizaciones/editar", [
+            "titulo" => "Editar Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . ", Plan " . $cotizacion->getFieldValue('Plan'),
+            "cotizacion" => $cotizacion
+        ]);
+    }
+
+    public function adjuntar($id)
+    {
+        $libreria = new LibrariesCotizaciones;
+        $cotizacion = $libreria->getRecord("Quotes", $id);
+
+        //los archivos debe ser subida al servidor para luego ser adjuntados al registro
+        if ($documentos = $this->request->getFiles()) {
+            $libreria->adjuntar_documentos($documentos['documentos'], $id);
+            session()->setFlashdata('alerta', "¡Documentos adjuntados correctamente!.");
+            return redirect()->to(site_url("cotizaciones/adjuntar/$id"));
+        }
+
+        //detalles de la emision
+        $titulo = "Adjuntar documentos a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido');
+
+        //documentos adjuntados
+        $adjuntos = $libreria->getAttachments("Quotes", $id);
+
+        return view("cotizaciones/adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion, "adjuntos" => $adjuntos]);
+    }
+
+    public function reportes()
+    {
+        $libreria = new LibrariesCotizaciones;
+        $ruta_reporte = $libreria->generar_reporte($this->request->getPost("desde"), $this->request->getPost("hasta"));
+
+        //si no encontro registros
+        if (empty($ruta_reporte)) {
+            session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
+            return redirect()->to(site_url());
+        }
+
+        //forzar al navegador a descargar el archivo
+
+        //funciona en ambos ambientes
+        $nombre = "Reporte it" . date("d-m-Y");
+        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
+
+        //no funciona en ambiente de produccion, solo en desarrollo local
+        //es necesario no tener echo antes de descargar
+        /*
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($ruta_reporte));
+                readfile($ruta_reporte);
+                //eliminar el archivo descargado
+                unlink($ruta_reporte);
+                */
     }
 }
