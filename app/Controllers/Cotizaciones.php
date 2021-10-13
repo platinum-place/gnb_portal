@@ -64,7 +64,34 @@ class Cotizaciones extends BaseController
         $modelotipo = null;
 
         switch ($this->request->getPost("tipo")) {
-            case 'auto':
+            case 'Vida':
+                $libreria = new Vida;
+                $cotizaciones = $libreria->cotizar(
+                    $this->request->getPost("suma"),
+                    $this->request->getPost("plazo"),
+                    $this->request->getPost("deudor"),
+                    $this->request->getPost("codeudor")
+                );
+                break;
+
+            case 'Vida/Desempleo':
+                $libreria = new Desempleo;
+                $cotizaciones = $libreria->cotizar(
+                    $this->request->getPost("deudor"),
+                    $this->request->getPost("suma"),
+                    $this->request->getPost("cuota"),
+                    $this->request->getPost("plazo")
+                );
+                break;
+
+            case 'Seguro Incendio Hipotecario':
+                $libreria = new Incendio;
+                $cotizaciones = $libreria->cotizar(
+                    $this->request->getPost("suma"),
+                );
+                break;
+
+            default:
                 $libreria = new Auto;
                 //datos relacionados al modelo, dividios en un array
                 $modelo = explode(",", $this->request->getPost("modelo"));
@@ -81,33 +108,6 @@ class Cotizaciones extends BaseController
                     $modeloid,
                     $modelotipo,
                     $this->request->getPost("plan"),
-                );
-                break;
-
-            case 'vida':
-                $libreria = new Vida;
-                $cotizaciones = $libreria->cotizar(
-                    $this->request->getPost("suma"),
-                    $this->request->getPost("plazo"),
-                    $this->request->getPost("deudor"),
-                    $this->request->getPost("codeudor")
-                );
-                break;
-
-            case 'desempleo':
-                $libreria = new Desempleo;
-                $cotizaciones = $libreria->cotizar(
-                    $this->request->getPost("deudor"),
-                    $this->request->getPost("suma"),
-                    $this->request->getPost("cuota"),
-                    $this->request->getPost("plazo")
-                );
-                break;
-
-            case 'incendio':
-                $libreria = new Incendio;
-                $cotizaciones = $libreria->cotizar(
-                    $this->request->getPost("suma"),
                 );
                 break;
         }
@@ -135,6 +135,8 @@ class Cotizaciones extends BaseController
                 "fecha_deudor" => $this->request->getPost("deudor"),
                 "fecha_codeudor" => $this->request->getPost("codeudor"),
                 "direccion" => $this->request->getPost("direccion"),
+                "construccion" => $this->request->getPost("construccion"),
+                "riesgo" => $this->request->getPost("riesgo"),
             ]);
         } else {
             session()->setFlashdata('alerta', 'No existen planes para cotizar.');
@@ -153,7 +155,8 @@ class Cotizaciones extends BaseController
             "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")),
             "Account_Name" =>  session('cuenta_id'),
             "Contact_Name" =>  session('usuario_id'),
-            "Condiciones" => $this->request->getPost("estado"),
+            "Construcci_n" => $this->request->getPost("construccion"),
+            "Riesgo" => $this->request->getPost("riesgo"),
             "Quote_Stage" => "Cotizando",
             "Nombre" => $this->request->getPost("nombre"),
             "Apellido" => $this->request->getPost("apellido"),
@@ -194,7 +197,7 @@ class Cotizaciones extends BaseController
         $libreria = new LibrariesCotizaciones;
         $id = $libreria->crear_cotizacion($registro, $cotizaciones);
 
-        session()->setFlashdata('alerta', "Procede a completar el formulario para emitir la cotización. Es posible retomar el proceso antes del " . date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")));
+        session()->setFlashdata('alerta', "Procede a completar el formulario para emitir la cotización. Es posible retomar el proceso hasta " . date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")) . ".");
         return redirect()->to(site_url("cotizaciones/emitir/$id"));
     }
 
@@ -202,7 +205,7 @@ class Cotizaciones extends BaseController
     {
         $libreria = new LibrariesCotizaciones;
         $cotizaciones = $libreria->lista_cotizaciones();
-        return view("cotizaciones/buscar", ["titulo" => "Buscar", "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
+        return view("buscar", ["titulo" => "Buscar", "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
     }
 
     public function emitir($id)
@@ -227,7 +230,7 @@ class Cotizaciones extends BaseController
                 "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 years")),
             ];
 
-            $libreria->update("Quotes", $$id, $cambios);
+            $libreria->update("Quotes", $id, $cambios);
 
             //los archivos debe ser subida al servidor para luego ser adjuntados al registro
             if ($documentos = $this->request->getFiles()) {
@@ -295,7 +298,6 @@ class Cotizaciones extends BaseController
                 "Chasis" => $this->request->getPost("chasis"),
                 "Color" => $this->request->getPost("color"),
                 "Placa" => $this->request->getPost("placa"),
-                "Tipo_crm" => $this->request->getPost("tipo_crm"),
             ];
 
             //agregar los cambios al registro en el crm
@@ -303,10 +305,10 @@ class Cotizaciones extends BaseController
             //alerta general cuando se edita una cotizacion en el crm
             session()->setFlashdata('alerta', "¡Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . " editada exitosamente!.");
 
-            return redirect()->to(site_url("emisiones/emitir/$id"));
+            return redirect()->to(site_url("cotizaciones/buscar/Cotizando/$id"));
         }
 
-        return view("cotizaciones/editar", [
+        return view("editar", [
             "titulo" => "Editar Cotización No. " . $cotizacion->getFieldValue('Quote_Number') . ", Plan " . $cotizacion->getFieldValue('Plan'),
             "cotizacion" => $cotizacion
         ]);
@@ -321,7 +323,7 @@ class Cotizaciones extends BaseController
         if ($documentos = $this->request->getFiles()) {
             $libreria->adjuntar_documentos($documentos['documentos'], $id);
             session()->setFlashdata('alerta', "¡Documentos adjuntados correctamente!.");
-            return redirect()->to(site_url("cotizaciones/adjuntar/$id"));
+            return redirect()->to(site_url("adjuntar/$id"));
         }
 
         //detalles de la emision
@@ -330,7 +332,7 @@ class Cotizaciones extends BaseController
         //documentos adjuntados
         $adjuntos = $libreria->getAttachments("Quotes", $id);
 
-        return view("cotizaciones/adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion, "adjuntos" => $adjuntos]);
+        return view("adjuntar", ["titulo" => $titulo, "cotizacion" => $cotizacion, "adjuntos" => $adjuntos]);
     }
 
     public function reportes()

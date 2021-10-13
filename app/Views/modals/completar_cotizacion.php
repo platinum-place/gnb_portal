@@ -55,7 +55,7 @@
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Tel. Celular</label>
-                                <input type="tel" class="form-control" name="telefono" required placeholder="809-457-8888" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                                <input type="tel" class="form-control" name="telefono" placeholder="809-457-8888" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
                             </div>
                         </div>
                     </div>
@@ -200,6 +200,8 @@
                     <input type="text" hidden name="modelotipo" value="<?= $modelotipo ?>">
                     <input type="text" hidden name="estado" value="<?= $estado ?>">
                     <input type="text" hidden name="prestamo" value="<?= $prestamo ?>">
+                    <input type="text" hidden name="construccion" value="<?= $construccion ?>">
+                    <input type="text" hidden name="riesgo" value="<?= $riesgo ?>">
                 </div>
 
                 <div class="modal-footer">

@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<form enctype="multipart/form-data" method="POST" action="<?= site_url("emisiones/emitir/" . $cotizacion->getEntityId()) ?>">
+<form enctype="multipart/form-data" method="POST" action="<?= site_url("cotizaciones/emitir/" . $cotizacion->getEntityId()) ?>">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card">
@@ -12,8 +12,6 @@
                         <br>
                         <a href="<?= site_url("plantillas/cotizacion/" . $cotizacion->getEntityId()) ?>" class="btn btn-success mb-3" target="__blank">Descargar</a>
                     </div>
-
-
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -38,7 +36,6 @@
                     </div>
 
 
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
@@ -60,15 +57,17 @@
                         </div>
                     </div>
 
+
+
                     <div class="mt-4 mb-0">
                         <div class="d-grid">
-                            <button button type="submit" class="btn btn-success btn-block">Emitir cotización</button>
+                            <button type="submit" class="btn btn-success btn-block">Emitir cotización</button>
                         </div>
                     </div>
 
                     <div class="mt-4 mb-0">
                         <div class="d-grid">
-                            <button button type="submit" class="btn btn-primary btn-block">Editar cotización</button>
+                            <a href="<?= site_url("cotizaciones/editar/") ?>" class="btn btn-primary btn-block">Editar cotización</a>
                         </div>
                     </div>
                 </div>

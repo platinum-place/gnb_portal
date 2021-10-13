@@ -22,7 +22,7 @@ class Plantillas extends BaseController
                 break;
 
             case 'Seguro Incendio Hipotecario':
-                return view('cotizacion_incendio', ["cotizacion" => $cotizacion]);
+                return view('cotizacion_incendio', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
 
             default:
