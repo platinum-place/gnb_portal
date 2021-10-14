@@ -2,32 +2,70 @@
 
 <?= $this->section('content') ?>
 
-<div class="row">
-    <!-- encabezado -->
+<div class="container">
     <div class="row">
         <div class="col-4">
-            <img src="<?= base_url("img/tua.png") ?>" width="200" height="200">
+            <img src="<?= base_url("img/tua.png") ?>" width="150" height="150">
         </div>
 
         <div class="col-4">
-            <h4 class="text-center text-uppercase">
-                REGISTRO TUA ASISTENCIA
-            </h4>
+            <h5 class="text-center text-uppercase">
+                REGISTRO <br> TU ASISTENCIA
+            </h5>
         </div>
 
         <div class="col-4">
             &nbsp;
         </div>
-    </div>
 
-    <div class="col-12">
-        &nbsp;
-    </div>
+        <h6>DATOS TUA</h6>
+        <div class="row" style="font-size: small;">
+            <div class="col-6">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <td><?= $tua->getFieldValue("Type") ?></td>
+                        </tr>
 
-    <h5>DATOS CLIENTE</h5>
-    <div class="card-group" style="font-size: small;">
-        <div class="card border-0">
-            <div class="card-body">
+                        <tr>
+                            <th scope="col">Vigencia Desde</th>
+                            <td><?= date('d/m/Y', strtotime($tua->getFieldValue("Fecha_de_inicio"))) ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Creado por</th>
+                            <td><?= $creado_por->getName() ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-6">
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        <tr>
+                            <th scope="col">Número TUA</th>
+                            <td><?= $tua->getFieldValue("TUA") ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Vigencia Hasta</th>
+                            <td><?= date('d/m/Y', strtotime($tua->getFieldValue("Closing_Date"))) ?></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="col">Hora de creación</th>
+                            <td><?= date('d/m/Y h:i:s A', strtotime($tua->getCreatedTime())) ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h6>DATOS CLIENTE</h6>
+        <div class="row" style="font-size: small;">
+            <div class="col-6">
                 <table class="table table-sm table-bordered">
                     <tbody>
                         <tr>
@@ -47,10 +85,8 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <div class="card border-0">
-            <div class="card-body">
+            <div class="col-6">
                 <table class="table table-sm table-bordered">
                     <tbody>
                         <tr>
@@ -71,16 +107,10 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <div class="col-12">
-        &nbsp;
-    </div>
-
-    <h5>DATOS INTERMEDIARIO</h5>
-    <div class="card-group" style="font-size: small;">
-        <div class="card border-0">
-            <div class="card-body">
+        <h6>DATOS INTERMEDIARIO</h6>
+        <div class="row" style="font-size: small;">
+            <div class="col-6">
                 <table class="table table-sm table-bordered">
                     <tbody>
                         <tr>
@@ -90,10 +120,8 @@
                     </tbody>
                 </table>
             </div>
-        </div>
 
-        <div class="card border-0">
-            <div class="card-body">
+            <div class="col-6">
                 <table class="table table-sm table-bordered">
                     <tbody>
                         <tr>
@@ -104,117 +132,62 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <div class="col-12">
-        &nbsp;
-    </div>
+        <h6>VEHÍCULOS</h6>
+        <div class="col-12">
+            <table class="table table-sm table-bordered" style="font-size: small;">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Año</th>
+                        <th>Color</th>
+                        <th>Placa</th>
+                        <th>Chasis</th>
+                    </tr>
+                </thead>
 
-    <h5>DATOS TUA</h5>
-    <div class="card-group" style="font-size: small;">
-        <div class="card border-0">
-            <div class="card-body">
-                <table class="table table-sm table-bordered">
-                    <tbody>
+                <tbody>
+                    <?php $cont = 1 ?>
+                    <?php foreach ((array)$vehiculos as $vehiculo) : ?>
                         <tr>
-                            <th scope="col">Vigencia Desde</th>
-                            <td><?= $tua->getFieldValue("Fecha_de_inicio") ?></td>
+                            <td><?= $cont ?></td>
+                            <td><?= $vehiculo->getFieldValue('Marca') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
+                            <td><?= $vehiculo->getFieldValue('A_o') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Color') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Placa') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Name') ?></td>
                         </tr>
-
-                        <tr>
-                            <th scope="col">Creado por</th>
-                            <td><?= $creado_por->getName() ?></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="col">Número</th>
-                            <td><?= $tua->getFieldValue("TUA") ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="card border-0">
-            <div class="card-body">
-                <table class="table table-sm table-bordered">
-                    <tbody>
-                        <tr>
-                            <th scope="col">Vigencia Hasta</th>
-                            <td><?= $tua->getFieldValue("Closing_Date") ?></td>
-                        </tr>
-
-                        <tr>
-                            <th scope="col">Hora de creación</th>
-                            <td><?= $tua->getCreatedTime(); ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <?php $cont++ ?>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="col-12">
-        &nbsp;
-    </div>
-
-    <h5>VEHÍCULOS</h5>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Tipo</th>
-                <th>Año</th>
-                <th>Color</th>
-                <th>Placa</th>
-                <th>Chasis</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <?php $cont = 1 ?>
-            <?php foreach ((array)$vehiculos as $vehiculo) : ?>
-                <tr>
-                    <td><?= $cont ?></td>
-                    <td><?= $vehiculo->getFieldValue('Marca') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
-                    <td><?= $vehiculo->getFieldValue('A_o') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Color') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Placa') ?></td>
-                    <td><?= $vehiculo->getFieldValue('Name') ?></td>
-                </tr>
-                <?php $cont++ ?>
-            <?php endforeach ?>
-        </tbody>
-    </table>
-
-    <div class="col-12">
-        &nbsp;
-    </div>
-
-    <?php if ($cont > 11) : ?>
-        <div class="saltopagina"></div>
-    <?php endif ?>
-
-    <h5>NOTA</h5>
+    <h6>NOTA</h6>
     <div class="card">
         <div class="card-body">
             <p class="card-text"><?= $tua->getFieldValue('Description') ?></p>
         </div>
     </div>
 
-    <div class="divFooter">
-        <p class="text-center">
-            Ave. Gustavo Mejía Ricart esq. Abrahm Lincoln, Torre Piantini, Suite 14-A, <br>
-            Ens. Piantini, Santo Domingo, República Dominicana <br>
-            www.gruponobe.com | RNC: 131057251
-        </p>
+
+    <div class="row">
+        <div <?= ($cont < 8) ? 'class="fixed-bottom"' : ""; ?>>
+            <p class="text-center">
+                Ave. Gustavo Mejía Ricart esq. Abrahm Lincoln, Torre Piantini, Suite 14-A, <br>
+                Ens. Piantini, Santo Domingo, República Dominicana <br>
+                www.gruponobe.com | RNC: 131057251
+            </p>
+        </div>
     </div>
 </div>
+
 
 <?= $this->endSection() ?>
 
@@ -232,23 +205,6 @@
             display: block;
             page-break-before: always;
         }
-    }
-
-    @media screen {
-        div.divFooter {
-            display: none;
-        }
-    }
-
-    @media print {
-        div.divFooter {
-            position: fixed;
-            bottom: 0;
-        }
-    }
-
-    @page {
-        size: A3;
     }
 </style>
 <?= $this->endSection() ?>
