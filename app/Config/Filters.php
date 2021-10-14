@@ -33,7 +33,7 @@ class Filters extends BaseConfig
         'before' => [
             // 'honeypot',
             // 'csrf',
-            'sesion' => ['except' => ['casos/*', 'login']],
+            'sesion' => ['except' => ['plantillas/*', 'login']],
         ],
         'after' => [
             //el toolbar ralentiza la carga cuando se listan grandes cantidades de registros
