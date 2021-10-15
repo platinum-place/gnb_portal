@@ -10,6 +10,7 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+                            <th scope="col">#</th>
                             <th scope="col">Fecha Inicio</th>
                             <th scope="col">No.</th>
                             <th scope="col">Cliente</th>
@@ -20,9 +21,11 @@
                     </thead>
 
                     <tbody>
+                        <?php $cont = 1; ?>
                         <?php foreach ((array)$cotizaciones as $cotizacion) : ?>
                             <?php if (date('m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) == date("m/Y") and $cotizacion->getFieldValue('Quote_Stage') == "Emitida") : ?>
                                 <tr>
+                                    <td><?= $cont ?></td>
                                     <td><?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?></td>
                                     <td><?= $cotizacion->getFieldValue('Quote_Number') ?></td>
                                     <td>
@@ -54,6 +57,7 @@
                                         <?php endif ?>
                                     </td>
                                 </tr>
+                                <?php $cont++ ?>
                             <?php endif ?>
                         <?php endforeach ?>
                     </tbody>

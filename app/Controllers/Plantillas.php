@@ -15,19 +15,19 @@ class Plantillas extends BaseController
 
         switch ($cotizacion->getFieldValue("Plan")) {
             case 'Vida':
-                return view('cotizacion_vida', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('plantillas/cotizacion_vida', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
 
             case 'Vida/Desempleo':
-                return view('cotizacion_desempleo', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('plantillas/cotizacion_desempleo', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
 
             case 'Seguro Incendio Hipotecario':
-                return view('cotizacion_incendio', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('plantillas/cotizacion_incendio', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
 
             default:
-                return view('cotizacion_auto', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                return view('plantillas/cotizacion_auto', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
                 break;
         }
     }
@@ -42,19 +42,19 @@ class Plantillas extends BaseController
 
         switch ($cotizacion->getFieldValue("Plan")) {
             case 'Vida':
-                return view('emision_vida',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                return view('plantillas/emision_vida',  ["cotizacion" => $cotizacion, "plan" => $plan]);
                 break;
 
             case 'Vida/Desempleo':
-                return view('emision_desempleo',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                return view('plantillas/emision_desempleo',  ["cotizacion" => $cotizacion, "plan" => $plan]);
                 break;
 
             case 'Seguro Incendio Hipotecario':
-                return view('emision_incendio',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                return view('plantillas/emision_incendio',  ["cotizacion" => $cotizacion, "plan" => $plan]);
                 break;
 
             default:
-                return view('emision_auto', ["cotizacion" => $cotizacion, "plan" => $plan]);
+                return view('plantillas/emision_auto', ["cotizacion" => $cotizacion, "plan" => $plan]);
                 break;
         }
     }
@@ -73,7 +73,7 @@ class Plantillas extends BaseController
         $creado_por = $tua->getCreatedBy();
         //usuario que modifico la tua
         $modificado_por = $tua->getModifiedBy();
-        return view('tua', [
+        return view('plantillas/tua', [
             "tua" => $tua,
             "cliente" => $cliente,
             "vehiculos" => $vehiculos,

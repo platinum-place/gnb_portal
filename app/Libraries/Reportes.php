@@ -7,8 +7,13 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class Reportes extends Cotizaciones
 {
-    public function generar_reporte($desde, $hasta)
+    public function generar_reporte($plan, $desde, $hasta)
     {
+        $emisiones = $this->lista_cotizaciones();
+        if (empty($emisiones)) {
+            return $emisiones;
+        }
+
         //iniciar las librerias de la api para generar excel
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -32,13 +37,36 @@ class Reportes extends Cotizaciones
 
         //titulos del reporte
         $sheet->setCellValue('D1', session("cuenta"));
-        $sheet->setCellValue('D2', 'EMISIONES');
+        $sheet->setCellValue('D2', 'EMISIONES PLAN' . $plan);
         $sheet->setCellValue('D4', 'Generado por:');
         $sheet->setCellValue('E4', session("usuario"));
         $sheet->setCellValue('D5', 'Desde:');
         $sheet->setCellValue('E5', $desde);
         $sheet->setCellValue('D6', 'Hasta:');
         $sheet->setCellValue('E6', $hasta);
+
+
+        //elegir el contenido del encabezado de la tabla
+        switch ($plan) {
+            case 'auto':
+                # code...
+                break;
+            
+                case 'vida':
+                    # code...
+                    break;
+
+                    case 'desempleo':
+                        # code...
+                        break;
+
+                        case 'incendio':
+                            # code...
+                            break;
+        }
+
+
+        
 
         //titulos de las columnas de tabla
         $sheet->setCellValue('A12', 'Num');
@@ -64,15 +92,29 @@ class Reportes extends Cotizaciones
         $sheet->setCellValue('U12', 'Valor del Préstamo');
         $sheet->setCellValue('V12', 'Codeudor');
 
-        //inicializar contadores
-        $cont = 1;
-        $pos = 13;
+                //cambiar el color de fondo de un rango de celdas
+                $spreadsheet
+                ->getActiveSheet()
+                ->getStyle('A12:V12')
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()
+                ->setARGB('004F97');
+    
+            //cambiar el color de fuente de un rango de celdas
+            $spreadsheet->getActiveSheet()
+                ->getStyle('A12:V12')
+                ->getFont()
+                ->getColor()
+                ->setARGB("FFFFFF");
 
         //inicializar contadores
         $cont = 1;
         $pos = 13;
 
-        $emisiones = $this->lista_cotizaciones();
+        //inicializar contadores
+        $cont = 1;
+        $pos = 13;
 
         foreach ($emisiones as $emisiones => $emision) {
             if (
@@ -117,22 +159,6 @@ class Reportes extends Cotizaciones
                 $pos++;
             }
         }
-
-        //cambiar el color de fondo de un rango de celdas
-        $spreadsheet
-            ->getActiveSheet()
-            ->getStyle('A12:V12')
-            ->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()
-            ->setARGB('004F97');
-
-        //cambiar el color de fuente de un rango de celdas
-        $spreadsheet->getActiveSheet()
-            ->getStyle('A12:V12')
-            ->getFont()
-            ->getColor()
-            ->setARGB("FFFFFF");
 
         //ajustar tamaño de las columnas
         $sheet->getColumnDimension('A')->setWidth(20);

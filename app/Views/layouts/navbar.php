@@ -31,14 +31,3 @@
         </li>
     </ul>
 </nav>
-
-
-<?= $this->section('modal') ?>
-
-<!-- Formulario para cambiar de contraseña -->
-<?= $this->include('modals/cambiar_clave') ?>
-
-<!-- opciones para salir de la sesion -->
-<?= $this->include('modals/cerrar_sesion') ?>
-
-<?= $this->endSection() ?>

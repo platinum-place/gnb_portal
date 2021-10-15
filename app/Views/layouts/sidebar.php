@@ -31,7 +31,7 @@
                     Buscar Emisión
                 </a>
 
-                <a class="nav-link" href="<?= site_url("cotizaciones/reportes") ?>">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#generar_reporte">
                     <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                     Generar Reporte
                 </a>

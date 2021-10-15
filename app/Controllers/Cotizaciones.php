@@ -334,25 +334,24 @@ class Cotizaciones extends BaseController
 
     public function reportes()
     {
-        if ($this->request->getPost()) {
-            $libreria = new Reportes;
-            $ruta_reporte = $libreria->generar_reporte($this->request->getPost("desde"), $this->request->getPost("hasta"));
+        $libreria = new Reportes;
+        $ruta_reporte = $libreria->generar_reporte($this->request->getPost("plan"), $this->request->getPost("desde"), $this->request->getPost("hasta"));
 
-            //si no encontro registros
-            if (empty($ruta_reporte)) {
-                session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-                return redirect()->to(site_url());
-            }
+        //si no encontro registros
+        if (empty($ruta_reporte)) {
+            session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
+            return redirect()->to(site_url());
+        }
 
-            //forzar al navegador a descargar el archivo
+        //forzar al navegador a descargar el archivo
 
-            //funciona en ambos ambientes
-            $nombre = "Reporte " . date("d-m-Y");
-            return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
+        //funciona en ambos ambientes
+        $nombre = "Reporte " . date("d-m-Y");
+        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
 
-            //no funciona en ambiente de produccion, solo en desarrollo local
-            //es necesario no tener echo antes de descargar
-            /*
+        //no funciona en ambiente de produccion, solo en desarrollo local
+        //es necesario no tener echo antes de descargar
+        /*
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
                 header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
@@ -364,8 +363,5 @@ class Cotizaciones extends BaseController
                 //eliminar el archivo descargado
                 unlink($ruta_reporte);
                 */
-        }
-
-        return view("reportes", ["titulo" => "Reporte de Emisiones"]);
     }
 }

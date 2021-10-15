@@ -55,6 +55,16 @@
     <!-- Aqui se cargaran los modal que se utilicen en las vistas -->
     <?= $this->renderSection('modal') ?>
 
+
+    <!-- Formulario para cambiar de contraseña -->
+    <?= $this->include('modals/cambiar_clave') ?>
+    <!-- opciones para salir de la sesion -->
+    <?= $this->include('modals/cerrar_sesion') ?>
+    <!-- opciones para salir de la sesion -->
+    <?= $this->include('modals/generar_reporte') ?>
+
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="<?= base_url('js/scripts.js') ?>"></script>
