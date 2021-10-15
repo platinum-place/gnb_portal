@@ -45,30 +45,7 @@ class Reportes extends Cotizaciones
         $sheet->setCellValue('D6', 'Hasta:');
         $sheet->setCellValue('E6', $hasta);
 
-
         //elegir el contenido del encabezado de la tabla
-        switch ($plan) {
-            case 'auto':
-                # code...
-                break;
-            
-                case 'vida':
-                    # code...
-                    break;
-
-                    case 'desempleo':
-                        # code...
-                        break;
-
-                        case 'incendio':
-                            # code...
-                            break;
-        }
-
-
-        
-
-        //titulos de las columnas de tabla
         $sheet->setCellValue('A12', 'Num');
         $sheet->setCellValue('B12', 'Referidor');
         $sheet->setCellValue('C12', 'Plan');
@@ -80,33 +57,35 @@ class Reportes extends Cotizaciones
         $sheet->setCellValue('I12', 'Tel. Residencia');
         $sheet->setCellValue('J12', 'Fecha de nacimiento');
         $sheet->setCellValue('K12', 'Dirección');
-        $sheet->setCellValue('L12', 'Marca');
-        $sheet->setCellValue('M12', 'Modelo');
-        $sheet->setCellValue('N12', 'Año');
-        $sheet->setCellValue('O12', 'Color');
-        $sheet->setCellValue('P12', 'Placa');
-        $sheet->setCellValue('Q12', 'Chasis');
-        $sheet->setCellValue('R12', 'Tipo vehículo');
-        $sheet->setCellValue('S12', 'Plazos');
-        $sheet->setCellValue('T12', 'Cuota Mensual de Préstamo');
-        $sheet->setCellValue('U12', 'Valor del Préstamo');
-        $sheet->setCellValue('V12', 'Codeudor');
+        $sheet->setCellValue('L12', 'Plazos');
+        $sheet->setCellValue('M12', 'Codeudor');
+        $sheet->setCellValue('N12', 'Cuota Mensual de Préstamo');
+        $sheet->setCellValue('O12', 'Valor del Préstamo');
+        $sheet->setCellValue('P12', 'Construcción');
+        $sheet->setCellValue('Q12', 'Riesgo');
+        $sheet->setCellValue('R12', 'Marca');
+        $sheet->setCellValue('S12', 'Modelo');
+        $sheet->setCellValue('T12', 'Año');
+        $sheet->setCellValue('U12', 'Color');
+        $sheet->setCellValue('V12', 'Placa');
+        $sheet->setCellValue('W12', 'Chasis');
+        $sheet->setCellValue('X12', 'Tipo vehículo');
 
-                //cambiar el color de fondo de un rango de celdas
-                $spreadsheet
-                ->getActiveSheet()
-                ->getStyle('A12:V12')
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()
-                ->setARGB('004F97');
-    
-            //cambiar el color de fuente de un rango de celdas
-            $spreadsheet->getActiveSheet()
-                ->getStyle('A12:V12')
-                ->getFont()
-                ->getColor()
-                ->setARGB("FFFFFF");
+        //cambiar el color de fondo de un rango de celdas
+        $spreadsheet
+            ->getActiveSheet()
+            ->getStyle('A12:X12')
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setARGB('004F97');
+
+        //cambiar el color de fuente de un rango de celdas
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A12:X12')
+            ->getFont()
+            ->getColor()
+            ->setARGB("FFFFFF");
 
         //inicializar contadores
         $cont = 1;
@@ -139,20 +118,30 @@ class Reportes extends Cotizaciones
                 $sheet->setCellValue('J' . $pos, $emision->getFieldValue('Fecha_de_nacimiento'));
                 $sheet->setCellValue('K' . $pos, $emision->getFieldValue('Direcci_n'));
 
-                //relacionados al vehiculo
-                $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Marca')->getLookupLabel());
-                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Modelo')->getLookupLabel());
-                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('A_o'));
-                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Color'));
-                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Placa'));
-                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Chasis'));
-                $sheet->setCellValue('R' . $pos, $emision->getFieldValue('Tipo_veh_culo'));
-
                 //otros
-                $sheet->setCellValue('S' . $pos, $emision->getFieldValue('Plazo'));
-                $sheet->setCellValue('T' . $pos, $emision->getFieldValue('Placa'));
-                $sheet->setCellValue('U' . $pos, $emision->getFieldValue('Cuota'));
-                $sheet->setCellValue('V' . $pos, $emision->getFieldValue('Nombre_codeudor'));
+                $sheet->setCellValue('L' . $pos, $emision->getFieldValue('Plazo'));
+                $sheet->setCellValue('M' . $pos, $emision->getFieldValue('Nombre_codeudor'));
+                $sheet->setCellValue('N' . $pos, $emision->getFieldValue('Cuota'));
+                $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Prestamo'));
+                $sheet->setCellValue('P' . $pos, $emision->getFieldValue('Construcci_n'));
+                $sheet->setCellValue('Q' . $pos, $emision->getFieldValue('Riesgo'));
+
+                //relacionados al vehiculo
+                if (!empty($emision->getFieldValue('Marca'))) {
+                    $marca = $emision->getFieldValue('Marca')->getLookupLabel();
+                    $modelo = $emision->getFieldValue('Modelo')->getLookupLabel();
+                } else {
+                    $marca = null;
+                    $modelo = null;
+                }
+
+                $sheet->setCellValue('R' . $pos, $marca);
+                $sheet->setCellValue('S' . $pos, $modelo);
+                $sheet->setCellValue('T' . $pos, $emision->getFieldValue('A_o'));
+                $sheet->setCellValue('U' . $pos, $emision->getFieldValue('Color'));
+                $sheet->setCellValue('V' . $pos, $emision->getFieldValue('Placa'));
+                $sheet->setCellValue('W' . $pos, $emision->getFieldValue('Chasis'));
+                $sheet->setCellValue('X' . $pos, $emision->getFieldValue('Tipo_veh_culo'));
 
                 //contadores
                 $cont++;
@@ -161,28 +150,10 @@ class Reportes extends Cotizaciones
         }
 
         //ajustar tamaño de las columnas
-        $sheet->getColumnDimension('A')->setWidth(20);
-        $sheet->getColumnDimension('B')->setWidth(20);
-        $sheet->getColumnDimension('C')->setWidth(20);
-        $sheet->getColumnDimension('D')->setWidth(20);
-        $sheet->getColumnDimension('E')->setWidth(20);
-        $sheet->getColumnDimension('F')->setWidth(20);
-        $sheet->getColumnDimension('G')->setWidth(20);
-        $sheet->getColumnDimension('H')->setWidth(20);
-        $sheet->getColumnDimension('I')->setWidth(20);
-        $sheet->getColumnDimension('J')->setWidth(20);
-        $sheet->getColumnDimension('K')->setWidth(20);
-        $sheet->getColumnDimension('L')->setWidth(20);
-        $sheet->getColumnDimension('M')->setWidth(20);
-        $sheet->getColumnDimension('N')->setWidth(20);
-        $sheet->getColumnDimension('O')->setWidth(20);
-        $sheet->getColumnDimension('P')->setWidth(20);
-        $sheet->getColumnDimension('Q')->setWidth(20);
-        $sheet->getColumnDimension('R')->setWidth(20);
-        $sheet->getColumnDimension('S')->setWidth(20);
-        $sheet->getColumnDimension('T')->setWidth(20);
-        $sheet->getColumnDimension('U')->setWidth(20);
-        $sheet->getColumnDimension('V')->setWidth(20);
+        foreach (range('A', 'X') as $columnID) {
+            $sheet->getColumnDimension($columnID)
+                ->setAutoSize(true);
+        }
 
         //ruta del excel
         $doc = WRITEPATH . 'uploads/reporte.xlsx';

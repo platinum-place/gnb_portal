@@ -53,7 +53,7 @@
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Uso</label>
-                                <select name="uso" class="form-control">
+                                <select name="uso" class="form-select">
                                     <option value="Privado" selected>Privado</option>
                                     <option value="Publico">Publico</option>
                                 </select>
@@ -62,7 +62,7 @@
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Plan</label>
-                                <select name="plan" class="form-control">
+                                <select name="plan" class="form-select">
                                     <option value="Mensual full" selected>Mensual Full</option>
                                     <option value="Anual full">Anual Full</option>
                                 </select>
@@ -75,7 +75,7 @@
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Estado</label>
-                                <select name="estado" class="form-control">
+                                <select name="estado" class="form-select">
                                     <option value="Nuevo" selected>Nuevo</option>
                                     <option value="Usado">Usado</option>
                                 </select>

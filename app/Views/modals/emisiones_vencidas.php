@@ -12,9 +12,9 @@
                         <tr>
                             <th scope="col">#</th>
                             <th scope="col">Fecha Inicio</th>
-                            <th scope="col">No.</th>
                             <th scope="col">Cliente</th>
                             <th scope="col">Plan</th>
+                            <th scope="col">Aseguradora</th>
                             <th scope="col">Referidor</th>
                             <th scope="col">Opciones</th>
                         </tr>
@@ -27,11 +27,11 @@
                                 <tr>
                                     <td><?= $cont ?></td>
                                     <td><?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?></td>
-                                    <td><?= $cotizacion->getFieldValue('Quote_Number') ?></td>
                                     <td>
                                         <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
                                     </td>
                                     <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
+                                    <td><?= $cotizacion->getFieldValue('Coberturas')->getLookupLabel() ?></td>
                                     <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                                     <td>
                                         <?php if ($cotizacion->getFieldValue('Quote_Stage') == "Cotizando") : ?>
