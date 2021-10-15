@@ -32,7 +32,6 @@
                         </div>
                     </div>
 
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
@@ -48,18 +47,8 @@
                         </div>
                     </div>
 
-
                     <div class="row mb-3">
-                        <div class="col-md-6">
-                            <div class="mb-3 mb-md-0">
-                                <label class="form-label">Uso</label>
-                                <select name="uso" class="form-select">
-                                    <option value="Privado" selected>Privado</option>
-                                    <option value="Publico">Publico</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Plan</label>
                                 <select name="plan" class="form-select">
@@ -68,11 +57,18 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
 
+                        <div class="col-md-4">
+                            <div class="mb-3 mb-md-0">
+                                <label class="form-label">Uso</label>
+                                <select name="uso" class="form-select">
+                                    <option value="Privado" selected>Privado</option>
+                                    <option value="Publico">Publico</option>
+                                </select>
+                            </div>
+                        </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Estado</label>
                                 <select name="estado" class="form-select">

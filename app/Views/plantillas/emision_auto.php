@@ -21,7 +21,6 @@
             <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
             <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
             <b>Fecha Fin</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?> <br>
-            <b>No.</b> <?= $cotizacion->getFieldValue('Quote_Number') ?>
         </p>
     </div>
 </div>

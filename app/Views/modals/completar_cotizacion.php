@@ -26,7 +26,6 @@
                         </div>
                     </div>
 
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
@@ -36,14 +35,13 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
-                                <?php if (!$fecha_deudor) : ?>
+                                <?php if (empty($fecha_deudor)) : ?>
                                     <label class="form-label">Fecha de Nacimiento</label>
                                     <input type="date" class="form-control" name="fecha" id="fecha">
                                 <?php endif ?>
                             </div>
                         </div>
                     </div>
-
 
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -60,8 +58,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
@@ -77,16 +73,12 @@
                         </div>
                     </div>
 
-
-
-                    <?php if ($direccion) : ?>
+                    <?php if (empty($direccion)) : ?>
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
                             <input type="text" class="form-control" name="direccion">
                         </div>
                     <?php endif ?>
-
-
 
                     <?php if ($marcaid) : ?>
                         <h6>Datos del vehículo</h6>
@@ -105,8 +97,6 @@
                                 </div>
                             </div>
                         </div>
-
-
 
                         <div class="mb-3">
                             <label class="form-label">Color</label>
@@ -133,7 +123,6 @@
                             </div>
                         </div>
 
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="mb-3 mb-md-0">
@@ -148,7 +137,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -165,8 +153,6 @@
                             </div>
                         </div>
 
-
-
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <div class="mb-3 mb-md-0">
@@ -176,13 +162,10 @@
                             </div>
                         </div>
 
-
-
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
                             <input type="text" class="form-control" name="direccion_codeudor">
                         </div>
-
                     <?php endif ?>
 
                     <!-- datos en general -->
@@ -202,6 +185,7 @@
                     <input type="text" hidden name="prestamo" value="<?= $prestamo ?>">
                     <input type="text" hidden name="construccion" value="<?= $construccion ?>">
                     <input type="text" hidden name="riesgo" value="<?= $riesgo ?>">
+                    <input type="text" hidden name="direccion" value="<?= $direccion ?>">
                 </div>
 
                 <div class="modal-footer">

@@ -18,7 +18,6 @@
         <p style="text-align: right">
             <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
             <b>Fecha Fin</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?> <br>
-            <b>No.</b> <?= $cotizacion->getFieldValue('Quote_Number') ?>
         </p>
     </div>
 </div>
@@ -48,6 +47,12 @@
             </p>
 
             <p class="card-title">
+                <b>Tipo de Construcción</b> <br>
+                <b>Tipo de Riesgo</b> <br>
+                <b>Direción</b>
+            </p>
+
+            <p class="card-title">
                 <b>Prima Neta</b> <br>
                 <b>ISC</b> <br>
                 <b>Prima Total</b>
@@ -66,6 +71,12 @@
                         RD<?= number_format($cotizacion->getFieldValue("Suma_asegurada"), 2) ?> <br>
                         RD<?= number_format($cotizacion->getFieldValue("Cuota"), 2) ?> <br>
                         <?= $cotizacion->getFieldValue("Plazo") ?> meses
+                    </p>
+
+                    <p class="card-title">
+                        <?= $cotizacion->getFieldValue("Construcci_n") ?> <br>
+                        <?= $cotizacion->getFieldValue("Riesgo") ?> <br>
+                        <?= $cotizacion->getFieldValue("Direcci_n") ?>
                     </p>
 
                     <p class="card-title">

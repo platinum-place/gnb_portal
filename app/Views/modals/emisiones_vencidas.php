@@ -16,7 +16,6 @@
                             <th scope="col">Plan</th>
                             <th scope="col">Aseguradora</th>
                             <th scope="col">Referidor</th>
-                            <th scope="col">Opciones</th>
                         </tr>
                     </thead>
 
@@ -33,29 +32,6 @@
                                     <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
                                     <td><?= $cotizacion->getFieldValue('Coberturas')->getLookupLabel() ?></td>
                                     <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
-                                    <td>
-                                        <?php if ($cotizacion->getFieldValue('Quote_Stage') == "Cotizando") : ?>
-                                            <a href="<?= site_url("cotizaciones/emitir/" . $cotizacion->getEntityId()) ?>" title="Emitir">
-                                                <i class="far fa-user"></i>
-                                            </a>
-                                            |
-                                            <a href="<?= site_url("cotizaciones/editar/" . $cotizacion->getEntityId()) ?>" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            |
-                                            <a href="<?= site_url("plantillas/cotizacion/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
-                                                <i class="fas fa-download"></i>
-                                            </a>
-                                        <?php else : ?>
-                                            <a href="<?= site_url("cotizaciones/adjuntar/" . $cotizacion->getEntityId()) ?>" title="Adjuntar">
-                                                <i class="fas fa-upload"></i>
-                                            </a>
-                                            |
-                                            <a href="<?= site_url("plantillas/emision/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
-                                                <i class="fas fa-download"></i>
-                                            </a>
-                                        <?php endif ?>
-                                    </td>
                                 </tr>
                                 <?php $cont++ ?>
                             <?php endif ?>

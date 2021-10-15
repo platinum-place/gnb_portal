@@ -18,8 +18,8 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>Fecha</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
-            <b>No.</b> <?= $cotizacion->getFieldValue('Quote_Number') ?>
+            <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
+            <b>Fecha Fin</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?> <br>
         </p>
     </div>
 </div>

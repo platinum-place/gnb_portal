@@ -19,7 +19,6 @@ _<?= $this->extend('layouts/simple') ?>
             <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
             <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
             <b>Fecha Fin</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?> <br>
-            <b>No.</b> <?= $cotizacion->getFieldValue('Quote_Number') ?>
         </p>
     </div>
 </div>
@@ -47,6 +46,12 @@ _<?= $this->extend('layouts/simple') ?>
             </p>
 
             <p class="card-title">
+                <b>Tipo de Construcción</b> <br>
+                <b>Tipo de Riesgo</b> <br>
+                <b>Direción</b>
+            </p>
+
+            <p class="card-title">
                 <b>Prima Neta</b> <br>
                 <b>ISC</b> <br>
                 <b>Prima Total</b>
@@ -62,10 +67,16 @@ _<?= $this->extend('layouts/simple') ?>
                 <?= $cotizacion->getFieldValue("Plazo") ?> meses
             </p>
 
+            <p class="card-title">
+                <?= $cotizacion->getFieldValue("Construcci_n") ?> <br>
+                <?= $cotizacion->getFieldValue("Riesgo") ?> <br>
+                <?= $cotizacion->getFieldValue("Direcci_n") ?>
+            </p>
+
             <?php
-            $neta = $plan->getFieldValue('Prima') - ($plan->getFieldValue('Prima') * 0.16);
-            $isc = $plan->getFieldValue('Prima') * 0.16;
-            $total = $plan->getFieldValue('Prima') - ($plan->getFieldValue('Prima') * 0.16);
+            $neta = $cotizacion->getFieldValue('Prima') - ($cotizacion->getFieldValue('Prima') * 0.16);
+            $isc = $cotizacion->getFieldValue('Prima') * 0.16;
+            $total = $cotizacion->getFieldValue('Prima') - ($cotizacion->getFieldValue('Prima') * 0.16);
             ?>
 
             <p class="card-title">
