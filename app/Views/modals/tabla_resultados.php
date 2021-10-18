@@ -17,7 +17,7 @@
                     </thead>
 
                     <tbody>
-                        <?php foreach ($cotizaciones as $plan) : ?>
+                        <?php foreach ($cotizacion->planes as $plan) : ?>
                             <tr>
                                 <td><?= $plan["aseguradora"] ?></td>
                                 <td>RD$<?= number_format($plan["total"], 2) ?></td>

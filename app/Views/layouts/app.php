@@ -60,7 +60,7 @@
     <?= $this->include('modals/cambiar_clave') ?>
     <!-- opciones para salir de la sesion -->
     <?= $this->include('modals/cerrar_sesion') ?>
-    <!-- opciones para salir de la sesion -->
+    <!-- generar reporte -->
     <?= $this->include('modals/generar_reporte') ?>
 
 

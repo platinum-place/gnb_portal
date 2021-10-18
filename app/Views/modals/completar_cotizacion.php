@@ -1,5 +1,4 @@
 <form method="POST" action="<?= site_url("cotizaciones/completar") ?>">
-
     <div class="modal fade" id="completar_cotizacion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="completar_cotizacion" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -35,7 +34,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
-                                <?php if (empty($fecha_deudor)) : ?>
+                                <?php if (empty($cotizacion->fecha_deudor)) : ?>
                                     <label class="form-label">Fecha de Nacimiento</label>
                                     <input type="date" class="form-control" name="fecha" id="fecha">
                                 <?php endif ?>
@@ -73,14 +72,14 @@
                         </div>
                     </div>
 
-                    <?php if (empty($direccion)) : ?>
+                    <?php if (empty($cotizacion->direccion)) : ?>
                         <div class="mb-3">
                             <label class="form-label">Dirección</label>
                             <input type="text" class="form-control" name="direccion">
                         </div>
                     <?php endif ?>
 
-                    <?php if ($marcaid) : ?>
+                    <?php if (!empty($cotizacion->marcaid)) : ?>
                         <h6>Datos del vehículo</h6>
                         <hr>
                         <div class="row mb-3">
@@ -105,7 +104,7 @@
                     <?php endif ?>
 
                     <!-- Formulario codeudor, en caso de plan vida -->
-                    <?php if ($fecha_codeudor) : ?>
+                    <?php if (!empty($cotizacion->fecha_codeudor)) : ?>
                         <h6>Datos del Codeudor</h6>
                         <hr>
                         <div class="row mb-3">
@@ -169,23 +168,23 @@
                     <?php endif ?>
 
                     <!-- datos en general -->
-                    <input type="text" hidden name="plan" value="<?= $plan ?>">
-                    <input type="number" hidden name="suma" value="<?= $suma ?>">
-                    <input type="text" hidden name="cotizaciones" value='<?= json_encode($cotizaciones)  ?>'>
-                    <input type="text" hidden name="cuota" value="<?= $cuota ?>">
-                    <input type="text" hidden name="plazo" value="<?= $plazo ?>">
-                    <input type="text" hidden name="fecha_codeudor" value="<?= $fecha_codeudor ?>">
-                    <input type="text" hidden name="fecha" value="<?= $fecha_deudor ?>">
-                    <input type="text" hidden name="marcaid" value="<?= $marcaid ?>">
-                    <input type="text" hidden name="uso" value="<?= $uso ?>">
-                    <input type="text" hidden name="ano" value="<?= $ano ?>">
-                    <input type="text" hidden name="modeloid" value="<?= $modeloid ?>">
-                    <input type="text" hidden name="modelotipo" value="<?= $modelotipo ?>">
-                    <input type="text" hidden name="estado" value="<?= $estado ?>">
-                    <input type="text" hidden name="prestamo" value="<?= $prestamo ?>">
-                    <input type="text" hidden name="construccion" value="<?= $construccion ?>">
-                    <input type="text" hidden name="riesgo" value="<?= $riesgo ?>">
-                    <input type="text" hidden name="direccion" value="<?= $direccion ?>">
+                    <input type="text" hidden name="plan" value="<?= $cotizacion->plan ?>">
+                    <input type="number" hidden name="suma" value="<?= $cotizacion->suma ?>">
+                    <input type="text" hidden name="planes" value='<?= json_encode($cotizacion->planes)  ?>'>
+                    <input type="text" hidden name="cuota" value="<?= $cotizacion->cuota ?>">
+                    <input type="text" hidden name="plazo" value="<?= $cotizacion->plazo ?>">
+                    <input type="text" hidden name="fecha_codeudor" value="<?= $cotizacion->fecha_codeudor ?>">
+                    <input type="text" hidden name="fecha" value="<?= $cotizacion->fecha_deudor ?>">
+                    <input type="text" hidden name="marcaid" value="<?= $cotizacion->marcaid ?>">
+                    <input type="text" hidden name="uso" value="<?= $cotizacion->uso ?>">
+                    <input type="text" hidden name="ano" value="<?= $cotizacion->ano ?>">
+                    <input type="text" hidden name="modeloid" value="<?= $cotizacion->modeloid ?>">
+                    <input type="text" hidden name="modelotipo" value="<?= $cotizacion->modelotipo ?>">
+                    <input type="text" hidden name="estado" value="<?= $cotizacion->estado ?>">
+                    <input type="text" hidden name="prestamo" value="<?= $cotizacion->prestamo ?>">
+                    <input type="text" hidden name="construccion" value="<?= $cotizacion->construccion ?>">
+                    <input type="text" hidden name="riesgo" value="<?= $cotizacion->riesgo ?>">
+                    <input type="text" hidden name="direccion" value="<?= $cotizacion->direccion ?>">
                 </div>
 
                 <div class="modal-footer">

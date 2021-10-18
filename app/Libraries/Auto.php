@@ -77,7 +77,7 @@ class Auto extends Cotizaciones
                 or
                 ($recargo->getFieldValue('Tipo') == $modelotipo)
                 or
-                ($ano > $recargo->getFieldValue('Desde'))
+                ($recargo->getFieldValue('Desde') > 0 and $ano > $recargo->getFieldValue('Desde'))
             ) {
                 $valorrecargo = $recargo->getFieldValue('Name') / 100;
             }
@@ -145,7 +145,7 @@ class Auto extends Cotizaciones
                 "comentario" => $comentario
             ];
         }
-
+        
         return $cotizacion;
     }
 }

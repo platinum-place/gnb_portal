@@ -1,5 +1,6 @@
-<form method="POST" action="<?= site_url("cotizaciones/cotizar") ?>">
-    <input type="text" hidden name="plan" value="Seguro Incendio Hipotecario">
+<form method="POST" action="<?= site_url("cotizaciones") ?>">
+<input type="text" hidden value="Seguro Incendio Hipotecario" name="plan">
+
     <div class="modal fade" id="cotizar_incendio" tabindex="-1" aria-labelledby="cotizar_incendio" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -20,7 +21,7 @@
                         <div class="col-md-4">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Valor del Préstamo</label>
-                                <input type="number" class="form-control" name="cuota" required>
+                                <input type="number" class="form-control" name="prestamo" required>
                             </div>
                         </div>
 
@@ -54,7 +55,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Dirección</label>
-                        <input type="text" class="form-control" name="direccion">
+                        <input type="text" class="form-control" name="direccion" required>
                     </div>
                 </div>
 

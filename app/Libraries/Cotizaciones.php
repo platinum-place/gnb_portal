@@ -15,33 +15,7 @@ class Cotizaciones extends Zoho
         } else {
             $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . "))";
         }
-
         return $this->searchRecordsByCriteria("Quotes", $criterio);
-    }
-
-    public function resumen()
-    {
-        $lista = array();
-        $polizas = 0;
-        $vencidas = 0;
-
-        $cotizaciones = $this->lista_cotizaciones();
-        foreach ((array)$cotizaciones as $cotizacion) {
-            if ($cotizacion->getFieldValue('Quote_Stage') == "Emitida") {
-                //filtrar por  mes y año actual
-                if (date("Y-m", strtotime($cotizacion->getCreatedTime())) == date("Y-m")) {
-                    $lista[] =  $cotizacion->getFieldValue('Coberturas')->getLookupLabel();
-                    $polizas++;
-                }
-
-                //contador para las emisiones que vencen en el mes y año actual
-                if (date("Y-m", strtotime($cotizacion->getFieldValue('Valid_Till'))) == date("Y-m")) {
-                    $vencidas++;
-                }
-            }
-        }
-
-        return ["lista" => array_count_values($lista), "polizas" => $polizas, "vencidas" => $vencidas, "cotizaciones" => $cotizaciones];
     }
 
     //crea el registro en el crm, al ser un registro con una tabla de productos es necesario...
@@ -90,13 +64,10 @@ class Cotizaciones extends Zoho
             if ($documento->isValid() && !$documento->hasMoved()) {
                 //subir el archivo al servidor
                 $documento->move(WRITEPATH . 'uploads');
-
                 //ruta del archivo subido
                 $ruta = WRITEPATH . 'uploads/' . $documento->getClientName();
-
                 //funcion para adjuntar el archivo
                 $this->uploadAttachment("Quotes", $id, $ruta);
-
                 //borrar el archivo del servidor local
                 unlink($ruta);
             }

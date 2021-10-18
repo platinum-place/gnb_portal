@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("cotizaciones/cotizar") ?>">
+<form method="POST" action="<?= site_url("cotizaciones") ?>">
     <div class="modal fade" id="cotizar_auto" tabindex="-1" aria-labelledby="cotizar_auto" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -22,6 +22,7 @@
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Modelo</label>
@@ -39,6 +40,7 @@
                                 <input type="number" class="form-control" name="ano" required>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Suma Asegurada</label>

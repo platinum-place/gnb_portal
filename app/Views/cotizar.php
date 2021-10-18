@@ -1,6 +1,7 @@
 <?= $this->extend('layouts/app') ?>
 
 <?= $this->section('content') ?>
+
 <!-- Opciones para cotizar -->
 <div class="row row-cols-1 row-cols-md-4 g-4">
     <div class="col">
@@ -39,23 +40,23 @@
         </div>
     </div>
 </div>
+
 <?= $this->endSection() ?>
 
 
-
+<!-- Formulario para cotizar -->
 <?= $this->section('modal') ?>
-<?php if (!empty($cotizaciones)) : ?>
+<?php if (!empty($cotizacion->planes)) : ?>
     <?= $this->include('modals/tabla_resultados') ?>
     <?= $this->include('modals/completar_cotizacion') ?>
 <?php endif ?>
 
-<!-- Formulario para cotizar -->
 <?= $this->include('modals/cotizar_auto') ?>
 <?= $this->include('modals/cotizar_vida') ?>
 <?= $this->include('modals/cotizar_desempleo') ?>
 <?= $this->include('modals/cotizar_incendio') ?>
-<?= $this->endSection() ?>
 
+<?= $this->endSection() ?>
 
 
 <?= $this->section('js') ?>
@@ -72,7 +73,6 @@
         tabla_resultados.hide();
         completar_cotizacion.show();
     }
-
 
     //Funcion para cargar una url con codigo php cuando hagan una solicitud con ajax
     function modelosAJAX(val) {
@@ -98,17 +98,14 @@
         });
     }
 </script>
-
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
 <?= $this->endSection() ?>
 
 
-<!-- CSS personalizado -->
 <?= $this->section('css') ?>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
-
 <!-- hace que el rango de clic del campo de fecha sea mas grande -->
 <style>
     #fecha::-webkit-calendar-picker-indicator {
