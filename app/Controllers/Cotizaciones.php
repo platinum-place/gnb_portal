@@ -192,9 +192,9 @@ class Cotizaciones extends BaseController
         $libreria = new LibrariesCotizaciones;
         $id = $libreria->crear_cotizacion($registro, $planes);
         $cliente = $this->request->getPost("nombre") . " " . $this->request->getPost("apellido");
-        $alerta = view("alertas/completar_cotizacion", ["cliente" => $cliente, "id" => $id]);
+        $alerta = view("alertas/completar_cotizacion", ["cliente" => $cliente]);
         session()->setFlashdata('alerta', $alerta);
-        return redirect()->to(site_url("cotizaciones/buscar/Cotizando"));
+        return redirect()->to(site_url("cotizaciones/emitir/$id"));
     }
 
     public function buscar($filtro)
@@ -216,6 +216,8 @@ class Cotizaciones extends BaseController
     public function editar($id)
     {
         $libreria = new LibrariesCotizaciones;
+        //obtener datos de la cotizacion
+        $cotizacion = $libreria->getRecord("Quotes", $id);
         if ($this->request->getPost()) {
             //datos generales para crear una cotizacion
             $registro = [
@@ -243,13 +245,13 @@ class Cotizaciones extends BaseController
             //agregar los cambios al registro en el crm
             $libreria->update("Quotes", $id, $registro);
             //alerta general cuando se edita una cotizacion en el crm
-            $cliente = $this->request->getPost("nombre") . " " . $this->request->getPost("apellido");
-            session()->setFlashdata('alerta', "¡Cotización, a nombre de $cliente, editada exitosamente!.");
-            return redirect()->to(site_url("cotizaciones/buscar/Cotizando"));
+            session()->setFlashdata('alerta', "¡Cotización editada exitosamente!.");
+            return redirect()->to(site_url("cotizaciones/emitir/$id"));
         }
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-        echo view("modals/editar_cotizacion", ["cotizacion" => $cotizacion]);
-        return $this->buscar("Cotizando");
+        return view("editar", [
+            "titulo" => "Editar Cotización, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
+            "cotizacion" => $cotizacion
+        ]);
     }
 
     public function emitir($id)
@@ -284,8 +286,10 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', $alerta);
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
-        echo view("modals/emitir_cotizacion", ["cotizacion" => $cotizacion]);
-        return $this->buscar("Cotizando");
+        return view("emitir", [
+            "titulo" => "Emitir Cotización, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
+            "cotizacion" => $cotizacion
+        ]);
     }
 
     public function condicionado($id)
@@ -314,15 +318,17 @@ class Cotizaciones extends BaseController
     public function adjuntar($id)
     {
         $libreria = new LibrariesCotizaciones;
+        $cotizacion = $libreria->getRecord("Quotes", $id);
         //los archivos debe ser subida al servidor para luego ser adjuntados al registro
         if ($documentos = $this->request->getFiles()) {
-            $libreria->adjuntar_documentos($documentos['documentos'], $id);
-            session()->setFlashdata('alerta', "¡Documentos adjuntados correctamente!.");
+            $cantidad= $libreria->adjuntar_documentos($documentos['documentos'], $id);
+            session()->setFlashdata('alerta', "Documentos adjuntados: $cantidad, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'));
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
-        $cotizacion = $libreria->getRecord("Quotes", $id);
-        echo view("modals/adjuntar_documentos", ["cotizacion" => $cotizacion]);
-        return $this->buscar("Emitida");
+        return view("adjuntar", [
+            "titulo" => "Adjuntar a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
+            "cotizacion" => $cotizacion
+        ]);
     }
 
     public function reportes()

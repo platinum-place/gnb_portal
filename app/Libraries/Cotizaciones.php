@@ -60,6 +60,8 @@ class Cotizaciones extends Zoho
 
     public function adjuntar_documentos($documentos, $id)
     {
+        $cont = 0;
+
         foreach ($documentos as $documento) {
             if ($documento->isValid() && !$documento->hasMoved()) {
                 //subir el archivo al servidor
@@ -70,7 +72,10 @@ class Cotizaciones extends Zoho
                 $this->uploadAttachment("Quotes", $id, $ruta);
                 //borrar el archivo del servidor local
                 unlink($ruta);
+                $cont++;
             }
         }
+        
+        return $cont;
     }
 }

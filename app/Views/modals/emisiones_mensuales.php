@@ -1,5 +1,5 @@
 <div class="modal fade" id="emisiones_mensuales" tabindex="-1" aria-labelledby="emisiones_mensuales" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="emisiones_mensuales">Pólizas emitidas este mes</h5>
@@ -11,7 +11,7 @@
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Fecha Fin</th>
+                            <th scope="col">Fecha</th>
                             <th scope="col">Cliente</th>
                             <th scope="col">Plan</th>
                             <th scope="col">Aseguradora</th>
