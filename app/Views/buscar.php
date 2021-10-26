@@ -8,8 +8,8 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
+                    <th>Vigencia Desde</th>
+                    <th>Vigencia Hasta</th>
                     <th>Cliente</th>
                     <th>RNC/Cédula</th>
                     <th>Codeudor</th>
@@ -22,8 +22,8 @@
             <tfoot>
                 <tr>
                     <th>#</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
+                    <th>Vigencia Desde</th>
+                    <th>Vigencia Hasta</th>
                     <th>Cliente</th>
                     <th>RNC/Cédula</th>
                     <th>Codeudor</th>

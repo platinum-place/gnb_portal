@@ -191,8 +191,7 @@ class Cotizaciones extends BaseController
         //crea la cotizacion el en crm
         $libreria = new LibrariesCotizaciones;
         $id = $libreria->crear_cotizacion($registro, $planes);
-        $cliente = $this->request->getPost("nombre") . " " . $this->request->getPost("apellido");
-        $alerta = view("alertas/completar_cotizacion", ["cliente" => $cliente]);
+        $alerta = view("alertas/completar_cotizacion");
         session()->setFlashdata('alerta', $alerta);
         return redirect()->to(site_url("cotizaciones/emitir/$id"));
     }
@@ -257,8 +256,12 @@ class Cotizaciones extends BaseController
     public function emitir($id)
     {
         $libreria = new LibrariesCotizaciones;
+        
         //obtener los datos de la cotizacion, la funcion es heredada de la libreria del api
         $cotizacion = $libreria->getRecord("Quotes", $id);
+
+        $cliente =  $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido');
+
         if ($this->request->getPost()) {
             //obtener los datos del plan elegido
             foreach ($cotizacion->getLineItems() as $lineItem) {
@@ -281,13 +284,12 @@ class Cotizaciones extends BaseController
                 $libreria->adjuntar_documentos($documentos['documentos'], $id);
             }
 
-            $cliente = $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido');
-            $alerta = view("alertas/emitir_cotizacion", ["cliente" => $cliente, "id" => $id]);
+            $alerta = view("alertas/emitir_cotizacion");
             session()->setFlashdata('alerta', $alerta);
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
         return view("emitir", [
-            "titulo" => "Emitir Cotización, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
+            "titulo" => "Emitir Cotización, a nombre de $cliente",
             "cotizacion" => $cotizacion
         ]);
     }
@@ -322,7 +324,7 @@ class Cotizaciones extends BaseController
         //los archivos debe ser subida al servidor para luego ser adjuntados al registro
         if ($documentos = $this->request->getFiles()) {
             $cantidad= $libreria->adjuntar_documentos($documentos['documentos'], $id);
-            session()->setFlashdata('alerta', "Documentos adjuntados: $cantidad, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'));
+            session()->setFlashdata('alerta', "Documentos adjuntados: $cantidad, en la emisión a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'));
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
         return view("adjuntar", [

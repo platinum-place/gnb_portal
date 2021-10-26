@@ -23,48 +23,27 @@
             </div>
         </div>
     </div>
+</div>
 
-    <div class="col-xl-3 col-md-4">
-        <div class="card bg-danger text-white mb-4">
-            <div class="card-body">
-                Pólizas vencidas este mes<br>
-                <?= $vencidas ?>
-            </div>
+<div class="card mb-4">
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Aseguradora</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
 
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#emisiones_vencidas">Ver más</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-6 col-md-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Pólizas emitidas este mes
-            </div>
-
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Aseguradora</th>
-                            <th>Cantidad</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <?php foreach ($lista as $aseguradora => $cantidad) : ?>
-                            <tr>
-                                <td><?= $aseguradora ?></td>
-                                <td><?= $cantidad ?></td>
-                            </tr>
-                        <?php endforeach ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <tbody>
+                <?php foreach ($lista as $aseguradora => $cantidad) : ?>
+                    <tr>
+                        <td><?= $aseguradora ?></td>
+                        <td><?= $cantidad ?></td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -73,5 +52,4 @@
 
 <?= $this->section('modal') ?>
 <?= $this->include('modals/emisiones_mensuales') ?>
-<?= $this->include('modals/emisiones_vencidas') ?>
 <?= $this->endSection() ?>

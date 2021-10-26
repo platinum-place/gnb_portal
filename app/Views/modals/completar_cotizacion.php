@@ -83,23 +83,26 @@
                         <h6>Datos del vehículo</h6>
                         <hr>
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3 mb-md-0">
                                     <label class="form-label">Chasis</label>
                                     <input type="text" class="form-control" name="chasis" required>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+
+                            <div class="col-md-4">
                                 <div class="mb-3 mb-md-0">
                                     <label class="form-label">Placa</label>
                                     <input type="text" class="form-control" name="placa">
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Color</label>
-                            <input type="text" class="form-control" name="color">
+                            <div class="col-md-4">
+                                <div class="mb-3 mb-md-0">
+                                    <label class="form-label">Color</label>
+                                    <input type="text" class="form-control" name="color">
+                                </div>
+                            </div>
                         </div>
                     <?php endif ?>
 

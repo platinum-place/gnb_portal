@@ -10,21 +10,19 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Fecha</th>
                             <th scope="col">Cliente</th>
                             <th scope="col">Plan</th>
                             <th scope="col">Aseguradora</th>
                             <th scope="col">Referidor</th>
+                            <th scope="col">Opciones</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        <?php $cont = 1; ?>
                         <?php foreach ((array)$cotizaciones as $cotizacion) : ?>
                             <?php if (date('m/Y', strtotime($cotizacion->getCreatedTime())) == date("m/Y") and $cotizacion->getFieldValue('Quote_Stage') == "Emitida") : ?>
                                 <tr>
-                                    <td><?= $cont ?></td>
                                     <td><?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?></td>
                                     <td>
                                         <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
@@ -32,8 +30,16 @@
                                     <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
                                     <td><?= $cotizacion->getFieldValue('Coberturas')->getLookupLabel() ?></td>
                                     <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
+                                    <td>
+                                    <a href="<?= site_url("cotizaciones/adjuntar/" . $cotizacion->getEntityId()) ?>" title="Adjuntar">
+                                        <i class="fas fa-upload"></i>
+                                    </a>
+                                    |
+                                    <a href="<?= site_url("plantillas/emision/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    </td>
                                 </tr>
-                                <?php $cont++ ?>
                             <?php endif ?>
                         <?php endforeach ?>
                     </tbody>

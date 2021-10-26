@@ -1,4 +1,4 @@
-<h6>¡Cotización, a nombre de <? $cliente ?>, emitida correctamente!</h6>
+<h6>¡Cotización emitida correctamente!</h6>
 
 <p>Mientras los documentos son evaluados, es posible:</p>
 
@@ -8,6 +8,6 @@
     </li>
 
     <li>
-        <i class="fas fa-download"></i>, <b>Descargar:</b> Emisión en formato PDF.
+        <i class="fas fa-download"></i>, <b>Descargar:</b> Constancia de emisión en formato PDF.
     </li>
 </ul>

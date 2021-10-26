@@ -22,9 +22,9 @@ class Cotizacion
     public $riesgo;
     public $direccion;
 
-    public function auto($marca, $modeloid, $modelotipo, $plan, $ano, $uso, $estado, $suma, $planes)
+    public function auto($marcaid, $modeloid, $modelotipo, $plan, $ano, $uso, $estado, $suma, $planes)
     {
-        $this->marca = $marca;
+        $this->marcaid = $marcaid;
         $this->modeloid = $modeloid;
         $this->modelotipo = $modelotipo;
         $this->plan = $plan;
