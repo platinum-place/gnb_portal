@@ -2,143 +2,23 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Auto;
-use App\Libraries\Cotizaciones as LibrariesCotizaciones;
-use App\Libraries\Desempleo;
-use App\Libraries\Incendio;
-use App\Libraries\Reportes;
-use App\Libraries\Vida;
+use App\Libraries\Zoho;
 use App\Models\Cotizacion;
+use zcrmsdk\crm\crud\ZCRMRecord;
+use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
+use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
 
 class Cotizaciones extends BaseController
 {
     public function index()
     {
         $cotizacion = new Cotizacion;
-        if ($this->request->getPost()) {
-            switch ($this->request->getPost("plan")) {
-                case 'Seguro Incendio Hipotecario':
-                    $libreria = new Incendio;
-                    $planes = $libreria->cotizar(
-                        $this->request->getPost("suma"),
-                    );
-                    $cotizacion->incendio(
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("prestamo"),
-                        $this->request->getPost("plazo"),
-                        $this->request->getPost("riesgo"),
-                        $this->request->getPost("construccion"),
-                        $this->request->getPost("direccion"),
-                        $this->request->getPost("plan"),
-                        $planes
-                    );
-                    break;
-
-                case 'Vida/Desempleo':
-                    $libreria = new Desempleo;
-                    $planes = $libreria->cotizar(
-                        $this->request->getPost("deudor"),
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("cuota"),
-                        $this->request->getPost("plazo")
-                    );
-                    $cotizacion->desempleo(
-                        $this->request->getPost("deudor"),
-                        $this->request->getPost("cuota"),
-                        $this->request->getPost("plazo"),
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("plan"),
-                        $planes
-                    );
-                    break;
-
-                case 'Vida':
-                    $libreria = new Vida;
-                    $planes = $libreria->cotizar(
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("plazo"),
-                        $this->request->getPost("deudor"),
-                        $this->request->getPost("codeudor")
-                    );
-                    $cotizacion->vida(
-                        $this->request->getPost("deudor"),
-                        $this->request->getPost("codeudor"),
-                        $this->request->getPost("plazo"),
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("plan"),
-                        $planes
-                    );
-                    break;
-
-                default:
-                    $libreria = new Auto;
-                    //datos relacionados al modelo, dividios en un array
-                    $modelo = explode(",", $this->request->getPost("modelo"));
-                    //asignando valores al objeto
-                    $modeloid = $modelo[0];
-                    $modelotipo = $modelo[1];
-                    $planes = $libreria->cotizar(
-                        $this->request->getPost("uso"),
-                        $this->request->getPost("suma"),
-                        $this->request->getPost("ano"),
-                        $this->request->getPost("marca"),
-                        $modeloid,
-                        $modelotipo,
-                        $this->request->getPost("plan"),
-                    );
-                    $cotizacion->auto(
-                        $this->request->getPost("marca"),
-                        $modeloid,
-                        $modelotipo,
-                        $this->request->getPost("plan"),
-                        $this->request->getPost("ano"),
-                        $this->request->getPost("uso"),
-                        $this->request->getPost("estado"),
-                        $this->request->getPost("suma"),
-                        $planes
-                    );
-                    break;
-            }
-            if (empty($planes)) {
-                session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-            }
-        }
-        $libreria = new LibrariesCotizaciones;
+        $libreria = new Zoho;
         //libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
         $marcas = $libreria->getRecords("Marcas");
         //formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
         return view("cotizar", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
-    }
-
-    public function lista_modelos()
-    {
-        //inicializar el contador
-        $pag = 1;
-        $libreria = new LibrariesCotizaciones;
-        //criterio de aseguir por la api
-        $criteria = "Marca:equals:" . $this->request->getPost("marcaid");
-        //repetir en secuencia para obtener todo los modelos de una misma marca, 
-        //teniendo en cuenta que pueden ser mas de 200 en algunos casos
-        // por tanto en necesario recontar la sentencia pero variando en paginas para superar el limite de la api
-        do {
-            //obtener los modelos empezando por la primera pagina
-            $modelos =  $libreria->searchRecordsByCriteria("Modelos", $criteria, $pag);
-            //en caso de encontrar valores
-            if (!empty($modelos)) {
-                //formatear el resultado para ordenarlo alfabeticamente en forma descendente
-                asort($modelos);
-                //aumentar el contador
-                $pag++;
-                //mostrar los valores en forma de option para luego ser mostrados en dentro de un select
-                foreach ($modelos as $modelo) {
-                    echo '<option value="' . $modelo->getEntityId() . "," . $modelo->getFieldValue('Tipo') . '">' . strtoupper($modelo->getFieldValue('Name')) . '</option>';
-                }
-            } else {
-                //igualar a 0 el contador para salir del ciclo
-                $pag = 0;
-            }
-        } while ($pag > 0);
     }
 
     //funcion post
@@ -188,18 +68,55 @@ class Cotizaciones extends BaseController
             "Direcci_n_codeudor" => $this->request->getPost("direccion_codeudor"),
             "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
         ];
-        //crea la cotizacion el en crm
-        $libreria = new LibrariesCotizaciones;
-        $id = $libreria->crear_cotizacion($registro, $planes);
+
+        //inicializar el api
+        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Quotes");
+
+        //inicializar el registro en blanco
+        $records = array();
+        $record = ZCRMRecord::getInstance("Quotes", null);
+
+        //recorre los datos para crear un registro con los nombres de los campos a los valores que correspondan
+        foreach ($registro as $campo => $valor) {
+            $record->setFieldValue($campo, $valor);
+        }
+
+        //recorre los planes/productos al registro
+        foreach ($planes as $plan) {
+            $lineItem = ZCRMInventoryLineItem::getInstance(null);
+            $lineItem->setListPrice($plan["total"]);
+            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $plan["planid"]));
+            $lineItem->setQuantity(1);
+            $record->addLineItem($lineItem);
+        }
+
+        array_push($records, $record);
+        $responseIn = $moduleIns->createRecords($records);
+
+        foreach ($responseIn->getEntityResponses() as $responseIns) {
+            //echo "HTTP Status Code:" . $responseIn->getHttpStatusCode();
+            //echo "Status:" . $responseIns->getStatus();
+            //echo "Message:" . $responseIns->getMessage();
+            //echo "Code:" . $responseIns->getCode();
+            //echo "Details:" . json_encode($responseIns->getDetails());
+            $details = json_decode(json_encode($responseIns->getDetails()), true);
+        }
+
         $alerta = view("alertas/completar_cotizacion");
         session()->setFlashdata('alerta', $alerta);
-        return redirect()->to(site_url("cotizaciones/emitir/$id"));
+        return redirect()->to(site_url("cotizaciones/emitir/" . $details["id"]));
     }
 
     public function buscar($filtro)
     {
-        $libreria = new LibrariesCotizaciones;
-        $cotizaciones = $libreria->lista_cotizaciones();
+        $libreria = new Zoho;
+        if (session('puesto') == "Administrador") {
+            $criterio = "Account_Name:equals:" . session('cuenta_id');
+        } else {
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . "))";
+        }
+        $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
+
         switch ($filtro) {
             case 'Emitida':
                 $titulo = "Buscar Emisiones";
@@ -209,12 +126,13 @@ class Cotizaciones extends BaseController
                 $titulo = "Buscar Cotizaciones";
                 break;
         }
+
         return view("buscar", ["titulo" => $titulo, "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
     }
 
     public function editar($id)
     {
-        $libreria = new LibrariesCotizaciones;
+        $libreria = new Zoho;
         //obtener datos de la cotizacion
         $cotizacion = $libreria->getRecord("Quotes", $id);
         if ($this->request->getPost()) {
@@ -255,8 +173,8 @@ class Cotizaciones extends BaseController
 
     public function emitir($id)
     {
-        $libreria = new LibrariesCotizaciones;
-        
+        $libreria = new Zoho;
+
         //obtener los datos de la cotizacion, la funcion es heredada de la libreria del api
         $cotizacion = $libreria->getRecord("Quotes", $id);
 
@@ -279,9 +197,21 @@ class Cotizaciones extends BaseController
             ];
 
             $libreria->update("Quotes", $id, $cambios);
+
             //los archivos debe ser subida al servidor para luego ser adjuntados al registro
             if ($documentos = $this->request->getFiles()) {
-                $libreria->adjuntar_documentos($documentos['documentos'], $id);
+                foreach ($documentos['documentos'] as $documento) {
+                    if ($documento->isValid() && !$documento->hasMoved()) {
+                        //subir el archivo al servidor
+                        $documento->move(WRITEPATH . 'uploads');
+                        //ruta del archivo subido
+                        $ruta = WRITEPATH . 'uploads/' . $documento->getClientName();
+                        //funcion para adjuntar el archivo
+                        $libreria->uploadAttachment("Quotes", $id, $ruta);
+                        //borrar el archivo del servidor local
+                        unlink($ruta);
+                    }
+                }
             }
 
             $alerta = view("alertas/emitir_cotizacion");
@@ -296,7 +226,7 @@ class Cotizaciones extends BaseController
 
     public function condicionado($id)
     {
-        $libreria = new LibrariesCotizaciones;
+        $libreria = new Zoho;
         //obtener los todos los adjuntos del plan, normalmente es solo uno
         $attachments = $libreria->getAttachments("Products", $id);
         foreach ($attachments as $attchmentIns) {
@@ -319,11 +249,26 @@ class Cotizaciones extends BaseController
 
     public function adjuntar($id)
     {
-        $libreria = new LibrariesCotizaciones;
+        $libreria = new Zoho;
         $cotizacion = $libreria->getRecord("Quotes", $id);
+        
         //los archivos debe ser subida al servidor para luego ser adjuntados al registro
         if ($documentos = $this->request->getFiles()) {
-            $cantidad= $libreria->adjuntar_documentos($documentos['documentos'], $id);
+            $cantidad = 0;
+            foreach ($documentos['documentos'] as $documento) {
+                if ($documento->isValid() && !$documento->hasMoved()) {
+                    //subir el archivo al servidor
+                    $documento->move(WRITEPATH . 'uploads');
+                    //ruta del archivo subido
+                    $ruta = WRITEPATH . 'uploads/' . $documento->getClientName();
+                    //funcion para adjuntar el archivo
+                    $libreria->uploadAttachment("Quotes", $id, $ruta);
+                    //borrar el archivo del servidor local
+                    unlink($ruta);
+                    $cantidad++;
+                }
+            }
+
             session()->setFlashdata('alerta', "Documentos adjuntados: $cantidad, en la emisión a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'));
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
@@ -331,38 +276,5 @@ class Cotizaciones extends BaseController
             "titulo" => "Adjuntar a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
             "cotizacion" => $cotizacion
         ]);
-    }
-
-    public function reportes()
-    {
-        $libreria = new Reportes;
-        $ruta_reporte = $libreria->generar_reporte($this->request->getPost("plan"), $this->request->getPost("desde"), $this->request->getPost("hasta"));
-
-        //si no encontro registros
-        if (empty($ruta_reporte)) {
-            session()->setFlashdata('alerta', 'No existen emisiones dentro del rango de tiempo.');
-            return redirect()->to(site_url());
-        }
-
-        //forzar al navegador a descargar el archivo
-
-        //funciona en ambos ambientes
-        $nombre = "Reporte " . date("d-m-Y");
-        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
-
-        //no funciona en ambiente de produccion, solo en desarrollo local
-        //es necesario no tener echo antes de descargar
-        /*
-                header('Content-Description: File Transfer');
-                header('Content-Type: application/octet-stream');
-                header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
-                header('Expires: 0');
-                header('Cache-Control: must-revalidate');
-                header('Pragma: public');
-                header('Content-Length: ' . filesize($ruta_reporte));
-                readfile($ruta_reporte);
-                //eliminar el archivo descargado
-                unlink($ruta_reporte);
-                */
     }
 }

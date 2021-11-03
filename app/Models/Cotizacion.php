@@ -22,7 +22,7 @@ class Cotizacion
     public $riesgo;
     public $direccion;
 
-    public function auto($marcaid, $modeloid, $modelotipo, $plan, $ano, $uso, $estado, $suma, $planes)
+    public function auto($marcaid, $modeloid, $modelotipo, $plan, $ano, $uso, $estado, $suma)
     {
         $this->marcaid = $marcaid;
         $this->modeloid = $modeloid;
@@ -32,10 +32,9 @@ class Cotizacion
         $this->uso = $uso;
         $this->estado = $estado;
         $this->suma = $suma;
-        $this->planes = $planes;
     }
 
-    public function incendio($suma, $prestamo, $plazo, $riesgo, $construccion, $direccion, $plan, $planes)
+    public function incendio($suma, $prestamo, $plazo, $riesgo, $construccion, $direccion, $plan)
     {
         $this->suma = $suma;
         $this->prestamo = $prestamo;
@@ -44,26 +43,23 @@ class Cotizacion
         $this->construccion = $construccion;
         $this->direccion = $direccion;
         $this->plan = $plan;
-        $this->planes = $planes;
     }
 
-    public function desempleo($fecha_deudor, $cuota, $plazo, $suma, $plan, $planes)
+    public function desempleo($fecha_deudor, $cuota, $plazo, $suma, $plan)
     {
         $this->fecha_deudor = $fecha_deudor;
         $this->cuota = $cuota;
         $this->plazo = $plazo;
         $this->suma = $suma;
         $this->plan = $plan;
-        $this->planes = $planes;
     }
 
-    public function vida($fecha_deudor, $codeudor, $plazo, $suma, $plan, $planes)
+    public function vida($fecha_deudor, $fecha_codeudor, $plazo, $suma, $plan)
     {
         $this->fecha_deudor = $fecha_deudor;
-        $this->codeudor = $codeudor;
+        $this->fecha_codeudor = $fecha_codeudor;
         $this->plazo = $plazo;
         $this->suma = $suma;
         $this->plan = $plan;
-        $this->planes = $planes;
     }
 }

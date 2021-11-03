@@ -1,5 +1,5 @@
-<form method="POST" action="<?= site_url("cotizaciones") ?>">
-<input type="text" hidden value="Seguro Incendio Hipotecario" name="plan">
+<form method="POST" action="<?= site_url("incendio/cotizar") ?>">
+    <input type="text" hidden value="Seguro Incendio Hipotecario" name="plan">
 
     <div class="modal fade" id="cotizar_incendio" tabindex="-1" aria-labelledby="cotizar_incendio" aria-hidden="true">
         <div class="modal-dialog modal-lg">

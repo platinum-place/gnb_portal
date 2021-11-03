@@ -66,19 +66,16 @@ class Plantillas extends BaseController
         $tua = $libreria->getRecord("Deals", $id);
         //datos del cliente
         $cliente = $libreria->getRecord("Leads", $tua->getFieldValue("Cliente")->getEntityId());
+        //datos del corredor
+        $corredor = $libreria->getRecord("Accounts", $tua->getFieldValue("Account_Name")->getEntityId());
         //datos de los vehiculos
         $criterio = "Trato:equals:$id";
         $vehiculos = $libreria->searchRecordsByCriteria("Bienes", $criterio);
-        //usuario que creo la tua
-        $creado_por = $tua->getCreatedBy();
-        //usuario que modifico la tua
-        $modificado_por = $tua->getModifiedBy();
         return view('plantillas/tua', [
             "tua" => $tua,
             "cliente" => $cliente,
+            "corredor" => $corredor,
             "vehiculos" => $vehiculos,
-            "creado_por" => $creado_por,
-            "modificado_por" => $modificado_por,
         ]);
     }
 

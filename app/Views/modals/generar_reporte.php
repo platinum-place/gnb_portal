@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("cotizaciones/reportes") ?>">
+<form method="POST" action="<?= site_url("reportes") ?>">
     <div class="modal fade" id="generar_reporte" tabindex="-1" aria-labelledby="generar_reporte" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -13,10 +13,10 @@
                             <div class="mb-3 mb-md-0">
                                 <label class="form-label">Plan</label>
                                 <select class="form-select" name="plan">
-                                    <option value="auto">Auto</option>
-                                    <option value="vida">Vida</option>
-                                    <option value="desempleo">Vida/Desempleo</option>
-                                    <option value="incendio">Seguro Incendio Hipotecario</option>
+                                    <option value="Auto">Auto</option>
+                                    <option value="Vida">Vida</option>
+                                    <option value="Vida/Desempleo">Vida/Desempleo</option>
+                                    <option value="Seguro Incendio Hipotecario">Seguro Incendio Hipotecario</option>
                                 </select>
                             </div>
                         </div>

@@ -40,7 +40,7 @@ class Login extends BaseController
     public function editar()
     {
         $libreria = new Zoho;
-        $libreria->update("Contacts", session('id'), ["Contrase_a" => $this->request->getPost("pass")]);
+        $libreria->update("Contacts", session('usuario_id'), ["Contrase_a" => $this->request->getPost("pass")]);
         //alerta
         session()->setFlashdata('alerta', 'La contraseña ha sido actualizada.');
         //recargar la pagina para limpiar el post

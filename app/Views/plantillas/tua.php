@@ -15,7 +15,7 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>Fecha </b> <?= date('d/m/Y', strtotime($tua->getCreatedTime())) ?>
+            <b>Fecha </b> <?= date('d/m/Y') ?>
         </p>
     </div>
 
@@ -23,7 +23,56 @@
         &nbsp;
     </div>
 
-    <h6>DATOS TUA</h6>
+    <h6>DETALLES INTERMEDIARIO</h6>
+    <div class="row" style="font-size: small;">
+        <div class="col-6">
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <td><?= $tua->getFieldValue("Account_Name")->getLookupLabel() ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">RNC/Cédula</th>
+                        <td><?= $corredor->getFieldValue("Identificaci_n") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Dirección</th>
+                        <td><?= $corredor->getFieldValue("Billing_Street") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-6">
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr>
+                        <th scope="col">Código</th>
+                        <td><?= $corredor->getFieldValue("Account_Number") ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Contacto</th>
+                        <td><?= ($tua->getFieldValue("Contact_Name")) ? $tua->getFieldValue("Contact_Name")->getLookupLabel() : ""; ?></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="col">Teléfono</th>
+                        <td><?= $corredor->getFieldValue("Phone") ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-12">
+        &nbsp;
+    </div>
+
+    <h6>DETALLES TUA</h6>
     <div class="row" style="font-size: small;">
         <div class="col-6">
             <table class="table table-bordered">
@@ -37,11 +86,6 @@
                         <th scope="col">Vigencia Desde</th>
                         <td><?= date('d/m/Y', strtotime($tua->getFieldValue("Fecha_de_inicio"))) ?></td>
                     </tr>
-
-                    <tr>
-                        <th scope="col">Creado por</th>
-                        <td><?= $creado_por->getName() ?></td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -51,7 +95,7 @@
                 <tbody>
                     <tr>
                         <th scope="col">Número TUA</th>
-                        <td><?= $tua->getFieldValue("TUA") ?></td>
+                        <td><?= $tua->getFieldValue("Deal_Name") ?></td>
                     </tr>
 
                     <tr>
@@ -67,7 +111,7 @@
         &nbsp;
     </div>
 
-    <h6>DATOS CLIENTE</h6>
+    <h6>DETALLES BENEFICIARIO</h6>
     <div class="row" style="font-size: small;">
         <div class="col-6">
             <table class="table table-sm table-bordered">
@@ -116,36 +160,7 @@
         &nbsp;
     </div>
 
-    <h6>DATOS INTERMEDIARIO</h6>
-    <div class="row" style="font-size: small;">
-        <div class="col-6">
-            <table class="table table-sm table-bordered">
-                <tbody>
-                    <tr>
-                        <th scope="col">Nombre</th>
-                        <td><?= $tua->getFieldValue("Account_Name")->getLookupLabel() ?></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="col-6">
-            <table class="table table-sm table-bordered">
-                <tbody>
-                    <tr>
-                        <th scope="col">Contacto</th>
-                        <td><?= ($tua->getFieldValue("Contact_Name")) ? $tua->getFieldValue("Contact_Name")->getLookupLabel() : ""; ?></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="col-12">
-        &nbsp;
-    </div>
-
-    <h6>VEHÍCULOS</h6>
+    <h6>VEHÍCULOS ACTIVOS</h6>
     <div class="col-12" style="font-size: small;">
         <table class="table table-sm table-bordered">
             <thead>
@@ -164,7 +179,7 @@
             <tbody>
                 <?php $cont = 1 ?>
                 <?php foreach ((array)$vehiculos as $vehiculo) : ?>
-                    <?php if ($vehiculo->getFieldValue('Estado') == "1") : ?>
+                    <?php if ($vehiculo->getFieldValue('Estado') == "1" or $vehiculo->getFieldValue('Estado') == 1) : ?>
                         <tr>
                             <td><?= $cont ?></td>
                             <td><?= $vehiculo->getFieldValue('Marca') ?></td>
@@ -234,7 +249,7 @@
 <?= $this->section('js') ?>
 <!-- Tiempo para que la pagina se imprima y luego se cierre -->
 <script>
-    document.title = "REGISTRO TUA" + <?= $tua->getFieldValue('TUA') ?>; // Cambiamos el título
+    document.title = "REGISTRO TUA" + <?= $tua->getFieldValue('Deal_Name') ?>; // Cambiamos el título
     setTimeout(function() {
         window.print();
         window.close();

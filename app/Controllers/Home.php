@@ -2,17 +2,25 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Cotizaciones;
+use App\Libraries\Zoho;
 
 class Home extends BaseController
 {
     public function index()
     {
-        $libreria = new Cotizaciones;
+        $libreria = new Zoho;
         $lista = array();
         $polizas = 0;
         $vencidas = 0;
-        $cotizaciones = $libreria->lista_cotizaciones();
+
+        if (session('puesto') == "Administrador") {
+            $criterio = "Account_Name:equals:" . session('cuenta_id');
+        } else {
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . "))";
+        }
+
+        $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
+
         foreach ((array)$cotizaciones as $cotizacion) {
             if ($cotizacion->getFieldValue('Quote_Stage') == "Emitida") {
                 //filtrar por  mes y año actual
