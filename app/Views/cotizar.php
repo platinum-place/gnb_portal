@@ -8,6 +8,7 @@
         <div class="card">
             <img src="<?= base_url('img/auto.png') ?>" class="card-img-top" height="350">
             <div class="card-body">
+                <h6 class="text-center">AUTO</h6>
                 <a class="stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#cotizar_auto"></a>
             </div>
         </div>
@@ -17,6 +18,7 @@
         <div class="card">
             <img src="<?= base_url('img/vida.png') ?>" class="card-img-top" height="350">
             <div class="card-body">
+                <h6 class="text-center">VIDA</h6>
                 <a class="stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#cotizar_vida"></a>
             </div>
         </div>
@@ -26,6 +28,7 @@
         <div class="card">
             <img src="<?= base_url('img/desempleo.png') ?>" class="card-img-top" height="350">
             <div class="card-body">
+                <h6 class="text-center">VIDA/DESEMPLEO</h6>
                 <a class="stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#cotizar_desempleo"></a>
             </div>
         </div>
@@ -35,6 +38,7 @@
         <div class="card">
             <img src="<?= base_url('img/incendio.png') ?>" class="card-img-top" height="350">
             <div class="card-body">
+                <h6 class="text-center">SEGURO INCENDIO HIPOTECARIO</h6>
                 <a class="stretched-link" href="#" data-bs-toggle="modal" data-bs-target="#cotizar_incendio"></a>
             </div>
         </div>

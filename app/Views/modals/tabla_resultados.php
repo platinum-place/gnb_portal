@@ -17,12 +17,18 @@
                     </thead>
 
                     <tbody>
+                        <?php $cont = 0 ?>
                         <?php foreach ($cotizacion->planes as $plan) : ?>
                             <tr>
                                 <td><?= $plan["aseguradora"] ?></td>
                                 <td>RD$<?= number_format($plan["total"], 2) ?></td>
                                 <td><?= $plan["comentario"] ?></td>
                             </tr>
+                            <?php
+                            if ($plan["total"] > 0) {
+                                $cont++;
+                            }
+                            ?>
                         <?php endforeach ?>
                     </tbody>
                 </table>
@@ -30,7 +36,9 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="cerrar()">Continuar</button>
+                <?php if ($cont > 0) : ?>
+                    <button type="button" class="btn btn-primary" onclick="cerrar()">Continuar</button>
+                <?php endif ?>
             </div>
         </div>
     </div>

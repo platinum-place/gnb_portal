@@ -329,7 +329,7 @@ class Reportes extends BaseController
                 $sheet->setCellValue('J12', 'Fecha de nacimiento');
                 $sheet->setCellValue('K12', 'Dirección');
                 $sheet->setCellValue('L12', 'Plazos');
-                $sheet->setCellValue('N12', 'Valor del Préstamo');
+                $sheet->setCellValue('M12', 'Valor del Préstamo');
                 $sheet->setCellValue('N12', 'Construcción');
                 $sheet->setCellValue('O12', 'Riesgo');
 

@@ -15,7 +15,8 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>Fecha </b> <?= date('d/m/Y') ?>
+            <b>Fecha </b> <?= date('d/m/Y') ?> <br>
+            <b>Estado </b> <?= $tua->getFieldValue("Stage") ?>
         </p>
     </div>
 
@@ -173,13 +174,13 @@
                     <th>Color</th>
                     <th>Placa</th>
                     <th>Chasis</th>
+                    <th>Estado</th>
                 </tr>
             </thead>
 
             <tbody>
                 <?php $cont = 1 ?>
-                <?php foreach ((array)$vehiculos as $vehiculo) : ?>
-                    <?php if ($vehiculo->getFieldValue('Estado') == "1" or $vehiculo->getFieldValue('Estado') == 1) : ?>
+                <?php foreach ($vehiculos as $vehiculo) : ?>
                         <tr>
                             <td><?= $cont ?></td>
                             <td><?= $vehiculo->getFieldValue('Marca') ?></td>
@@ -189,9 +190,9 @@
                             <td><?= $vehiculo->getFieldValue('Color') ?></td>
                             <td><?= $vehiculo->getFieldValue('Placa') ?></td>
                             <td><?= $vehiculo->getFieldValue('Name') ?></td>
+                            <td><?= $vehiculo->getFieldValue('Estado') ?></td>
                         </tr>
                         <?php $cont++ ?>
-                    <?php endif ?>
                 <?php endforeach ?>
             </tbody>
         </table>

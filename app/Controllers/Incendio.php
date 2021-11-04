@@ -31,7 +31,7 @@ class Incendio extends BaseController
 
                 foreach ((array)$tasas as $tasa) {
                     //verificar limite de edad
-                    $prima = ($this->request->getPost("suma") / 100) * $tasa->getFieldValue('Name') / 100;;
+                    $prima = ($this->request->getPost("suma") / 100) * $tasa->getFieldValue('Name') / 100;
                 }
             }
 

@@ -27,7 +27,7 @@ class Cotizaciones extends BaseController
         //pasa la tabla de cotizacion en array para agregarla al registro
         $planes = json_decode($this->request->getPost("planes"), true);
         $registro = [
-            "Subject" => "Portal IT",
+            "Subject" => $this->request->getPost("nombre") . " " . $this->request->getPost("apellido"),
             "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")),
             "Account_Name" =>  session('cuenta_id'),
             "Contact_Name" =>  session('usuario_id'),
@@ -251,7 +251,7 @@ class Cotizaciones extends BaseController
     {
         $libreria = new Zoho;
         $cotizacion = $libreria->getRecord("Quotes", $id);
-        
+
         //los archivos debe ser subida al servidor para luego ser adjuntados al registro
         if ($documentos = $this->request->getFiles()) {
             $cantidad = 0;
