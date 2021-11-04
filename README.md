@@ -14,4 +14,14 @@ Utiliza la [versión 4](https://github.com/codeigniter4/CodeIgniter4) del framew
 
 - [Selects tag con buscador](https://github.com/snapappointments/bootstrap-select), utilizada para agregar un cuadro de busqueda a los selects tag muy largos.
 
-- [Iconos](https://fontawesome.com/v5.15/icons/search?style=solid).
+- [Iconos](https://fontawesome.com/v5.15/icons/search?style=solid), libreria de bootstrap de iconos.
+
+- [Template](https://github.com/startbootstrap/startbootstrap-sb-admin), referencias y marco visual de las vistas.
+
+### Documentacion ZOHO
+
+Los métodos están documentadas junto con su correspondiente enlace a la documentación de zoho. Más información [aquí](https://www.zoho.com/crm/developer/docs/php-sdk/sample-codes.html).
+
+### Aviso
+
+Zoho ha desarrollado la versión 3 del PHP SDK, esta versión es incompatible con la versión 2 y , por lo tanto, todos los métodos descritos de este repositorio no funcionan en esa versión, no obstante, la versión 2 sigue en funcionamiento y los métodos funcionan correctamente. Más información [aquí](https://github.com/zoho/zcrm-php-sdk#archival-notice).
