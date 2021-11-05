@@ -131,3 +131,5 @@ ZCRMClientLibrary.log
 *.png
 zoho/ejemplo.json
 zoho/prueba api systrack.php
+zoho/refresh_token.php
+zoho/access_token.php
