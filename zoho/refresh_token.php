@@ -7,10 +7,10 @@ function generar_refresh_tokens()
     //alcance ZohoCRM.modules.Cases.CREATE
 
     $post = [
-        "code" => "1000.dc02312938060362b0b3d315665cd6e8.dec7fe58a5bd4c85497225b73bde050c",
-        "redirect_uri" => "https://it.gruponobe.com/",
-        "client_id" => "1000.7FJQ4A2KDH9S2IJWDYL13HATQFMA2H",
-        "client_secret" => "c3f1d0589803f294a7c5b27e3968ae1658927da9d7",
+        "code" => "",
+        "redirect_uri" => "",
+        "client_id" => "",
+        "client_secret" => "",
         "grant_type" => "authorization_code"
     ];
 
