@@ -128,3 +128,6 @@ nb-configuration.xml
 zcrm_oauthtokens.txt
 ZCRMClientLibrary.log
 .project
+*.png
+zoho/ejemplo.json
+zoho/prueba api systrack.php

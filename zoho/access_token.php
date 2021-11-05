@@ -5,9 +5,9 @@
 function generar_access_tokens()
 {
     $post = [
-        "refresh_token" => "1000.9cd8b17b6d31e76ac381d92ff630f995.53baee2923e34df8d5edf151e966bd45",
-        "client_id" => "1000.7FJQ4A2KDH9S2IJWDYL13HATQFMA2H",
-        "client_secret" => "c3f1d0589803f294a7c5b27e3968ae1658927da9d7",
+        "refresh_token" => "",
+        "client_id" => "",
+        "client_secret" => "",
         "grant_type" => "refresh_token"
     ];
 
