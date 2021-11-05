@@ -71,8 +71,7 @@
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="acuerdo" name="acuerdo" required>
                             <label class="form-check-label" for="acuerdo">
-                                Estoy de acuerdo que quiero emitir la cotización no. <b><?= $cotizacion->getFieldValue('Quote_Number') ?></b>
-                                , a nombre de <b><?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?></b>,
+                                Estoy de acuerdo que quiero emitir la cotización, a nombre de <b><?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?></b>,
                                 RNC/Cédula <b><?= $cotizacion->getFieldValue('RNC_C_dula') ?></b> .
                             </label>
                         </div>

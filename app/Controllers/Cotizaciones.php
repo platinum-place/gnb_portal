@@ -4,9 +4,6 @@ namespace App\Controllers;
 
 use App\Libraries\Zoho;
 use App\Models\Cotizacion;
-use zcrmsdk\crm\crud\ZCRMRecord;
-use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
-use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
 
 class Cotizaciones extends BaseController
 {
@@ -69,42 +66,12 @@ class Cotizaciones extends BaseController
             "Correo_electr_nico_codeudor" => $this->request->getPost("correo_codeudor")
         ];
 
-        //inicializar el api
-        $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance("Quotes");
-
-        //inicializar el registro en blanco
-        $records = array();
-        $record = ZCRMRecord::getInstance("Quotes", null);
-
-        //recorre los datos para crear un registro con los nombres de los campos a los valores que correspondan
-        foreach ($registro as $campo => $valor) {
-            $record->setFieldValue($campo, $valor);
-        }
-
-        //recorre los planes/productos al registro
-        foreach ($planes as $plan) {
-            $lineItem = ZCRMInventoryLineItem::getInstance(null);
-            $lineItem->setListPrice($plan["total"]);
-            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $plan["planid"]));
-            $lineItem->setQuantity(1);
-            $record->addLineItem($lineItem);
-        }
-
-        array_push($records, $record);
-        $responseIn = $moduleIns->createRecords($records);
-
-        foreach ($responseIn->getEntityResponses() as $responseIns) {
-            //echo "HTTP Status Code:" . $responseIn->getHttpStatusCode();
-            //echo "Status:" . $responseIns->getStatus();
-            //echo "Message:" . $responseIns->getMessage();
-            //echo "Code:" . $responseIns->getCode();
-            //echo "Details:" . json_encode($responseIns->getDetails());
-            $details = json_decode(json_encode($responseIns->getDetails()), true);
-        }
+        $libreria = new Zoho;
+        $id = $libreria->createRecords("Quotes", $registro, $planes);
 
         $alerta = view("alertas/completar_cotizacion");
         session()->setFlashdata('alerta', $alerta);
-        return redirect()->to(site_url("cotizaciones/emitir/" . $details["id"]));
+        return redirect()->to(site_url("cotizaciones/emitir/" . $id));
     }
 
     public function buscar($filtro)
