@@ -15,7 +15,7 @@ class Cotizaciones extends BaseController
         $marcas = $libreria->getRecords("Marcas");
         //formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
-        return view("cotizar", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
+        return view("cotizaciones/cotizar", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
     }
 
     //funcion post
@@ -94,7 +94,7 @@ class Cotizaciones extends BaseController
                 break;
         }
 
-        return view("buscar", ["titulo" => $titulo, "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
+        return view("cotizaciones/buscar", ["titulo" => $titulo, "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
     }
 
     public function editar($id)
@@ -132,7 +132,7 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', "¡Cotización editada exitosamente!.");
             return redirect()->to(site_url("cotizaciones/emitir/$id"));
         }
-        return view("editar", [
+        return view("cotizaciones/editar", [
             "titulo" => "Editar Cotización, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
             "cotizacion" => $cotizacion
         ]);
@@ -185,7 +185,7 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', $alerta);
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
-        return view("emitir", [
+        return view("cotizaciones/emitir", [
             "titulo" => "Emitir Cotización, a nombre de $cliente",
             "cotizacion" => $cotizacion
         ]);
@@ -239,9 +239,57 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', "Documentos adjuntados: $cantidad, en la emisión a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'));
             return redirect()->to(site_url("cotizaciones/buscar/Emitida"));
         }
-        return view("adjuntar", [
+        return view("cotizaciones/adjuntar", [
             "titulo" => "Adjuntar a emisión, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
             "cotizacion" => $cotizacion
         ]);
+    }
+
+    public function descargar($id)
+    {
+        $libreria = new Zoho;
+        //obtener datos de la cotizacion
+        $cotizacion = $libreria->getRecord("Quotes", $id);
+
+        if ($cotizacion->getFieldValue('Quote_Stage') == "Cotizando") {
+            switch ($cotizacion->getFieldValue("Plan")) {
+                case 'Vida':
+                    return view('vida/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                    break;
+
+                case 'Vida/Desempleo':
+                    return view('desempleo/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                    break;
+
+                case 'Seguro Incendio Hipotecario':
+                    return view('incendio/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                    break;
+
+                default:
+                    return view('auto/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
+                    break;
+            }
+        } else {
+            //informacion sobre las coberturas, la aseguradora,las coberturas
+            $plan = $libreria->getRecord("Products", $cotizacion->getFieldValue("Coberturas")->getEntityId());
+
+            switch ($cotizacion->getFieldValue("Plan")) {
+                case 'Vida':
+                    return view('vida/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                    break;
+
+                case 'Vida/Desempleo':
+                    return view('desempleo/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                    break;
+
+                case 'Seguro Incendio Hipotecario':
+                    return view('incendio/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
+                    break;
+
+                default:
+                    return view('auto/emision', ["cotizacion" => $cotizacion, "plan" => $plan]);
+                    break;
+            }
+        }
     }
 }

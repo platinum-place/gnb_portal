@@ -144,7 +144,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3 mb-md-0">
                                     <label class="form-label">Tel. Celular</label>
-                                    <input type="tel" class="form-control" name="telefono_codeudor" required placeholder="809-457-8888" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+                                    <input type="tel" class="form-control" name="telefono_codeudor" placeholder="809-457-8888" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
                                 </div>
                             </div>
                             <div class="col-md-6">

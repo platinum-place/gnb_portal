@@ -106,6 +106,6 @@ class Desempleo extends BaseController
         $marcas = $libreria->getRecords("Marcas");
         //formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
-        return view("cotizar", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
+        return view("cotizaciones/cotizar", ["titulo" => "Cotizar", "marcas" => $marcas, "cotizacion" => $cotizacion]);
     }
 }

@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <div class="mt-4 mb-0">
                         <div class="d-grid">
-                            <a href="<?= site_url("plantillas/cotizacion/" . $cotizacion->getEntityId()) ?>" class="btn btn-primary btn-block" target="__blank">Descargar</a>
+                            <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" class="btn btn-primary btn-block" target="__blank">Descargar</a>
                         </div>
                     </div>
                 </div>

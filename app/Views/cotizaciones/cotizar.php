@@ -55,10 +55,10 @@
     <?= $this->include('modals/completar_cotizacion') ?>
 <?php endif ?>
 
-<?= $this->include('modals/cotizar_auto') ?>
-<?= $this->include('modals/cotizar_vida') ?>
-<?= $this->include('modals/cotizar_desempleo') ?>
-<?= $this->include('modals/cotizar_incendio') ?>
+<?= $this->include('auto/cotizar') ?>
+<?= $this->include('vida/cotizar') ?>
+<?= $this->include('desempleo/cotizar') ?>
+<?= $this->include('incendio/cotizar') ?>
 
 <?= $this->endSection() ?>
 

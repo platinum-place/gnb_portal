@@ -35,7 +35,7 @@
                                         <i class="fas fa-upload"></i>
                                     </a>
                                     |
-                                    <a href="<?= site_url("plantillas/emision/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
+                                    <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
                                         <i class="fas fa-download"></i>
                                     </a>
                                     </td>

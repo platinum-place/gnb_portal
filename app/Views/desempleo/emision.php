@@ -72,7 +72,7 @@
             <?php
             $neta = $cotizacion->getFieldValue('Prima') - ($cotizacion->getFieldValue('Prima') * 0.16);
             $isc = $cotizacion->getFieldValue('Prima') * 0.16;
-            $total = $cotizacion->getFieldValue('Prima') - ($cotizacion->getFieldValue('Prima') * 0.16);
+            $total = $cotizacion->getFieldValue('Prima');
             ?>
 
             <p class="card-title">

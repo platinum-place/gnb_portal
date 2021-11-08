@@ -56,19 +56,15 @@
                                     <a href="<?= site_url("cotizaciones/editar/" . $cotizacion->getEntityId()) ?>" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    |
-                                    <a href="<?= site_url("plantillas/cotizacion/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
-                                        <i class="fas fa-download"></i>
-                                    </a>
                                 <?php else : ?>
                                     <a href="<?= site_url("cotizaciones/adjuntar/" . $cotizacion->getEntityId()) ?>" title="Adjuntar">
                                         <i class="fas fa-upload"></i>
                                     </a>
-                                    |
-                                    <a href="<?= site_url("plantillas/emision/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
-                                        <i class="fas fa-download"></i>
-                                    </a>
                                 <?php endif ?>
+                                |
+                                <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
+                                    <i class="fas fa-download"></i>
+                                </a>
                             </td>
                         </tr>
                         <?php $cont++ ?>
