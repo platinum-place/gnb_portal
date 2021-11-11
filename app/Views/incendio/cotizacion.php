@@ -80,8 +80,8 @@
                     </p>
 
                     <p class="card-title">
-                        RD$ <?= number_format($lineItem->getNetTotal() - $lineItem->getNetTotal() * 0.16, 2) ?> <br>
-                        RD$ <?= number_format($lineItem->getNetTotal() * 0.16, 2) ?> <br>
+                        RD$ <?= number_format($lineItem->getNetTotal() / 1.16, 2) ?> <br>
+                        RD$ <?= number_format($lineItem->getNetTotal() - $lineItem->getNetTotal() / 1.16, 2) ?> <br>
                         RD$ <?= number_format($lineItem->getNetTotal(), 2) ?>
                     </p>
                 </div>

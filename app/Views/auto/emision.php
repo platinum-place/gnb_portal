@@ -19,7 +19,7 @@
     <div class="col-4">
         <p style="text-align: right">
             <b>Póliza No.</b> <?= $plan->getFieldValue("P_liza") ?> <br>
-            <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?> <br>
+            <b>Fecha Inicio</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue("Vigencia_desde"))) ?> <br>
             <b>Fecha Fin</b> <?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?> <br>
         </p>
     </div>
@@ -138,16 +138,10 @@
                 ?>
             </p>
 
-            <?php
-            $neta = $cotizacion->getFieldValue('Prima') - ($cotizacion->getFieldValue('Prima') * 0.16);
-            $isc = $cotizacion->getFieldValue('Prima') * 0.16;
-            $total = $cotizacion->getFieldValue('Prima');
-            ?>
-
             <p class="card-title">
-                RD$ <?= number_format($neta, 2) ?> <br>
-                RD$ <?= number_format($isc, 2) ?> <br>
-                RD$ <?= number_format($total, 2) ?>
+                RD$ <?= number_format($cotizacion->getFieldValue('Prima_neta'), 2) ?> <br>
+                RD$ <?= number_format($cotizacion->getFieldValue('ISC'), 2) ?> <br>
+                RD$ <?= number_format($cotizacion->getFieldValue('Prima'), 2) ?>
             </p>
         </div>
     </div>

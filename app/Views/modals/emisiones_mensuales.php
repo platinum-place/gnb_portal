@@ -23,7 +23,7 @@
                         <?php foreach ((array)$cotizaciones as $cotizacion) : ?>
                             <?php if (date('m/Y', strtotime($cotizacion->getCreatedTime())) == date("m/Y") and $cotizacion->getFieldValue('Quote_Stage') == "Emitida") : ?>
                                 <tr>
-                                    <td><?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?></td>
+                                    <td><?= date('d/m/Y', strtotime($cotizacion->getFieldValue("Vigencia_desde"))) ?></td>
                                     <td>
                                         <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
                                     </td>

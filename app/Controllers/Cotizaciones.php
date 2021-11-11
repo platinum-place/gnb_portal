@@ -151,15 +151,20 @@ class Cotizaciones extends BaseController
             //obtener los datos del plan elegido
             foreach ($cotizacion->getLineItems() as $lineItem) {
                 if ($this->request->getPost("planid") == $lineItem->getProduct()->getEntityId()) {
-                    $total = round($lineItem->getNetTotal(), 2);
+                    $total = $lineItem->getNetTotal();
                     $planid = $lineItem->getProduct()->getEntityId();
+                    $neta = $lineItem->getNetTotal() / 1.16;
+                    $isc = $total -$neta;
                 }
             }
 
             $cambios = [
-                "Prima" => $total,
+                "Prima" => round($total, 2),
+                "Prima_neta" => round($neta, 2),
+                "ISC" => round($isc, 2),
                 "Coberturas" => $planid,
                 "Quote_Stage" => "Emitida",
+                "Vigencia_desde" => date("Y-m-d"),
                 "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 1 years")),
             ];
 

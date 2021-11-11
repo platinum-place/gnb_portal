@@ -38,7 +38,7 @@
                     <?php if ($cotizacion->getFieldValue('Quote_Stage') == $filtro) : ?>
                         <tr>
                             <td><?= $cont ?></td>
-                            <td><?= date('d/m/Y', strtotime($cotizacion->getCreatedTime())) ?></td>
+                            <td><?= date('d/m/Y', strtotime($cotizacion->getFieldValue("Vigencia_desde"))) ?></td>
                             <td><?= date('d/m/Y', strtotime($cotizacion->getFieldValue('Valid_Till'))) ?></td>
                             <td>
                                 <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
