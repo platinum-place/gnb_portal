@@ -6,15 +6,16 @@ use zcrmsdk\crm\setup\restclient\ZCRMRestClient;
 use zcrmsdk\oauth\ZohoOAuth;
 use zcrmsdk\crm\crud\ZCRMRecord;
 use zcrmsdk\crm\exception\ZCRMException;
+use zcrmsdk\crm\crud\ZCRMInventoryLineItem;
 
 class Zoho
 {
     function __construct()
     {
         ZCRMRestClient::initialize([
-            "client_id" => "",
-            "client_secret" => "",
-            "currentUserEmail" => "",
+            "client_id" => "1000.7FJQ4A2KDH9S2IJWDYL13HATQFMA2H",
+            "client_secret" => "c3f1d0589803f294a7c5b27e3968ae1658927da9d7",
+            "currentUserEmail" => "tecnologia@gruponobe.com",
             "redirect_uri" => base_url(),
             "token_persistence_path" => ROOTPATH
         ]);
@@ -100,7 +101,7 @@ class Zoho
         //echo "Details:" . json_encode($responseIns->getDetails());
     }
 
-    public function createRecords($module_api_name, $registro = array())
+    public function createRecords($module_api_name, $registro, $planes)
     {
         $moduleIns = ZCRMRestClient::getInstance()->getModuleInstance($module_api_name); //to get the instance of the module
         $records = array();
@@ -108,6 +109,15 @@ class Zoho
         $record = ZCRMRecord::getInstance($module_api_name, null);  //To get ZCRMRecord instance
         foreach ($registro as $campo => $valor) {
             $record->setFieldValue($campo, $valor); //This function use to set FieldApiName and value similar to all other FieldApis and Custom field
+        }
+
+        //recorre los planes/productos al registro
+        foreach ($planes as $plan) {
+            $lineItem = ZCRMInventoryLineItem::getInstance(null);
+            $lineItem->setListPrice($plan["total"]);
+            $lineItem->setProduct(ZCRMRecord::getInstance("Products", $plan["planid"]));
+            $lineItem->setQuantity(1);
+            $record->addLineItem($lineItem);
         }
 
         array_push($records, $record); // pushing the record to the array.

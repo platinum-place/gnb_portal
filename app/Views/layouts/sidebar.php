@@ -19,14 +19,14 @@
                     Cotizar
                 </a>
 
-                <a class="nav-link" href="<?= site_url("cotizaciones/buscar/Cotizando") ?>">
+                <a class="nav-link" href="<?= site_url("cotizaciones/buscar_cotizaciones") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
                     Buscar Cotización
                 </a>
 
                 <div class="sb-sidenav-menu-heading">Emisiones</div>
                 
-                <a class="nav-link" href="<?= site_url("cotizaciones/buscar/Emitida") ?>">
+                <a class="nav-link" href="<?= site_url("cotizaciones/buscar_emisiones") ?>">
                     <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                     Buscar Emisión
                 </a>

@@ -12,7 +12,6 @@
                         <tr>
                             <th scope="col">Fecha</th>
                             <th scope="col">Cliente</th>
-                            <th scope="col">Plan</th>
                             <th scope="col">Aseguradora</th>
                             <th scope="col">Referidor</th>
                             <th scope="col">Opciones</th>
@@ -21,23 +20,22 @@
 
                     <tbody>
                         <?php foreach ((array)$cotizaciones as $cotizacion) : ?>
-                            <?php if (date('m/Y', strtotime($cotizacion->getCreatedTime())) == date("m/Y") and $cotizacion->getFieldValue('Quote_Stage') == "Emitida") : ?>
+                            <?php if (date('m/Y', strtotime($cotizacion->getFieldValue("Vigencia_desde"))) == date("m/Y")) : ?>
                                 <tr>
                                     <td><?= date('d/m/Y', strtotime($cotizacion->getFieldValue("Vigencia_desde"))) ?></td>
                                     <td>
                                         <?= $cotizacion->getFieldValue('Nombre') . ' ' . $cotizacion->getFieldValue('Apellido') ?>
                                     </td>
-                                    <td><?= $cotizacion->getFieldValue('Plan') ?> </td>
                                     <td><?= $cotizacion->getFieldValue('Coberturas')->getLookupLabel() ?></td>
                                     <td><?= $cotizacion->getFieldValue('Contact_Name')->getLookupLabel() ?></td>
                                     <td>
-                                    <a href="<?= site_url("cotizaciones/adjuntar/" . $cotizacion->getEntityId()) ?>" title="Adjuntar">
-                                        <i class="fas fa-upload"></i>
-                                    </a>
-                                    |
-                                    <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
-                                        <i class="fas fa-download"></i>
-                                    </a>
+                                        <a href="<?= site_url("cotizaciones/adjuntar/" . $cotizacion->getEntityId()) ?>" title="Adjuntar">
+                                            <i class="fas fa-upload"></i>
+                                        </a>
+                                        |
+                                        <a href="<?= site_url("cotizaciones/descargar/" . $cotizacion->getEntityId()) ?>" title="Descargar" target="__blank">
+                                            <i class="fas fa-download"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endif ?>

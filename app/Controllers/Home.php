@@ -14,26 +14,25 @@ class Home extends BaseController
         $vencidas = 0;
 
         if (session('puesto') == "Administrador") {
-            $criterio = "Account_Name:equals:" . session('cuenta_id');
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Quote_Stage:starts_with:E))";
         } else {
-            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . "))";
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . ") and (Quote_Stage:starts_with:E))";
         }
 
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
 
         foreach ((array)$cotizaciones as $cotizacion) {
-            if ($cotizacion->getFieldValue('Quote_Stage') == "Emitida") {
-                //filtrar por  mes y año actual
-                if (date("Y-m", strtotime($cotizacion->getCreatedTime())) == date("Y-m")) {
-                    $lista[] =  $cotizacion->getFieldValue('Coberturas')->getLookupLabel();
-                    $polizas++;
-                }
-                //contador para las emisiones que vencen en el mes y año actual
-                if (date("Y-m", strtotime($cotizacion->getFieldValue('Valid_Till'))) == date("Y-m")) {
-                    $vencidas++;
-                }
+            //filtrar por  mes y año actual
+            if (date("Y-m", strtotime($cotizacion->getFieldValue("Vigencia_desde"))) == date("Y-m")) {
+                $lista[] =  $cotizacion->getFieldValue('Coberturas')->getLookupLabel();
+                $polizas++;
+            }
+            //contador para las emisiones que vencen en el mes y año actual
+            if (date("Y-m", strtotime($cotizacion->getFieldValue('Valid_Till'))) == date("Y-m")) {
+                $vencidas++;
             }
         }
+        
         return view('index', [
             "titulo" => "Panel de Control",
             "lista" => array_count_values($lista),

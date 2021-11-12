@@ -26,6 +26,7 @@ class Cotizaciones extends BaseController
         $registro = [
             "Subject" => $this->request->getPost("nombre") . " " . $this->request->getPost("apellido"),
             "Valid_Till" => date("Y-m-d", strtotime(date("Y-m-d") . "+ 30 days")),
+            "Vigencia_desde" => date("Y-m-d"),
             "Account_Name" =>  session('cuenta_id'),
             "Contact_Name" =>  session('usuario_id'),
             "Construcci_n" => $this->request->getPost("construccion"),
@@ -74,27 +75,28 @@ class Cotizaciones extends BaseController
         return redirect()->to(site_url("cotizaciones/emitir/" . $id));
     }
 
-    public function buscar($filtro)
+    public function buscar_cotizaciones()
     {
         $libreria = new Zoho;
         if (session('puesto') == "Administrador") {
-            $criterio = "Account_Name:equals:" . session('cuenta_id');
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Quote_Stage:starts_with:C))";
         } else {
-            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . "))";
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . ") and (Quote_Stage:starts_with:C))";
         }
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
+        return view("cotizaciones/buscar_cotizaciones", ["titulo" => "Buscar Cotizaciones", "cotizaciones" => $cotizaciones]);
+    }
 
-        switch ($filtro) {
-            case 'Emitida':
-                $titulo = "Buscar Emisiones";
-                break;
-
-            default:
-                $titulo = "Buscar Cotizaciones";
-                break;
+    public function buscar_emisiones()
+    {
+        $libreria = new Zoho;
+        if (session('puesto') == "Administrador") {
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Quote_Stage:starts_with:E))";
+        } else {
+            $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . ") and (Quote_Stage:starts_with:E))";
         }
-
-        return view("cotizaciones/buscar", ["titulo" => $titulo, "cotizaciones" => $cotizaciones, "filtro" => $filtro]);
+        $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
+        return view("cotizaciones/buscar_emisiones", ["titulo" => "Buscar Emisiones", "cotizaciones" => $cotizaciones]);
     }
 
     public function editar($id)
@@ -154,7 +156,7 @@ class Cotizaciones extends BaseController
                     $total = $lineItem->getNetTotal();
                     $planid = $lineItem->getProduct()->getEntityId();
                     $neta = $lineItem->getNetTotal() / 1.16;
-                    $isc = $total -$neta;
+                    $isc = $total - $neta;
                 }
             }
 
@@ -257,44 +259,11 @@ class Cotizaciones extends BaseController
         $cotizacion = $libreria->getRecord("Quotes", $id);
 
         if ($cotizacion->getFieldValue('Quote_Stage') == "Cotizando") {
-            switch ($cotizacion->getFieldValue("Plan")) {
-                case 'Vida':
-                    return view('vida/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
-                    break;
-
-                case 'Vida/Desempleo':
-                    return view('desempleo/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
-                    break;
-
-                case 'Seguro Incendio Hipotecario':
-                    return view('incendio/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
-                    break;
-
-                default:
-                    return view('auto/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
-                    break;
-            }
+            return view('cotizaciones/cotizacion', ["cotizacion" => $cotizacion, "libreria" => $libreria]);
         } else {
             //informacion sobre las coberturas, la aseguradora,las coberturas
             $plan = $libreria->getRecord("Products", $cotizacion->getFieldValue("Coberturas")->getEntityId());
-
-            switch ($cotizacion->getFieldValue("Plan")) {
-                case 'Vida':
-                    return view('vida/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
-                    break;
-
-                case 'Vida/Desempleo':
-                    return view('desempleo/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
-                    break;
-
-                case 'Seguro Incendio Hipotecario':
-                    return view('incendio/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
-                    break;
-
-                default:
-                    return view('auto/emision', ["cotizacion" => $cotizacion, "plan" => $plan]);
-                    break;
-            }
+            return view('cotizaciones/emision',  ["cotizacion" => $cotizacion, "plan" => $plan]);
         }
     }
 }
