@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("auto/cotizar") ?>">
+<form method="POST" action="<?= site_url("cotizaciones/cotizar_auto") ?>">
     <div class="modal fade" id="cotizar_auto" tabindex="-1" aria-labelledby="cotizar_auto" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

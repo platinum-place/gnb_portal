@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("reportes") ?>">
+<form method="POST" action="<?= site_url("cotizaciones/reportes") ?>">
     <div class="modal fade" id="generar_reporte" tabindex="-1" aria-labelledby="generar_reporte" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">

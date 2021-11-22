@@ -15,9 +15,18 @@
 
     <div class="col-4">
         <p style="text-align: right">
-            <b>Fecha </b> <?= date('d/m/Y') ?> <br>
-            <b>Estado </b> <?= $tua->getFieldValue("Stage") ?>
+            <b>Fecha </b> <?= date('d/m/Y') ?>
         </p>
+
+        <?php if ($tua->getFieldValue("Stage") == "Inactivo") : ?>
+            <p style="text-align: right" class="text-danger">
+                <b>Estado </b> Inactivo
+            </p>
+        <?php else : ?>
+            <p style="text-align: right">
+                <b>Estado </b> <?= $tua->getFieldValue("Stage") ?>
+            </p>
+        <?php endif ?>
     </div>
 
     <div class="col-12">
@@ -174,25 +183,41 @@
                     <th>Color</th>
                     <th>Placa</th>
                     <th>Chasis</th>
-                    <th>Estado</th>
                 </tr>
             </thead>
 
             <tbody>
                 <?php $cont = 1 ?>
                 <?php foreach ($vehiculos as $vehiculo) : ?>
-                        <tr>
-                            <td><?= $cont ?></td>
-                            <td><?= $vehiculo->getFieldValue('Marca') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
-                            <td><?= $vehiculo->getFieldValue('A_o') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Color') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Placa') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Name') ?></td>
-                            <td><?= $vehiculo->getFieldValue('Estado') ?></td>
-                        </tr>
-                        <?php $cont++ ?>
+                    <?php if ($tua->getFieldValue("Stage") == "Inactivo") : ?>
+                        <?php if ($vehiculo->getFieldValue("Estado") == 2 or $tua->getFieldValue("Estado") == "2") : ?>
+                            <tr>
+                                <td><?= $cont ?></td>
+                                <td><?= $vehiculo->getFieldValue('Marca') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
+                                <td><?= $vehiculo->getFieldValue('A_o') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Color') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Placa') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Name') ?></td>
+                            </tr>
+                            <?php $cont++ ?>
+                        <?php endif ?>
+                    <?php else : ?>
+                        <?php if ($vehiculo->getFieldValue("Estado") == 1 or $tua->getFieldValue("Estado") == "1") : ?>
+                            <tr>
+                                <td><?= $cont ?></td>
+                                <td><?= $vehiculo->getFieldValue('Marca') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Modelo') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Tipo') ?></td>
+                                <td><?= $vehiculo->getFieldValue('A_o') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Color') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Placa') ?></td>
+                                <td><?= $vehiculo->getFieldValue('Name') ?></td>
+                            </tr>
+                            <?php $cont++ ?>
+                        <?php endif ?>
+                    <?php endif ?>
                 <?php endforeach ?>
             </tbody>
         </table>

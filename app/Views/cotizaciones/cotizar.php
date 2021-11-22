@@ -82,7 +82,7 @@
     function modelosAJAX(val) {
         $.ajax({
             type: 'ajax',
-            url: "<?= site_url('auto/lista_modelos') ?>",
+            url: "<?= site_url('cotizaciones/lista_modelos') ?>",
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             },

@@ -23,7 +23,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $baseURL = 'http://localhost/zohoportal/public/';
+    public $baseURL = 'http://localhost/portal/public/';
 
     /**
      * --------------------------------------------------------------------------
