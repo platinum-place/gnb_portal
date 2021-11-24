@@ -2,19 +2,14 @@
 
 namespace App\Models;
 
-use App\Libraries\Zoho;
-
 class CotizacionVida extends Cotizacion
 {
-    public $fecha_codeudor;
-
+ 
     public function cotizar($fecha_deudor, $fecha_codeudor, $plazo, $suma, $plan)
     {
-        $libreria = new Zoho;
-
         //planes relacionados al banco
         $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Vida))";
-        $coberturas =  $libreria->searchRecordsByCriteria("Products", $criterio);
+        $coberturas =  $this->libreria->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
             //inicializacion de variables
@@ -23,14 +18,11 @@ class CotizacionVida extends Cotizacion
 
             //verificaciones
             //verificar limite de plazo
-            if ($plazo > $cobertura->getFieldValue('Plazo_max')) {
-                $comentario = "El plazo es mayor al limite establecido.";
-            }
+            $comentario = $this->limite_plazo($plazo, $cobertura->getFieldValue('Plazo_max'));
 
             //verificar limite suma
-            if ($suma > $cobertura->getFieldValue('Suma_asegurada_max')) {
-                $comentario = "La suma asegurada es mayor al limite establecido.";
-            }
+            $comentario = $this->limite_suma($suma, $cobertura->getFieldValue('Suma_asegurada_min'), $cobertura->getFieldValue('Suma_asegurada_max'));
+            
 
             //si no hubo un excepcion
             if (empty($comentario)) {
@@ -41,7 +33,7 @@ class CotizacionVida extends Cotizacion
 
                 //encontrar la tasa
                 $criterio = "Plan:equals:" . $cobertura->getEntityId();
-                $tasas = $libreria->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
+                $tasas = $this->libreria->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
 
                 foreach ((array)$tasas as $tasa) {
                     //verificar limite de edad

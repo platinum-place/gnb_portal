@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("cotizaciones/cotizar_vida") ?>">
+<form method="POST" action="<?= site_url("cotizaciones") ?>">
     <input type="text" hidden value="Vida" name="plan">
     
     <div class="modal fade" id="cotizar_vida" tabindex="-1" aria-labelledby="cotizar_vida" aria-hidden="true">

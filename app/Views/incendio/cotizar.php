@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("cotizaciones/cotizar_incendio") ?>">
+<form method="POST" action="<?= site_url("cotizaciones") ?>">
     <input type="text" hidden value="Seguro Incendio Hipotecario" name="plan">
 
     <div class="modal fade" id="cotizar_incendio" tabindex="-1" aria-labelledby="cotizar_incendio" aria-hidden="true">

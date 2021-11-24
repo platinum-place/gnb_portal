@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use App\Libraries\Zoho;
-
 class CotizacionIncendio extends Cotizacion
 {
-    public $prestamo;
-    public $construccion;
-    public $riesgo;
+
 
     public function cotizar($suma, $prestamo, $plazo, $riesgo, $construccion, $direccion, $plan)
     {
-        $libreria = new Zoho;
         //planes relacionados al banco
         $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Incendio))";
-        $coberturas =  $libreria->searchRecordsByCriteria("Products", $criterio);
+        $coberturas =  $this->libreria->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
             //inicializacion de variables
@@ -29,7 +24,7 @@ class CotizacionIncendio extends Cotizacion
                 //calcular prima
                 //encontrar la tasa
                 $criterio = "Plan:equals:" . $cobertura->getEntityId();
-                $tasas = $libreria->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
+                $tasas = $this->libreria->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
 
                 foreach ((array)$tasas as $tasa) {
                     //verificar limite de edad

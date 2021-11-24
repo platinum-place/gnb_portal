@@ -1,26 +1,91 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Libraries\Zoho;
 use App\Models\Cotizacion;
-use App\Models\CotizacionAuto;
-use App\Models\CotizacionDesempleo;
-use App\Models\CotizacionIncendio;
-use App\Models\CotizacionVida;
 use App\Models\ReporteAuto;
-use app\Models\ReporteVida;
-use app\Models\ReporteDesempleo;
-use app\Models\ReporteIncendio;
+use App\Models\ReporteVida;
+use App\Models\ReporteDesempleo;
+use App\Models\ReporteIncendio;
+use App\Libraries\CotizarAuto;
 
 class Cotizaciones extends BaseController
 {
 
     public function index()
     {
-        $cotizacion = new Cotizacion();
+        //libreria con funciones de zoho
         $libreria = new Zoho();
+
+        //objeto para almacenar valores relacionados a la cotizacion
+        $cotizacion = new Cotizacion();
+
+        if ($this->request->getPost()) {
+            // informacion general
+            $cotizacion->suma = $this->request->getPost("suma");
+            $cotizacion->plan = $this->request->getPost("plan");
+            $cotizacion->fecha_deudor = $this->request->getPost("deudor");
+
+            // plan vida
+            $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
+
+            // plan incendio
+            $cotizacion->direccion = $this->request->getPost("direccion");
+            $cotizacion->prestamo = $this->request->getPost("prestamo");
+            $cotizacion->construccion = $this->request->getPost("construccion");
+            $cotizacion->riesgo = $this->request->getPost("riesgo");
+
+            // plan desempleo
+            $cotizacion->cuota = $this->request->getPost("cuota");
+
+            // plan auto
+            // datos relacionados al modelo, dividios en un array
+            $modelo = explode(",", $this->request->getPost("modelo"));
+            // asignando valores al objeto
+            $modeloid = $modelo[0];
+            $modelotipo = $modelo[1];
+
+            $cotizacion->marcaid = $this->request->getPost("marca");
+            $cotizacion->modeloid = $modeloid;
+            $cotizacion->modelotipo = $modelotipo;
+            $cotizacion->plan = $this->request->getPost("plan");
+            $cotizacion->ano = $this->request->getPost("ano");
+            $cotizacion->uso = $this->request->getPost("uso");
+            $cotizacion->estado = $this->request->getPost("estado");
+
+            switch ($this->request->getPost("plan")) {
+                case "Vida":
+
+                    break;
+
+                case "Seguro Incendio Hipotecario":
+
+                    break;
+
+                case "Vida/Desempleo":
+                    $cotizacion->cotizar($this->request->getPost("deudor"), $this->request->getPost("cuota"), $this->request->getPost("plazo"), $this->request->getPost("suma"), $this->request->getPost("plan"));
+
+                    if (empty($cotizacion->planes)) {
+                        session()->setFlashdata('alerta', 'No existen planes para cotizar.');
+                    }
+                    break;
+
+                default:
+                    $cotizar = new CotizarAuto($libreria, $cotizacion);
+                    break;
+            }
+
+            $cotizar->cotizar_planes();
+
+            if (empty($cotizacion->planes)) {
+                session()->setFlashdata('alerta', 'No existen planes para cotizar.');
+            }
+        }
+
         // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
         $marcas = $libreria->getRecords("Marcas");
+
         // formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
         return view("cotizaciones/cotizar", [
@@ -45,11 +110,11 @@ class Cotizaciones extends BaseController
             // obtener los modelos empezando por la primera pagina
             $modelos = $libreria->searchRecordsByCriteria("Modelos", $criteria, $pag);
             // en caso de encontrar valores
-            if (! empty($modelos)) {
+            if (!empty($modelos)) {
                 // formatear el resultado para ordenarlo alfabeticamente en forma descendente
                 asort($modelos);
                 // aumentar el contador
-                $pag ++;
+                $pag++;
                 // mostrar los valores en forma de option para luego ser mostrados en dentro de un select
                 foreach ($modelos as $modelo) {
                     echo '<option value="' . $modelo->getEntityId() . "," . $modelo->getFieldValue('Tipo') . '">' . strtoupper($modelo->getFieldValue('Name')) . '</option>';
@@ -59,58 +124,6 @@ class Cotizaciones extends BaseController
                 $pag = 0;
             }
         } while ($pag > 0);
-    }
-
-    // funcion post
-    public function cotizar_auto()
-    {
-        $cotizacion = new CotizacionAuto();
-
-        // datos relacionados al modelo, dividios en un array
-        $modelo = explode(",", $this->request->getPost("modelo"));
-        // asignando valores al objeto
-        $modeloid = $modelo[0];
-        $modelotipo = $modelo[1];
-
-        $cotizacion->cotizar($this->request->getPost("marca"), $modeloid, $modelotipo, $this->request->getPost("plan"), $this->request->getPost("ano"), $this->request->getPost("uso"), $this->request->getPost("estado"), $this->request->getPost("suma"));
-
-        if (empty($cotizacion->planes)) {
-            session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-        }
-
-        $libreria = new Zoho();
-        // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $libreria->getRecords("Marcas");
-        // formatear el resultado para ordenarlo alfabeticamente en forma descendente
-        asort($marcas);
-        return view("cotizaciones/cotizar", [
-            "titulo" => "Cotizar",
-            "marcas" => $marcas,
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    // funcion post
-    public function cotizar_desempleo()
-    {
-        $cotizacion = new CotizacionDesempleo();
-
-        $cotizacion->cotizar($this->request->getPost("deudor"), $this->request->getPost("cuota"), $this->request->getPost("plazo"), $this->request->getPost("suma"), $this->request->getPost("plan"));
-
-        if (empty($cotizacion->planes)) {
-            session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-        }
-
-        $libreria = new Zoho();
-        // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $libreria->getRecords("Marcas");
-        // formatear el resultado para ordenarlo alfabeticamente en forma descendente
-        asort($marcas);
-        return view("cotizaciones/cotizar", [
-            "titulo" => "Cotizar",
-            "marcas" => $marcas,
-            "cotizacion" => $cotizacion
-        ]);
     }
 
     // funcion post
@@ -124,9 +137,8 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', 'No existen planes para cotizar.');
         }
 
-        $libreria = new Zoho();
         // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $libreria->getRecords("Marcas");
+        $marcas = $cotizacion->libreria->getRecords("Marcas");
         // formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
         return view("cotizaciones/cotizar", [
@@ -147,9 +159,8 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', 'No existen planes para cotizar.');
         }
 
-        $libreria = new Zoho();
         // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $libreria->getRecords("Marcas");
+        $marcas = $cotizacion->libreria->getRecords("Marcas");
         // formatear el resultado para ordenarlo alfabeticamente en forma descendente
         asort($marcas);
         return view("cotizaciones/cotizar", [
@@ -219,11 +230,13 @@ class Cotizaciones extends BaseController
     public function buscar_cotizaciones()
     {
         $libreria = new Zoho();
+
         if (session('admin') == true) {
             $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Quote_Stage:starts_with:C))";
         } else {
             $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . ") and (Quote_Stage:starts_with:C))";
         }
+
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
         return view("cotizaciones/buscar_cotizaciones", [
             "titulo" => "Buscar Cotizaciones",
@@ -234,11 +247,13 @@ class Cotizaciones extends BaseController
     public function buscar_emisiones()
     {
         $libreria = new Zoho();
+
         if (session('admin') == true) {
             $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Quote_Stage:starts_with:E))";
         } else {
             $criterio = "((Account_Name:equals:" . session('cuenta_id') . ") and (Contact_Name:equals:" . session('usuario_id') . ") and (Quote_Stage:starts_with:E))";
         }
+
         $cotizaciones = $libreria->searchRecordsByCriteria("Quotes", $criterio);
         return view("cotizaciones/buscar_emisiones", [
             "titulo" => "Buscar Emisiones",
@@ -251,6 +266,7 @@ class Cotizaciones extends BaseController
         $libreria = new Zoho();
         // obtener datos de la cotizacion
         $cotizacion = $libreria->getRecord("Quotes", $id);
+
         if ($this->request->getPost()) {
             // datos generales para crear una cotizacion
             $registro = [
@@ -275,12 +291,15 @@ class Cotizaciones extends BaseController
                 "Color" => $this->request->getPost("color"),
                 "Placa" => $this->request->getPost("placa")
             ];
+
             // agregar los cambios al registro en el crm
             $libreria->update("Quotes", $id, $registro);
+
             // alerta general cuando se edita una cotizacion en el crm
             session()->setFlashdata('alerta', "¡Cotización editada exitosamente!.");
             return redirect()->to(site_url("cotizaciones/emitir/$id"));
         }
+
         return view("cotizaciones/editar", [
             "titulo" => "Editar Cotización, a nombre de " . $cotizacion->getFieldValue('Nombre') . " " . $cotizacion->getFieldValue('Apellido'),
             "cotizacion" => $cotizacion
@@ -322,7 +341,7 @@ class Cotizaciones extends BaseController
             // los archivos debe ser subida al servidor para luego ser adjuntados al registro
             if ($documentos = $this->request->getFiles()) {
                 foreach ($documentos['documentos'] as $documento) {
-                    if ($documento->isValid() && ! $documento->hasMoved()) {
+                    if ($documento->isValid() && !$documento->hasMoved()) {
                         // subir el archivo al servidor
                         $documento->move(WRITEPATH . 'uploads');
                         // ruta del archivo subido
@@ -339,6 +358,7 @@ class Cotizaciones extends BaseController
             session()->setFlashdata('alerta', $alerta);
             return redirect()->to(site_url("cotizaciones/buscar_emisiones"));
         }
+
         return view("cotizaciones/emitir", [
             "titulo" => "Emitir Cotización, a nombre de $cliente",
             "cotizacion" => $cotizacion
@@ -348,8 +368,10 @@ class Cotizaciones extends BaseController
     public function condicionado($id)
     {
         $libreria = new Zoho();
+
         // obtener los todos los adjuntos del plan, normalmente es solo uno
         $attachments = $libreria->getAttachments("Products", $id);
+
         foreach ($attachments as $attchmentIns) {
             // descargar un documento en el servidor local
             $file = $libreria->downloadAttachment("Products", $id, $attchmentIns->getId(), WRITEPATH . "uploads");
@@ -377,7 +399,7 @@ class Cotizaciones extends BaseController
         if ($documentos = $this->request->getFiles()) {
             $cantidad = 0;
             foreach ($documentos['documentos'] as $documento) {
-                if ($documento->isValid() && ! $documento->hasMoved()) {
+                if ($documento->isValid() && !$documento->hasMoved()) {
                     // subir el archivo al servidor
                     $documento->move(WRITEPATH . 'uploads');
                     // ruta del archivo subido
@@ -386,7 +408,7 @@ class Cotizaciones extends BaseController
                     $libreria->uploadAttachment("Quotes", $id, $ruta);
                     // borrar el archivo del servidor local
                     unlink($ruta);
-                    $cantidad ++;
+                    $cantidad++;
                 }
             }
 
@@ -427,15 +449,15 @@ class Cotizaciones extends BaseController
             case 'Auto':
                 $reporte = new ReporteAuto();
                 break;
-                
+
             case 'Vida':
                 $reporte = new ReporteVida();
                 break;
-                
+
             case 'Vida/Desempleo':
                 $reporte = new ReporteDesempleo();
                 break;
-                
+
             case 'Seguro Incendio Hipotecario':
                 $reporte = new ReporteIncendio();
                 break;
@@ -455,8 +477,7 @@ class Cotizaciones extends BaseController
 
         // funciona en ambos ambientes
         $nombre = "Reporte " . date("d-m-Y");
-        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");
-        ;
+        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
 
         // no funciona en ambiente de produccion, solo en desarrollo local
         // es necesario no tener echo antes de descargar

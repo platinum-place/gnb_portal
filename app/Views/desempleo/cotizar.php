@@ -1,4 +1,4 @@
-<form method="POST" action="<?= site_url("cotizaciones/cotizar_desempleo") ?>">
+<form method="POST" action="<?= site_url("cotizaciones") ?>">
 <input type="text" hidden value="Vida/Desempleo" name="plan">
 
     <div class="modal fade" id="cotizar_desempleo" tabindex="-1" aria-labelledby="cotizar_desempleo" aria-hidden="true">
