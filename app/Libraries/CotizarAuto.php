@@ -24,8 +24,8 @@ class CotizarAuto extends Cotizar
 
     private function vehiculo_restringido($aseguradoraid): string
     {
-        $criterio = "((Marca:equals:".$this->cotizacion->marcaid.") and (Aseguradora:equals:$aseguradoraid))";
-        $marcas = $this->zoho->searchRecordsByCriteria("Restringidos", $criterio, 1, 200);
+        $criterio = "((Marca:equals:" . $this->cotizacion->marcaid . ") and (Aseguradora:equals:$aseguradoraid))";
+        $marcas = $this->zoho->searchRecordsByCriteria("Restringidos", $criterio);
 
         foreach ((array)$marcas as $marca) {
             if (empty($marca->getFieldValue('Modelo'))) {
@@ -42,8 +42,8 @@ class CotizarAuto extends Cotizar
     {
         $valortasa = 0;
         // encontrar la tasa
-        $criterio = "((Plan:equals:$planid) and (A_o:equals:".$this->cotizacion->ano."))";
-        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio, 1, 200);
+        $criterio = "((Plan:equals:$planid) and (A_o:equals:" . $this->cotizacion->ano . "))";
+        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
 
         foreach ((array)$tasas as $tasa) {
             // bucar entre los grupos de vehiculo
@@ -60,8 +60,8 @@ class CotizarAuto extends Cotizar
         $valorrecargo = 0;
 
         // verificar si la aseguradora tiene algun recargo para la marca o modelo
-        $criterio = "((Marca:equals:".$this->cotizacion->marcaid.") and (Aseguradora:equals:$aseguradoraid))";
-        $recargos = $this->zoho->searchRecordsByCriteria("Recargos", $criterio, 1, 200);
+        $criterio = "((Marca:equals:" . $this->cotizacion->marcaid . ") and (Aseguradora:equals:$aseguradoraid))";
+        $recargos = $this->zoho->searchRecordsByCriteria("Recargos", $criterio);
 
         foreach ((array)$recargos as $recargo) {
             if (
@@ -109,6 +109,37 @@ class CotizarAuto extends Cotizar
         return $prima;
     }
 
+    private function verificar_comentarios(
+        $Restringir_veh_culos_de_uso,
+        $Suma_asegurada_min,
+        $Suma_asegurada_max,
+        $Max_antig_edad,
+        $aseguradoraid
+    ): string
+    {
+        // verificar limites de uso
+        if ($comentario = $this->uso_restringido($Restringir_veh_culos_de_uso)) {
+            return $comentario;
+        }
+
+        // verificar suma
+        if ($comentario = $this->limite_suma($Suma_asegurada_min, $Suma_asegurada_max)) {
+            return $comentario;
+        }
+
+        // verificar antiguedad
+        if ($comentario = $this->antiguedad($Max_antig_edad)) {
+            return $comentario;
+        }
+
+        // verificar si la marca o modelo esta restringidos en la aseguradora
+        if ($comentario = $this->vehiculo_restringido($aseguradoraid)) {
+            return $comentario;
+        }
+
+        return "";
+    }
+
     public function cotizar_planes()
     {
         // planes relacionados al banco
@@ -117,29 +148,24 @@ class CotizarAuto extends Cotizar
 
         foreach ((array)$coberturas as $cobertura) {
             // inicializacion de variables
-            $comentario = "";
             $prima = 0;
 
             // verificaciones
-            // verificar limites de uso
-            $comentario = $this->uso_restringido($cobertura->getFieldValue('Restringir_veh_culos_de_uso'));
-
-            // verificar suma
-            $comentario = $this->limite_suma(
+            $comentario = $this->verificar_comentarios(
+                $cobertura->getFieldValue('Restringir_veh_culos_de_uso'),
                 $cobertura->getFieldValue('Suma_asegurada_min'),
-                $cobertura->getFieldValue('Suma_asegurada_max')
+                $cobertura->getFieldValue('Suma_asegurada_max'),
+                $cobertura->getFieldValue('Max_antig_edad'),
+                $cobertura->getFieldValue('Vendor_Name')->getEntityId()
             );
-
-            // verificar antiguedad
-            $comentario = $this->antiguedad($cobertura->getFieldValue('Max_antig_edad'));
-
-            // verificar si la marca o modelo esta restringidos en la aseguradora
-            $comentario = $this->vehiculo_restringido($cobertura->getFieldValue('Vendor_Name')->getEntityId());
 
             // si no hubo un excepcion
             if (empty($comentario)) {
-                $prima = $this->calcular_prima($cobertura->getEntityId(), $cobertura->getFieldValue('Vendor_Name')
-                    ->getEntityId(), $cobertura->getFieldValue('Prima_m_nima'));
+                $prima = $this->calcular_prima(
+                    $cobertura->getEntityId(),
+                    $cobertura->getFieldValue('Vendor_Name')->getEntityId(),
+                    $cobertura->getFieldValue('Prima_m_nima')
+                );
 
                 // en caso de haber algun problema
                 if ($prima == 0) {

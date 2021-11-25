@@ -2,6 +2,9 @@
 
 namespace App\Controllers;
 
+use App\Libraries\CotizarDesempleo;
+use App\Libraries\CotizarIncendio;
+use App\Libraries\CotizarVida;
 use App\Libraries\Zoho;
 use App\Models\Cotizacion;
 use App\Models\ReporteAuto;
@@ -9,11 +12,11 @@ use App\Models\ReporteVida;
 use App\Models\ReporteDesempleo;
 use App\Models\ReporteIncendio;
 use App\Libraries\CotizarAuto;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class Cotizaciones extends BaseController
 {
-
-    public function index()
+    public function index(): string
     {
         //libreria con funciones de zoho
         $libreria = new Zoho();
@@ -25,57 +28,57 @@ class Cotizaciones extends BaseController
             // informacion general
             $cotizacion->suma = $this->request->getPost("suma");
             $cotizacion->plan = $this->request->getPost("plan");
+            $cotizacion->plazo = $this->request->getPost("plazo");
             $cotizacion->fecha_deudor = $this->request->getPost("deudor");
 
-            // plan vida
+            //
             $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
 
-            // plan incendio
+            //
             $cotizacion->direccion = $this->request->getPost("direccion");
             $cotizacion->prestamo = $this->request->getPost("prestamo");
             $cotizacion->construccion = $this->request->getPost("construccion");
             $cotizacion->riesgo = $this->request->getPost("riesgo");
 
-            // plan desempleo
+            //
             $cotizacion->cuota = $this->request->getPost("cuota");
 
-            // plan auto
-            // datos relacionados al modelo, dividios en un array
-            $modelo = explode(",", $this->request->getPost("modelo"));
-            // asignando valores al objeto
-            $modeloid = $modelo[0];
-            $modelotipo = $modelo[1];
-
-            $cotizacion->marcaid = $this->request->getPost("marca");
-            $cotizacion->modeloid = $modeloid;
-            $cotizacion->modelotipo = $modelotipo;
+            //
             $cotizacion->plan = $this->request->getPost("plan");
             $cotizacion->ano = $this->request->getPost("ano");
             $cotizacion->uso = $this->request->getPost("uso");
             $cotizacion->estado = $this->request->getPost("estado");
+            $cotizacion->marcaid = $this->request->getPost("marca");
 
             switch ($this->request->getPost("plan")) {
                 case "Vida":
-
+                    $cotizar = new CotizarVida($libreria, $cotizacion);
                     break;
 
                 case "Seguro Incendio Hipotecario":
-
+                    $cotizar = new CotizarIncendio($libreria, $cotizacion);
                     break;
 
                 case "Vida/Desempleo":
-                    $cotizacion->cotizar($this->request->getPost("deudor"), $this->request->getPost("cuota"), $this->request->getPost("plazo"), $this->request->getPost("suma"), $this->request->getPost("plan"));
-
-                    if (empty($cotizacion->planes)) {
-                        session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-                    }
+                    $cotizar = new CotizarDesempleo($libreria, $cotizacion);
                     break;
 
                 default:
+                    // datos relacionados al modelo, dividios en un array
+                    $modelo = explode(",", $this->request->getPost("modelo"));
+                    // asignando valores al objeto
+                    $modeloid = $modelo[0];
+                    $modelotipo = $modelo[1];
+
+                    $cotizacion->modeloid = $modeloid;
+                    $cotizacion->modelotipo = $modelotipo;
+
+                    //libreria para cotizar
                     $cotizar = new CotizarAuto($libreria, $cotizacion);
                     break;
             }
 
+            //hacer uso de la libreria para cotizar
             $cotizar->cotizar_planes();
 
             if (empty($cotizacion->planes)) {
@@ -127,51 +130,7 @@ class Cotizaciones extends BaseController
     }
 
     // funcion post
-    public function cotizar_incendio()
-    {
-        $cotizacion = new CotizacionIncendio();
-
-        $cotizacion->cotizar($this->request->getPost("suma"), $this->request->getPost("prestamo"), $this->request->getPost("plazo"), $this->request->getPost("riesgo"), $this->request->getPost("construccion"), $this->request->getPost("direccion"), $this->request->getPost("plan"));
-
-        if (empty($cotizacion->planes)) {
-            session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-        }
-
-        // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $cotizacion->libreria->getRecords("Marcas");
-        // formatear el resultado para ordenarlo alfabeticamente en forma descendente
-        asort($marcas);
-        return view("cotizaciones/cotizar", [
-            "titulo" => "Cotizar",
-            "marcas" => $marcas,
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    // funcion post
-    public function cotizar_vida()
-    {
-        $cotizacion = new CotizacionVida();
-
-        $cotizacion->cotizar($this->request->getPost("deudor"), $this->request->getPost("codeudor"), $this->request->getPost("plazo"), $this->request->getPost("suma"), $this->request->getPost("plan"));
-
-        if (empty($cotizacion->planes)) {
-            session()->setFlashdata('alerta', 'No existen planes para cotizar.');
-        }
-
-        // libreria del api para obtener todo los registros de un modulo, en este caso del de marcas
-        $marcas = $cotizacion->libreria->getRecords("Marcas");
-        // formatear el resultado para ordenarlo alfabeticamente en forma descendente
-        asort($marcas);
-        return view("cotizaciones/cotizar", [
-            "titulo" => "Cotizar",
-            "marcas" => $marcas,
-            "cotizacion" => $cotizacion
-        ]);
-    }
-
-    // funcion post
-    public function completar()
+    public function completar(): RedirectResponse
     {
         // pasa la tabla de cotizacion en array para agregarla al registro
         $planes = json_decode($this->request->getPost("planes"), true);
@@ -227,7 +186,7 @@ class Cotizaciones extends BaseController
         return redirect()->to(site_url("cotizaciones/emitir/" . $id));
     }
 
-    public function buscar_cotizaciones()
+    public function buscar_cotizaciones(): string
     {
         $libreria = new Zoho();
 
@@ -244,7 +203,7 @@ class Cotizaciones extends BaseController
         ]);
     }
 
-    public function buscar_emisiones()
+    public function buscar_emisiones(): string
     {
         $libreria = new Zoho();
 
@@ -261,6 +220,9 @@ class Cotizaciones extends BaseController
         ]);
     }
 
+    /**
+     * @throws \zcrmsdk\crm\exception\ZCRMException
+     */
     public function editar($id)
     {
         $libreria = new Zoho();
@@ -306,6 +268,9 @@ class Cotizaciones extends BaseController
         ]);
     }
 
+    /**
+     * @throws \zcrmsdk\crm\exception\ZCRMException
+     */
     public function emitir($id)
     {
         $libreria = new Zoho();
@@ -477,21 +442,21 @@ class Cotizaciones extends BaseController
 
         // funciona en ambos ambientes
         $nombre = "Reporte " . date("d-m-Y");
-        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");;
+        return $this->response->download($ruta_reporte, null)->setFileName("$nombre.xlsx");
 
         // no funciona en ambiente de produccion, solo en desarrollo local
         // es necesario no tener echo antes de descargar
         /*
-         * header('Content-Description: File Transfer');
-         * header('Content-Type: application/octet-stream');
-         * header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
-         * header('Expires: 0');
-         * header('Cache-Control: must-revalidate');
-         * header('Pragma: public');
-         * header('Content-Length: ' . filesize($ruta_reporte));
-         * readfile($ruta_reporte);
-         * //eliminar el archivo descargado
-         * unlink($ruta_reporte);
+          header('Content-Description: File Transfer');
+          header('Content-Type: application/octet-stream');
+          header('Content-Disposition: attachment; filename="' . basename($ruta_reporte) . '"');
+          header('Expires: 0');
+          header('Cache-Control: must-revalidate');
+          header('Pragma: public');
+          header('Content-Length: ' . filesize($ruta_reporte));
+          readfile($ruta_reporte);
+          //eliminar el archivo descargado
+          unlink($ruta_reporte);
          */
     }
 }

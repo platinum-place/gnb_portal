@@ -2,42 +2,10 @@
 
 namespace App\Libraries;
 
-class CotizarDesempleo extends Cotizar
+class CotizarVida extends Cotizar
 {
-    private $vida = 0;
-    private $desempleo = 0;
-
-    private function calcular_tasas($coberturaid)
-    {
-        //encontrar la tasa
-        $criterio = "Plan:equals:$coberturaid";
-        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
-
-        foreach ((array)$tasas as $tasa) {
-            //verificar limite de edad
-            if (
-                $this->calcular_edad($this->cotizacion->fecha_deudor) > $tasa->getFieldValue('Edad_min')
-                and
-                $this->calcular_edad($this->cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
-            ) {
-                $this->vida = $tasa->getFieldValue('Name') / 100;
-                $this->desempleo = $tasa->getFieldValue('Desempleo');
-            }
-        }
-    }
-
-    private function calcular_prima($coberturaid)
-    {
-        //calcular tasas
-        $this->calcular_tasas($coberturaid);
-
-        //prima
-        $prima_vida = ($this->cotizacion->suma / 1000) * $this->vida;
-        $prima_desempleo = ($this->cotizacion->cuota / 1000) * $this->desempleo;
-
-        //retornar la union de ambas primas
-        return $prima_vida + $prima_desempleo;
-    }
+    private $deudor = 0;
+    private $codeudor = 0;
 
     private function verificar_comentarios($Plazo_max, $Suma_asegurada_min, $Suma_asegurada_max): string
     {
@@ -52,10 +20,53 @@ class CotizarDesempleo extends Cotizar
         return "";
     }
 
+    private function calcular_tasas($coberturaid)
+    {
+        //encontrar la tasa
+        $criterio = "Plan:equals:$coberturaid";
+        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
+
+        foreach ((array)$tasas as $tasa) {
+            //verificar limite de edad
+            if (
+                $this->calcular_edad($this->cotizacion->fecha_deudor) > $tasa->getFieldValue('Edad_min')
+                and
+                $this->calcular_edad($this->cotizacion->fecha_deudor) < $tasa->getFieldValue('Edad_max')
+            ) {
+                $this->deudor = $tasa->getFieldValue('Name') / 100;
+            }
+
+            if (!empty($this->cotizacion->fecha_codeudor)) {
+                if (
+                    $this->calcular_edad($this->cotizacion->fecha_codeudor) > $tasa->getFieldValue('Edad_min')
+                    and
+                    $this->calcular_edad($this->cotizacion->fecha_codeudor) < $tasa->getFieldValue('Edad_max')
+                ) {
+                    $this->codeudor = $tasa->getFieldValue('Codeudor') / 100;
+                }
+            }
+        }
+    }
+
+    private function calcular_prima($coberturaid){
+
+        //calcular tasas
+        $this->calcular_tasas($coberturaid);
+
+        //si existe codeudor
+        if (!empty($this->cotizacion->fecha_codeudor)) {
+            $prima_deudor = ($this->cotizacion->suma / 1000) * $this->deudor;
+            $prima_codeudor = ($this->cotizacion->suma / 1000) * ($this->codeudor - $this->deudor);
+            return $prima_deudor+$prima_codeudor;
+        }else{
+            return ($this->cotizacion->suma / 1000) * $this->deudor;
+        }
+    }
+
     public function cotizar_planes()
     {
         //planes relacionados al banco
-        $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Desempleo))";
+        $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Vida))";
         $coberturas = $this->zoho->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
@@ -75,7 +86,7 @@ class CotizarDesempleo extends Cotizar
 
                 // en caso de haber algun problema
                 if ($prima == 0) {
-                    $comentario = "La edad del deudor no esta dentro del limite permitido.";
+                    $comentario = "La edad del deudor o deudor no estan dentro del limite permitido.";
                 }
             }
 

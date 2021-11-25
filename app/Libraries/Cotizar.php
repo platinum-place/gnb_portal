@@ -14,18 +14,22 @@ class Cotizar
         $this->cotizacion = $cotizacion;
     }
 
-    protected function limite_suma($Suma_asegurada_min, $Suma_asegurada_max)
+    protected function limite_suma($Suma_asegurada_min, $Suma_asegurada_max): string
     {
         if ($this->cotizacion->suma < $Suma_asegurada_min and $this->cotizacion->suma > $Suma_asegurada_max) {
             return "La suma asegurada no esta dentro de los limites.";
         }
+
+        return "";
     }
 
-    protected function limite_plazo($Plazo_max)
+    protected function limite_plazo($Plazo_max): string
     {
         if ($this->cotizacion->plazo > $Plazo_max) {
             return "El plazo es mayor al limite establecido.";
         }
+
+        return "";
     }
 
     protected function calcular_edad($fecha)
