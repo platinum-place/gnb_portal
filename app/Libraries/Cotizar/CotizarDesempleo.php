@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Libraries;
+namespace App\Libraries\Cotizar;
 
 class CotizarDesempleo extends Cotizar
 {
     private $vida = 0;
     private $desempleo = 0;
 
-    private function calcular_tasas($coberturaid)
+    private function calcular_tasas($zoho, $coberturaid)
     {
         //encontrar la tasa
         $criterio = "Plan:equals:$coberturaid";
-        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
+        $tasas = $zoho->searchRecordsByCriteria("Tasas", $criterio);
 
         foreach ((array)$tasas as $tasa) {
             //verificar limite de edad
@@ -26,10 +26,10 @@ class CotizarDesempleo extends Cotizar
         }
     }
 
-    private function calcular_prima($coberturaid)
+    private function calcular_prima($zoho, $coberturaid)
     {
         //calcular tasas
-        $this->calcular_tasas($coberturaid);
+        $this->calcular_tasas($zoho, $coberturaid);
 
         //prima
         $prima_vida = ($this->cotizacion->suma / 1000) * $this->vida;
@@ -52,11 +52,11 @@ class CotizarDesempleo extends Cotizar
         return "";
     }
 
-    public function cotizar_planes()
+    public function cotizar_planes($zoho)
     {
         //planes relacionados al banco
         $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Desempleo))";
-        $coberturas = $this->zoho->searchRecordsByCriteria("Products", $criterio);
+        $coberturas = $zoho->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
             //inicializacion de variables
@@ -71,7 +71,7 @@ class CotizarDesempleo extends Cotizar
 
             //si no hubo un excepcion
             if (empty($comentario)) {
-                $prima = $this->calcular_prima($cobertura->getEntityId());
+                $prima = $this->calcular_prima($zoho, $cobertura->getEntityId());
 
                 // en caso de haber algun problema
                 if ($prima == 0) {

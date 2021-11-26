@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Libraries;
+namespace App\Libraries\Cotizar;
 
 class CotizarIncendio extends Cotizar
 {
@@ -13,12 +13,12 @@ class CotizarIncendio extends Cotizar
         return "";
     }
 
-    private function calcular_tasas($coberturaid)
+    private function calcular_tasas($zoho, $coberturaid)
     {
         $valortasa = 0;
 
         $criterio = "Plan:equals:$coberturaid";
-        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
+        $tasas = $zoho->searchRecordsByCriteria("Tasas", $criterio);
 
         foreach ((array)$tasas as $tasa) {
             $valortasa = $tasa->getFieldValue('Name') / 100;
@@ -27,17 +27,17 @@ class CotizarIncendio extends Cotizar
         return $valortasa;
     }
 
-    private function calcular_prima($coberturaid)
+    private function calcular_prima($zoho, $coberturaid)
     {
-        $tasa = $this->calcular_tasas($coberturaid);
+        $tasa = $this->calcular_tasas($zoho, $coberturaid);
         return ($this->cotizacion->suma / 100) * $tasa;
     }
 
-    public function cotizar_planes()
+    public function cotizar_planes($zoho)
     {
         //planes relacionados al banco
         $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Incendio))";
-        $coberturas = $this->zoho->searchRecordsByCriteria("Products", $criterio);
+        $coberturas = $zoho->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
             //inicializacion de variables
@@ -50,7 +50,7 @@ class CotizarIncendio extends Cotizar
             );
 
             //si no hubo un excepcion
-            if (empty($comentario)) $prima = $this->calcular_prima($cobertura->getEntityId());
+            if (empty($comentario)) $prima = $this->calcular_prima($zoho, $cobertura->getEntityId());
 
             //lista con los resultados de cada calculo
             $this->cotizacion->planes[] = [

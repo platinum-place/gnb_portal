@@ -2,20 +2,33 @@
 
 namespace App\Controllers;
 
-use App\Models\Cuenta;
+
+use App\Libraries\Emisiones;
+use App\Libraries\Zoho;
 
 class Home extends BaseController
 {
-    public function index()
+    public function index(): string
     {
-        $cuenta = new Cuenta;
-        $resumen = $cuenta->resumen();
+        $libreria = new \App\Libraries\Cotizaciones();
+        $emisiones = $libreria->lista_emisiones();
+
+        $lista = array();
+        $polizas = 0;
+
+        foreach ((array)$emisiones as $emision) {
+            //filtrar por  mes y año actual
+            if (date("Y-m", strtotime($emision->getFieldValue("Vigencia_desde"))) == date("Y-m")) {
+                $lista[] = $emision->getFieldValue('Coberturas')->getLookupLabel();
+                $polizas++;
+            }
+        }
 
         return view('index', [
             "titulo" => "Panel de Control",
-            "lista" => array_count_values($resumen[0]),
-            "polizas" => $resumen[1],
-            "cotizaciones" => $resumen[2],
+            "lista" => array_count_values($lista),
+            "polizas" => $polizas,
+            "cotizaciones" => $emisiones,
         ]);
     }
 }

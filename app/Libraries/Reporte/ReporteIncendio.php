@@ -1,13 +1,14 @@
 <?php
-namespace App\Models;
+
+namespace App\Libraries\Reporte;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class ReporteIncendio extends Reporte
+class ReporteIncendio
 {
 
-    public function generar_reporte($desde, $hasta)
+    public function generar_reporte($emisiones,$desde, $hasta)
     {
         // iniciar las librerias de la api para generar excel
         $spreadsheet = new Spreadsheet();
@@ -96,7 +97,7 @@ class ReporteIncendio extends Reporte
         $cont = 1;
         $pos = 13;
 
-        foreach ($this->emisiones as $emision) {
+        foreach (emisiones as $emision) {
             if (date("Y-m-d", strtotime($emision->getCreatedTime())) >= $desde and date("Y-m-d", strtotime($emision->getCreatedTime())) <= $hasta and $emision->getFieldValue('Quote_Stage') == "Emitida" and $emision->getFieldValue('Plan') == "Seguro Incendio Hipotecario") {
                 // valores de la tabla
                 $sheet->setCellValue('A' . $pos, $cont);
@@ -122,8 +123,8 @@ class ReporteIncendio extends Reporte
                 $sheet->setCellValue('O' . $pos, $emision->getFieldValue('Riesgo'));
 
                 // contadores
-                $cont ++;
-                $pos ++;
+                $cont++;
+                $pos++;
             }
         }
 

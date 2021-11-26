@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Libraries;
+namespace App\Libraries\Cotizar;
+
+use App\Libraries\Cotizaciones;
 
 class CotizarAuto extends Cotizar
 {
@@ -22,10 +24,10 @@ class CotizarAuto extends Cotizar
         return "";
     }
 
-    private function vehiculo_restringido($aseguradoraid): string
+    private function vehiculo_restringido($zoho, $aseguradoraid): string
     {
         $criterio = "((Marca:equals:" . $this->cotizacion->marcaid . ") and (Aseguradora:equals:$aseguradoraid))";
-        $marcas = $this->zoho->searchRecordsByCriteria("Restringidos", $criterio);
+        $marcas = $zoho->searchRecordsByCriteria("Restringidos", $criterio);
 
         foreach ((array)$marcas as $marca) {
             if (empty($marca->getFieldValue('Modelo'))) {
@@ -38,12 +40,12 @@ class CotizarAuto extends Cotizar
         return "";
     }
 
-    private function calcular_tasa($planid)
+    private function calcular_tasa($zoho, $planid)
     {
         $valortasa = 0;
         // encontrar la tasa
         $criterio = "((Plan:equals:$planid) and (A_o:equals:" . $this->cotizacion->ano . "))";
-        $tasas = $this->zoho->searchRecordsByCriteria("Tasas", $criterio);
+        $tasas = $zoho->searchRecordsByCriteria("Tasas", $criterio);
 
         foreach ((array)$tasas as $tasa) {
             // bucar entre los grupos de vehiculo
@@ -55,13 +57,13 @@ class CotizarAuto extends Cotizar
         return $valortasa;
     }
 
-    private function calcular_recargo($aseguradoraid)
+    private function calcular_recargo($zoho, $aseguradoraid)
     {
         $valorrecargo = 0;
 
         // verificar si la aseguradora tiene algun recargo para la marca o modelo
         $criterio = "((Marca:equals:" . $this->cotizacion->marcaid . ") and (Aseguradora:equals:$aseguradoraid))";
-        $recargos = $this->zoho->searchRecordsByCriteria("Recargos", $criterio);
+        $recargos = $zoho->searchRecordsByCriteria("Recargos", $criterio);
 
         foreach ((array)$recargos as $recargo) {
             if (
@@ -82,15 +84,15 @@ class CotizarAuto extends Cotizar
         return $valorrecargo;
     }
 
-    private function calcular_prima($coberturaid, $aseguradoraid, $prima_minima)
+    private function calcular_prima($zoho, $coberturaid, $aseguradoraid, $prima_minima)
     {
         // calcular tasa
         // en caso de error que el valor termine en 0
-        $tasa = $this->calcular_tasa($coberturaid);
+        $tasa = $this->calcular_tasa($zoho, $coberturaid);
 
         // calcular recargo
         // en caso de error que el valor termine en 0
-        $recargo = $this->calcular_recargo($aseguradoraid);
+        $recargo = $this->calcular_recargo($zoho, $aseguradoraid);
 
         // calcular prima
         // calculo para cotizacion auto
@@ -110,11 +112,7 @@ class CotizarAuto extends Cotizar
     }
 
     private function verificar_comentarios(
-        $Restringir_veh_culos_de_uso,
-        $Suma_asegurada_min,
-        $Suma_asegurada_max,
-        $Max_antig_edad,
-        $aseguradoraid
+        $zoho, $Restringir_veh_culos_de_uso, $Suma_asegurada_min, $Suma_asegurada_max, $Max_antig_edad, $aseguradoraid
     ): string
     {
         // verificar limites de uso
@@ -133,18 +131,18 @@ class CotizarAuto extends Cotizar
         }
 
         // verificar si la marca o modelo esta restringidos en la aseguradora
-        if ($comentario = $this->vehiculo_restringido($aseguradoraid)) {
+        if ($comentario = $this->vehiculo_restringido($zoho, $aseguradoraid)) {
             return $comentario;
         }
 
         return "";
     }
 
-    public function cotizar_planes()
+    public function cotizar_planes(Cotizaciones $zoho)
     {
         // planes relacionados al banco
         $criterio = "((Corredor:equals:" . session("cuenta_id") . ") and (Product_Category:equals:Auto))";
-        $coberturas = $this->zoho->searchRecordsByCriteria("Products", $criterio);
+        $coberturas = $zoho->searchRecordsByCriteria("Products", $criterio);
 
         foreach ((array)$coberturas as $cobertura) {
             // inicializacion de variables
@@ -152,6 +150,7 @@ class CotizarAuto extends Cotizar
 
             // verificaciones
             $comentario = $this->verificar_comentarios(
+                $zoho,
                 $cobertura->getFieldValue('Restringir_veh_culos_de_uso'),
                 $cobertura->getFieldValue('Suma_asegurada_min'),
                 $cobertura->getFieldValue('Suma_asegurada_max'),
@@ -162,6 +161,7 @@ class CotizarAuto extends Cotizar
             // si no hubo un excepcion
             if (empty($comentario)) {
                 $prima = $this->calcular_prima(
+                    $zoho,
                     $cobertura->getEntityId(),
                     $cobertura->getFieldValue('Vendor_Name')->getEntityId(),
                     $cobertura->getFieldValue('Prima_m_nima')

@@ -1,16 +1,16 @@
 <?php
-namespace app\Libraries;
 
+namespace App\Libraries\Cotizar;
+
+use App\Libraries\Cotizaciones;
 use App\Models\Cotizacion;
 
 class Cotizar
 {
-    protected $zoho;
     protected $cotizacion;
 
-    public function __construct(Zoho $zoho, Cotizacion $cotizacion)
+    public function __construct(Cotizacion $cotizacion)
     {
-        $this->zoho = $zoho;
         $this->cotizacion = $cotizacion;
     }
 
@@ -39,8 +39,31 @@ class Cotizar
         $mes_diferencia = date("m") - $mes;
         $dia_diferencia = date("d") - $dia;
         if ($dia_diferencia < 0 || $mes_diferencia < 0)
-            $ano_diferencia --;
+            $ano_diferencia--;
         return $ano_diferencia;
     }
-}
 
+    public function cotizar(Cotizaciones $zoho){
+        switch ($this->cotizacion->plan) {
+            case "Vida":
+                $cotizar = new CotizarVida();
+                break;
+
+            case "Seguro Incendio Hipotecario":
+                $cotizar = new CotizarIncendio();
+                break;
+
+            case "Vida/Desempleo":
+                $cotizar = new CotizarDesempleo();
+                break;
+
+            default:
+                //libreria para cotizar
+                $cotizar = new CotizarAuto();
+                break;
+        }
+
+        //hacer uso de la libreria para cotizar
+        $cotizar->cotizar_planes($zoho);
+    }
+}
