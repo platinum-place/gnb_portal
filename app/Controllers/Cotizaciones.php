@@ -2,8 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Libraries\Cotizar\Cotizar;
+use App\Libraries\Cotizar\CotizarAuto;
+use App\Libraries\Cotizar\CotizarDesempleo;
+use App\Libraries\Cotizar\CotizarIncendio;
+use App\Libraries\Cotizar\CotizarVida;
 use App\Libraries\Reporte\Reporte;
+use App\Libraries\Reporte\ReporteAuto;
+use App\Libraries\Reporte\ReporteDesempleo;
+use App\Libraries\Reporte\ReporteIncendio;
+use App\Libraries\Reporte\ReporteVida;
 use App\Libraries\Zoho;
 use App\Models\Cotizacion;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -26,36 +33,53 @@ class Cotizaciones extends BaseController
             $cotizacion->plazo = $this->request->getPost("plazo");
             $cotizacion->fecha_deudor = $this->request->getPost("deudor");
 
-            //
-            $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
+            switch ($cotizacion->plan) {
+                case "Vida":
+                    //informacion del plan vida
+                    $cotizacion->fecha_codeudor = $this->request->getPost("codeudor");
 
-            //
-            $cotizacion->direccion = $this->request->getPost("direccion");
-            $cotizacion->prestamo = $this->request->getPost("prestamo");
-            $cotizacion->construccion = $this->request->getPost("construccion");
-            $cotizacion->riesgo = $this->request->getPost("riesgo");
+                    $cotizar = new CotizarVida($cotizacion, $libreria);
+                    break;
 
-            //
-            $cotizacion->cuota = $this->request->getPost("cuota");
+                case "Seguro Incendio Hipotecario":
+                    //informacion sobre plan incendio
+                    $cotizacion->direccion = $this->request->getPost("direccion");
+                    $cotizacion->prestamo = $this->request->getPost("prestamo");
+                    $cotizacion->construccion = $this->request->getPost("construccion");
+                    $cotizacion->riesgo = $this->request->getPost("riesgo");
 
-            //
-            $cotizacion->plan = $this->request->getPost("plan");
-            $cotizacion->ano = $this->request->getPost("ano");
-            $cotizacion->uso = $this->request->getPost("uso");
-            $cotizacion->estado = $this->request->getPost("estado");
-            $cotizacion->marcaid = $this->request->getPost("marca");
-            // datos relacionados al modelo, dividios en un array
-            $modelo = explode(",", $this->request->getPost("modelo"));
-            // asignando valores al objeto
-            $modeloid = $modelo[0];
-            $modelotipo = $modelo[1];
-            $cotizacion->modeloid = $modeloid;
-            $cotizacion->modelotipo = $modelotipo;
+                    $cotizar = new CotizarIncendio($cotizacion, $libreria);
+                    break;
 
-            //
-            $libreria_cotizar = new Cotizar($cotizacion);
-            $libreria_cotizar->Cotizar($libreria);
+                case "Vida/Desempleo":
+                    //informacion del plan desempleo
+                    $cotizacion->cuota = $this->request->getPost("cuota");
 
+                    $cotizar = new CotizarDesempleo($cotizacion, $libreria);
+                    break;
+
+                default:
+                    //informacion para el plan auto
+                    $cotizacion->plan = $this->request->getPost("plan");
+                    $cotizacion->ano = $this->request->getPost("ano");
+                    $cotizacion->uso = $this->request->getPost("uso");
+                    $cotizacion->estado = $this->request->getPost("estado");
+                    $cotizacion->marcaid = $this->request->getPost("marca");
+                    // datos relacionados al modelo, dividios en un array
+                    $modelo = explode(",", $this->request->getPost("modelo"));
+                    // asignando valores al objeto
+                    $modeloid = $modelo[0];
+                    $modelotipo = $modelo[1];
+                    $cotizacion->modeloid = $modeloid;
+                    $cotizacion->modelotipo = $modelotipo;
+
+                    $cotizar = new CotizarAuto($cotizacion, $libreria);
+                    break;
+            }
+
+            $cotizar->cotizar_planes();
+
+            //en caso de no encontrar planes para cotizar
             if (empty($cotizacion->planes)) {
                 session()->setFlashdata('alerta', 'No existen planes para cotizar.');
             }
@@ -243,14 +267,14 @@ class Cotizaciones extends BaseController
 
         if ($this->request->getPost()) {
             //actualizar los datos de la cotizacion
-            $libreria->actualizar_cotizacion($this->request->getPost("planid"), $cotizacion);
+            $libreria->actualizar_cotizacion($cotizacion, $this->request->getPost("planid"));
 
             // los archivos debe ser subida al servidor para luego ser adjuntados al registro
             if ($documentos = $this->request->getFiles()) {
                 $libreria->adjuntar_archivo($documentos['documentos'], $id);
             }
 
-            $alerta = view("alertas/emitir_cotizacion");
+            $alerta = view("alertas/emitir_cotizacion", ["id" => $id, "cliente" => $cliente]);
             session()->setFlashdata('alerta', $alerta);
             return redirect()->to(site_url("cotizaciones/buscar_emisiones"));
         }
@@ -341,11 +365,33 @@ class Cotizaciones extends BaseController
     {
         $libreria = new \App\Libraries\Cotizaciones();
 
-        $libreria_reporte = new Reporte();
-        $ruta_reporte = $libreria_reporte->generar_reporte(
-            $libreria, $this->request->getPost("plan"),
-            $this->request->getPost("desde"), $this->request->getPost("hasta")
-        );
+        $emisiones = $libreria->lista_emisiones();
+
+        if (empty($emisiones)) {
+            return null;
+        }
+
+        switch ($this->request->getPost("plan")) {
+            case 'Auto':
+                $reporte = new ReporteAuto();
+                break;
+
+            case 'Vida':
+                $reporte = new ReporteVida();
+                break;
+
+            case 'Vida/Desempleo':
+                $reporte = new ReporteDesempleo();
+                break;
+
+            case 'Seguro Incendio Hipotecario':
+                $reporte = new ReporteIncendio();
+                break;
+        }
+
+        if (!empty($reporte)) {
+            $ruta_reporte = $reporte->generar_reporte($emisiones, $this->request->getPost("desde"), $this->request->getPost("hasta"));
+        }
 
         // si no encontro registros
         if (empty($ruta_reporte)) {

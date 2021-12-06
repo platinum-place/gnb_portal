@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Libraries\Zoho;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpWord\Style\Language;
 
 class Plantillas extends BaseController
@@ -25,6 +27,133 @@ class Plantillas extends BaseController
             "corredor" => $corredor,
             "vehiculos" => $vehiculos,
         ]);
+    }
+
+    public function excel($id)
+    {
+        $libreria = new Zoho;
+        //datos de la tua
+        $tua = $libreria->getRecord("Deals", $id);
+        //datos del cliente
+        $cliente = $libreria->getRecord("Leads", $tua->getFieldValue("Cliente")->getEntityId());
+        //datos del corredor
+        $corredor = $libreria->getRecord("Accounts", $tua->getFieldValue("Account_Name")->getEntityId());
+
+
+// iniciar las librerias de la api para generar excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Add a drawing to the worksheet
+        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing->setName('Logo');
+        $drawing->setDescription('Logo');
+        $drawing->setPath(FCPATH . 'img/nobe.png');
+        $drawing->setCoordinates('A1');
+        $drawing->setHeight(200);
+        $drawing->setWorksheet($spreadsheet->getActiveSheet());
+
+        // celdas en negrita
+        $sheet->getStyle('D1')
+            ->getFont()
+            ->setBold(true)
+            ->setName('Arial')
+            ->setSize(14);
+        $sheet->getStyle('D2')
+            ->getFont()
+            ->setBold(true)
+            ->setName('Arial')
+            ->setSize(12);
+        $sheet->getStyle('D4')
+            ->getFont()
+            ->setBold(true);
+        $sheet->getStyle('D5')
+            ->getFont()
+            ->setBold(true);
+        $sheet->getStyle('D6')
+            ->getFont()
+            ->setBold(true);
+        $sheet->getStyle('D7')
+            ->getFont()
+            ->setBold(true);
+
+        // titulos del reporte
+        $sheet->setCellValue('D1', $tua->getFieldValue("Account_Name")->getLookupLabel());
+        $sheet->setCellValue('D2', 'REGISTRO TU ASISTENCIA ' . $tua->getFieldValue('Deal_Name'));
+        $sheet->setCellValue('D4', 'Estado:');
+        $sheet->setCellValue('E4', $tua->getFieldValue("Stage"));
+        $sheet->setCellValue('D5', 'Vigencia Desde:');
+        $sheet->setCellValue('E5', date('d/m/Y', strtotime($tua->getFieldValue("Fecha_de_inicio"))));
+        $sheet->setCellValue('D6', 'Vigencia Hasta:');
+        $sheet->setCellValue('E6', date('d/m/Y', strtotime($tua->getFieldValue("Closing_Date"))));
+        $sheet->setCellValue('D7', 'Beneficiario:');
+        $sheet->setCellValue('E7', $cliente->getFieldValue("First_Name") . " " . $cliente->getFieldValue("Last_Name"));
+
+        // elegir el contenido del encabezado de la tabla
+        $sheet->setCellValue('A12', '#');
+        $sheet->setCellValue('B12', 'Marca');
+        $sheet->setCellValue('C12', 'Modelo');
+        $sheet->setCellValue('D12', 'Tipo vehículo');
+        $sheet->setCellValue('E12', 'Año');
+        $sheet->setCellValue('F12', 'Color');
+        $sheet->setCellValue('G12', 'Placa');
+        $sheet->setCellValue('H12', 'Chasis');
+
+        // cambiar el color de fondo de un rango de celdas
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A12:H12')
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()
+            ->setARGB('004F97');
+
+        // cambiar el color de fuente de un rango de celdas
+        $spreadsheet->getActiveSheet()
+            ->getStyle('A12:H12')
+            ->getFont()
+            ->getColor()
+            ->setARGB("FFFFFF");
+
+        // inicializar contadores
+        $cont = 1;
+        $pos = 13;
+
+        //datos de los vehiculos
+        $criterio = "Trato:equals:$id";
+        $vehiculos = $libreria->searchRecordsByCriteria("Bienes", $criterio);
+
+        foreach ($vehiculos as $vehiculo) {
+                // valores de la tabla
+                $sheet->setCellValue('A' . $pos, $cont);
+                $sheet->setCellValue('B' . $pos, $vehiculo->getFieldValue('Marca'));
+                $sheet->setCellValue('C' . $pos, $vehiculo->getFieldValue('Modelo'));
+                $sheet->setCellValue('D' . $pos, $vehiculo->getFieldValue('Tipo'));
+                $sheet->setCellValue('E' . $pos, $vehiculo->getFieldValue('A_o') );
+                $sheet->setCellValue('F' . $pos,$vehiculo->getFieldValue('Color'));
+                $sheet->setCellValue('G' . $pos, $vehiculo->getFieldValue('Placa'));
+                $sheet->setCellValue('H' . $pos, $vehiculo->getFieldValue('Name'));
+
+                // contadores
+                $cont ++;
+                $pos ++;
+            }
+
+        // ajustar tamaño de las columnas
+        foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setWidth(30);
+        }
+
+        // ruta del excel
+        $doc = WRITEPATH . 'uploads/reporte.xlsx';
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($doc);
+
+        // forzar al navegador a descargar el archivo
+
+        // funciona en ambos ambientes
+        $nombre = "Registro " . $tua->getFieldValue('Deal_Name');
+        return $this->response->download($doc, null)->setFileName("$nombre.xlsx");
     }
 
     public function caso($id)

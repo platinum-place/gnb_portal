@@ -129,12 +129,3 @@ zcrm_oauthtokens.txt
 ZCRMClientLibrary.log
 .project
 *.png
-zoho/ejemplo.json
-zoho/refresh_token.php
-zoho/access_token.php
-zoho/abrir_ticket.php
-zoho/obtener_ticket.php
-app/Libraries/Zoho.php
-zoho/api systrack.php
-zoho/access_token.php
-zoho/refresh_token.php
